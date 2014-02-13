@@ -19,7 +19,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+
+import de.tubs.ibr.dtn.api.SingletonEndpoint;
 
 public class MainActivity extends Activity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
@@ -29,7 +30,7 @@ public class MainActivity extends Activity implements
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
 	private LocationClient mLocationClient = null;
-	private Marker mSelfMarker = null;
+	private NodeManager mNodeManager = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class MainActivity extends Activity implements
 			BeaconGenerator.activate(this);
 		}
 
+		// create a new location client
 		mLocationClient = new LocationClient(this, this, this);
 
 		GoogleMap map = ((MapFragment) getFragmentManager()
@@ -54,7 +56,27 @@ public class MainActivity extends Activity implements
 		// Other supported types include: MAP_TYPE_NORMAL,
 		// MAP_TYPE_TERRAIN, MAP_TYPE_HYBRID and MAP_TYPE_NONE
 		map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+		
+		// enable own location
+		map.setMyLocationEnabled(true);
+		
+		// set listener for clicks on marker
+		map.setOnMarkerClickListener(mMarkerListener);
+		
+		// move camera to zoom level 20
+		map.moveCamera(CameraUpdateFactory.zoomTo(20.0f));
+		
+		// create a new NodeManager
+		mNodeManager = new NodeManager(map);
 	}
+	
+	private GoogleMap.OnMarkerClickListener mMarkerListener = new GoogleMap.OnMarkerClickListener() {
+		@Override
+		public boolean onMarkerClick(Marker marker) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	};
 
 	@Override
 	protected void onStart() {
@@ -75,12 +97,11 @@ public class MainActivity extends Activity implements
 		return true;
 	}
 	
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.action_center_location:
-				centerToLocation();
+			case R.id.action_settings:
+				// TODO: show settings
 				return true;
 			
 			default:
@@ -120,18 +141,35 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onConnected(Bundle arg0) {
 		centerToLocation();
+		
+		Node n = mNodeManager.get(new SingletonEndpoint("dtn://test1"));
+		Location l = mLocationClient.getLastLocation();
+		l.setLatitude(l.getLatitude() + 0.005);
+		n.setLocation(l);
+		n.setType(Node.Type.INGA);
+		
+		n = mNodeManager.get(new SingletonEndpoint("dtn://test2"));
+		l = mLocationClient.getLastLocation();
+		l.setLatitude(l.getLatitude() - 0.005);
+		n.setLocation(l);
+		n.setType(Node.Type.PI);
+		
+		n = mNodeManager.get(new SingletonEndpoint("dtn://test3"));
+		l = mLocationClient.getLastLocation();
+		l.setLongitude(l.getLongitude() - 0.005);
+		n.setLocation(l);
+		n.setType(Node.Type.ANDROID);
+
 	}
 	
 	private void centerToLocation() {
-		Location location = mLocationClient.getLastLocation();
-
 		GoogleMap map = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map)).getMap();
 		
-		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+		Location location = mLocationClient.getLastLocation();
+		if (location == null) return;
 		
-		mSelfMarker = map.addMarker(new MarkerOptions().position(position).flat(true));
-
+		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 		map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 20));
 	}
 
@@ -142,10 +180,8 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onLocationChanged(Location location) {
-		if (mSelfMarker != null) {
-			LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-			mSelfMarker.setPosition(position);
-		}
+		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+		// TODO: ...
 	}
 
 }
