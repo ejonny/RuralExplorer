@@ -3,6 +3,7 @@ package de.tubs.ibr.dtn.ruralexplorer;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.ParcelFileDescriptor;
+import android.os.Parcelable;
 import android.util.Log;
 import de.tubs.ibr.dtn.api.Block;
 import de.tubs.ibr.dtn.api.Bundle;
@@ -42,6 +43,11 @@ public class ExplorerService extends IntentService {
 	// indicates updated data to other components
 	public static final String DATA_UPDATED = "de.tubs.ibr.dtn.ruralexplorer.DATA_UPDATED";
 	
+	// data updated parameters
+	public static final String EXTRA_DATA_ENDPOINT = "de.tubs.ibr.dtn.ruralexplorer.DATA_ENDPOINT";
+	public static final String EXTRA_DATA_BUNDLEID = "de.tubs.ibr.dtn.ruralexplorer.DATA_BUNDLEID";
+	public static final String EXTRA_DATA_LOCATION = "de.tubs.ibr.dtn.ruralexplorer.DATA_LOCATION";
+	
 	// The communication with the DTN service is done using the DTNClient
 	private DTNClient mClient = null;
 
@@ -67,7 +73,7 @@ public class ExplorerService extends IntentService {
 		else if (MARK_DELIVERED_INTENT.equals(action))
 		{
 			// retrieve the bundle ID of the intent
-			BundleID bundleid = intent.getParcelableExtra("bundleid");
+			BundleID bundleid = intent.getParcelableExtra(EXTRA_DATA_BUNDLEID);
 
 			try {
 				// mark the bundle ID as delivered
@@ -82,7 +88,7 @@ public class ExplorerService extends IntentService {
 			SingletonEndpoint source = intent.getParcelableExtra("source");
 
 			// retrieve the bundle ID of the intent
-			BundleID bundleid = intent.getParcelableExtra("bundleid");
+			BundleID bundleid = intent.getParcelableExtra(EXTRA_DATA_BUNDLEID);
 
 			Log.d(TAG,
 					"Status report received for " + bundleid.toString() + " from "
@@ -171,7 +177,7 @@ public class ExplorerService extends IntentService {
 			// mark the bundle as delivered
 			Intent i = new Intent(ExplorerService.this, ExplorerService.class);
 			i.setAction(MARK_DELIVERED_INTENT);
-			i.putExtra("bundleid", received);
+			i.putExtra(EXTRA_DATA_BUNDLEID, received);
 			startService(i);
 
 			// free the bundle header
@@ -179,7 +185,8 @@ public class ExplorerService extends IntentService {
 
 			// notify other components of the updated value
 			Intent updatedIntent = new Intent(DATA_UPDATED);
-			updatedIntent.putExtra("bundleid", received);
+			updatedIntent.putExtra(EXTRA_DATA_ENDPOINT, (Parcelable)mBundle.getSource());
+			updatedIntent.putExtra(EXTRA_DATA_BUNDLEID, received);
 			sendBroadcast(updatedIntent);
 		}
 

@@ -67,7 +67,7 @@ public class MainActivity extends Activity implements
 		map.moveCamera(CameraUpdateFactory.zoomTo(20.0f));
 		
 		// create a new NodeManager
-		mNodeManager = new NodeManager(map);
+		mNodeManager = new NodeManager(this, map);
 	}
 	
 	private GoogleMap.OnMarkerClickListener mMarkerListener = new GoogleMap.OnMarkerClickListener() {
@@ -82,10 +82,12 @@ public class MainActivity extends Activity implements
 	protected void onStart() {
 		super.onStart();
 		mLocationClient.connect();
+		mNodeManager.onStart();
 	}
 
 	@Override
 	protected void onStop() {
+		mNodeManager.onStop();
 		mLocationClient.disconnect();
 		super.onStop();
 	}
