@@ -48,6 +48,8 @@ public class ExplorerService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		String action = intent.getAction();
+		
+		Log.d(TAG, action);
 
 		if (de.tubs.ibr.dtn.Intent.RECEIVE.equals(action))
 		{
@@ -85,6 +87,17 @@ public class ExplorerService extends IntentService {
 			Log.d(TAG,
 					"Status report received for " + bundleid.toString() + " from "
 							+ source.toString());
+		}
+		else if (ACTION_GENERATE_BEACON.equals(action))
+		{
+			Log.d(TAG, "send beacon");
+			try {
+				mClient.getSession().send(RURAL_GROUP_DTN_EID, 20, "Hello World".getBytes());
+			} catch (SessionDestroyedException e) {
+				Log.e(TAG, "Can not query for bundle", e);
+			} catch (InterruptedException e) {
+				Log.e(TAG, "Can not query for bundle", e);
+			}
 		}
 	}
 
