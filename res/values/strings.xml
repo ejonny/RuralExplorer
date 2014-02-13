@@ -3,6 +3,6 @@
 
     <string name="app_name">Rural Explorer</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_center_location">Center to Location</string>
 
 </resources>
