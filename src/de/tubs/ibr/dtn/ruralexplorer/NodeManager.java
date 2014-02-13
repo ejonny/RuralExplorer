@@ -56,14 +56,14 @@ public class NodeManager {
 			
 			if (ExplorerService.DATA_UPDATED.equals(action)) {
 				// update nodes
-				SingletonEndpoint endpoint = intent.getParcelableExtra(ExplorerService.EXTRA_DATA_ENDPOINT);
+				SingletonEndpoint endpoint = intent.getParcelableExtra(ExplorerService.EXTRA_ENDPOINT);
 				
 				// get node
 				Node n = NodeManager.this.get(endpoint);
 				
 				// set location if available
-				if (intent.hasExtra(ExplorerService.EXTRA_DATA_LOCATION)) {
-					Location l = intent.getParcelableExtra(ExplorerService.EXTRA_DATA_LOCATION);
+				if (intent.hasExtra(ExplorerService.EXTRA_LOCATION)) {
+					Location l = intent.getParcelableExtra(ExplorerService.EXTRA_LOCATION);
 					n.setLocation(l);
 				}
 			}

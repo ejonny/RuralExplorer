@@ -69,12 +69,6 @@
 
                 <category android:name="de.tubs.ibr.dtn.ping" />
             </intent-filter>
-            <!-- Add intent filter to receive the state of the DTN service -->
-            <intent-filter>
-                <action android:name="de.tubs.ibr.dtn.intent.STATE" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </receiver>
     </application>
 

@@ -2,11 +2,11 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -31,21 +31,15 @@ public class MainActivity extends Activity implements
 
 	private LocationClient mLocationClient = null;
 	private NodeManager mNodeManager = null;
+	private Handler mBeaconHandler = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		// check if this is the first start-up
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		if (!prefs.contains(Preferences.KEY_BEACON_ENABLED)) {
-			// enable beaconing
-			prefs.edit().putBoolean(Preferences.KEY_BEACON_ENABLED, true).commit();
-
-			// activate beacon timer
-			BeaconGenerator.activate(this);
-		}
+		
+		// create a new handler
+		mBeaconHandler = new Handler();
 
 		// create a new location client
 		mLocationClient = new LocationClient(this, this, this);
@@ -87,6 +81,9 @@ public class MainActivity extends Activity implements
 
 	@Override
 	protected void onStop() {
+		// stop beaconing
+		mBeaconHandler.removeCallbacks(mBeaconProcess);
+		
 		mNodeManager.onStop();
 		mLocationClient.disconnect();
 		super.onStop();
@@ -141,27 +138,32 @@ public class MainActivity extends Activity implements
 	}
 
 	@Override
-	public void onConnected(Bundle arg0) {
+	public void onConnected(Bundle bundle) {
 		centerToLocation();
 		
 		Node n = mNodeManager.get(new SingletonEndpoint("dtn://test1"));
 		Location l = mLocationClient.getLastLocation();
-		l.setLatitude(l.getLatitude() + 0.005);
-		n.setLocation(l);
-		n.setType(Node.Type.INGA);
 		
-		n = mNodeManager.get(new SingletonEndpoint("dtn://test2"));
-		l = mLocationClient.getLastLocation();
-		l.setLatitude(l.getLatitude() - 0.005);
-		n.setLocation(l);
-		n.setType(Node.Type.PI);
+		if (l != null) {
+			l.setLatitude(l.getLatitude() + 0.005);
+			n.setLocation(l);
+			n.setType(Node.Type.INGA);
+			
+			n = mNodeManager.get(new SingletonEndpoint("dtn://test2"));
+			l = mLocationClient.getLastLocation();
+			l.setLatitude(l.getLatitude() - 0.005);
+			n.setLocation(l);
+			n.setType(Node.Type.PI);
+			
+			n = mNodeManager.get(new SingletonEndpoint("dtn://test3"));
+			l = mLocationClient.getLastLocation();
+			l.setLongitude(l.getLongitude() - 0.005);
+			n.setLocation(l);
+			n.setType(Node.Type.ANDROID);
+		}
 		
-		n = mNodeManager.get(new SingletonEndpoint("dtn://test3"));
-		l = mLocationClient.getLastLocation();
-		l.setLongitude(l.getLongitude() - 0.005);
-		n.setLocation(l);
-		n.setType(Node.Type.ANDROID);
-
+		// start beaconing
+		mBeaconHandler.post(mBeaconProcess);
 	}
 	
 	private void centerToLocation() {
@@ -177,13 +179,26 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onDisconnected() {
-		// nothing to do.
+		// stop beaconing
+		mBeaconHandler.removeCallbacks(mBeaconProcess);
 	}
 
 	@Override
 	public void onLocationChanged(Location location) {
-		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-		// TODO: ...
+		// LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 	}
 
+	private Runnable mBeaconProcess = new Runnable() {
+		@Override
+		public void run() {
+			// generate beacon
+			Intent intent = new Intent(MainActivity.this, ExplorerService.class);
+			intent.setAction(ExplorerService.ACTION_GENERATE_BEACON);
+			intent.putExtra(ExplorerService.EXTRA_LOCATION, mLocationClient.getLastLocation());
+			startService(intent);
+			
+			// next update in 10 seconds
+			mBeaconHandler.postDelayed(mBeaconProcess, 10000);
+		}
+	};
 }
