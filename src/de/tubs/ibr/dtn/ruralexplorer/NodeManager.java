@@ -67,15 +67,17 @@ public class NodeManager {
 			
 			if (Database.DATA_UPDATED.equals(action)) {
 				// update nodes
-				SingletonEndpoint endpoint = intent.getParcelableExtra(Database.EXTRA_ENDPOINT);
+				SingletonEndpoint endpoint = intent.getParcelableExtra(CommService.EXTRA_ENDPOINT);
 				
-				// get node
-				Node n = NodeManager.this.get(endpoint);
-				
-				// set location if available
-				if (intent.hasExtra(Database.EXTRA_LOCATION)) {
-					Location l = intent.getParcelableExtra(Database.EXTRA_LOCATION);
-					n.setLocation(l);
+				if (endpoint != null) {
+					// get node
+					Node n = NodeManager.this.get(endpoint);
+					
+					// set location if available
+					if (intent.hasExtra(LocationService.EXTRA_LOCATION)) {
+						Location l = intent.getParcelableExtra(LocationService.EXTRA_LOCATION);
+						n.setLocation(l);
+					}
 				}
 			}
 		}
