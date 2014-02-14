@@ -86,6 +86,21 @@
             android:enabled="true"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name="de.tubs.ibr.dtn.ruralexplorer.NodeInfoActivity"
+            android:label="@string/title_activity_node_info"
+            android:parentActivityName="de.tubs.ibr.dtn.ruralexplorer.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.tubs.ibr.dtn.ruralexplorer.MainActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

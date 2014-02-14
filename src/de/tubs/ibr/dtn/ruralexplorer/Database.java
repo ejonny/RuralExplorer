@@ -8,6 +8,7 @@ import de.tubs.ibr.dtn.api.Bundle;
 public class Database {
 	// indicates updated data to other components
 	public static final String DATA_UPDATED = "de.tubs.ibr.dtn.ruralexplorer.DATA_UPDATED";
+	public static final String EXTRA_NODE = "de.tubs.ibr.dtn.ruralexplorer.NODE";
 	
 	private static final Database mDatabase = new Database();
 	

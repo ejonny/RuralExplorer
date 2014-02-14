@@ -93,6 +93,12 @@ public class NodeManager {
 		return n;
 	}
 	
+	public void update(Node n) {
+		for (NodeManagerListener l : mListener) {
+			l.onNodeUpdated(n);
+		}
+	}
+	
 	public void onStart() {
 		// register to update intents
 		IntentFilter filter = new IntentFilter(Database.DATA_UPDATED);
@@ -100,6 +106,31 @@ public class NodeManager {
 		
 		// load all nodes from the database and display them
 		// TODO: announce all nodes to the listener
+
+		Location l = new Location("fake");
+		l.setLatitude(52.273535);
+		l.setLongitude(10.524711);
+		
+		Node n = get(new SingletonEndpoint("dtn://test1"));
+		Location l1 = new Location(l);
+		l1.setLatitude(l.getLatitude() + 0.005);
+		n.setType(Node.Type.INGA);
+		n.setLocation(l1);
+		update(n);
+		
+		n = get(new SingletonEndpoint("dtn://test2"));
+		Location l2 = new Location(l);
+		l2.setLatitude(l.getLatitude() - 0.005);
+		n.setType(Node.Type.PI);
+		n.setLocation(l2);
+		update(n);
+		
+		n = get(new SingletonEndpoint("dtn://test3"));
+		Location l3 = new Location(l);
+		l3.setLongitude(l.getLongitude() - 0.005);
+		n.setType(Node.Type.ANDROID);
+		n.setLocation(l3);
+		update(n);
 	}
 	
 	public void onStop() {

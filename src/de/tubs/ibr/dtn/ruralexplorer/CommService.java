@@ -30,7 +30,7 @@ public class CommService extends IntentService {
 	// mark a specific bundle as delivered
 	public static final String MARK_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.MARK_DELIVERED";
 	public static final String EXTRA_BUNDLEID = "de.tubs.ibr.dtn.ruralexplorer.BUNDLEID";
-	public static final String EXTRA_ENDPOINT = "de.tubs.ibr.dtn.ruralexplorer.DATA_ENDPOINT";
+	public static final String EXTRA_ENDPOINT = "de.tubs.ibr.dtn.ruralexplorer.ENDPOINT";
 	
 	// process a status report
 	public static final String REPORT_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.REPORT_DELIVERED";

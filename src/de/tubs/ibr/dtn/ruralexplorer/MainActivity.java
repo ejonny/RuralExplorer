@@ -24,7 +24,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.InfoFragment.OnInfoWindowListener;
 
 public class MainActivity extends FragmentActivity implements
@@ -46,9 +45,8 @@ public class MainActivity extends FragmentActivity implements
 			mLocationService = ((LocationService.LocalBinder)service).getService();
 			
 			Location l = mLocationService.getMyLocation();
-			if (l != null) {
+			if ((l != null) && (!mLocationInitialized)) {
 				centerTo(l);
-				addFakeMarker(l);
 				mLocationInitialized = true;
 			}
 		}
@@ -119,7 +117,7 @@ public class MainActivity extends FragmentActivity implements
 		public boolean onMarkerClick(Marker marker) {
 			// move to the marker
 			GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-			map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
+			map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 			
 			// show / hide marker frame
 			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
@@ -211,7 +209,7 @@ public class MainActivity extends FragmentActivity implements
 				.findFragmentById(R.id.map)).getMap();
 
 		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-		map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 20));
+		map.animateCamera(CameraUpdateFactory.newLatLng(position));
 	}
 
 	@Override
@@ -236,32 +234,11 @@ public class MainActivity extends FragmentActivity implements
 			if (!mLocationInitialized && LocationService.LOCATION_UPDATED.equals(intent.getAction())) {
 				Location l = intent.getParcelableExtra(LocationService.EXTRA_LOCATION);
 				centerTo(l);
-				addFakeMarker(l);
 				mLocationInitialized = true;
 			}
 		}
 	};
 	
-	private void addFakeMarker(final Location l) {
-		Node n = mNodeManager.get(new SingletonEndpoint("dtn://test1"));
-		Location l1 = new Location(l);
-		l1.setLatitude(l.getLatitude() + 0.005);
-		n.setLocation(l1);
-		n.setType(Node.Type.INGA);
-		
-		n = mNodeManager.get(new SingletonEndpoint("dtn://test2"));
-		Location l2 = new Location(l);
-		l2.setLatitude(l.getLatitude() - 0.005);
-		n.setLocation(l2);
-		n.setType(Node.Type.PI);
-		
-		n = mNodeManager.get(new SingletonEndpoint("dtn://test3"));
-		Location l3 = new Location(l);
-		l3.setLongitude(l.getLongitude() - 0.005);
-		n.setLocation(l3);
-		n.setType(Node.Type.ANDROID);
-	}
-
 	@Override
 	public void onInfoWindowPageChanged(int position) {
 		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -271,7 +248,7 @@ public class MainActivity extends FragmentActivity implements
 			Marker marker = n.getMarker();
 
 			// move to the marker
-			map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
+			map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 			
 			// set selection marker
 			if (mSelectionMarker == null) {

@@ -47,5 +47,6 @@ public class InfoPagerAdapter extends FragmentStatePagerAdapter {
 	
 	public void updated(Node n) {
 		Log.d("InfoPagerAdapter", "Node updated: " + n.toString());
+		notifyDataSetChanged();
 	}
 }
