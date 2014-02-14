@@ -104,7 +104,7 @@ public class MainActivity extends FragmentActivity implements
 			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.info));
 			
-			infoFragment.setNode(null);
+			infoFragment.setNode(null, 0);
 			
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);
@@ -127,7 +127,8 @@ public class MainActivity extends FragmentActivity implements
 			
 			try {
 				Node n = mNodeManager.get(marker);
-				infoFragment.setNode(n);
+				int position = mNodeManager.getIndex(n);
+				infoFragment.setNode(n, position);
 				
 				// set selection marker
 				if (mSelectionMarker == null) {
@@ -141,7 +142,7 @@ public class MainActivity extends FragmentActivity implements
 				mSelectionMarker.setPosition(marker.getPosition());
 				mSelectionMarker.setVisible(true);
 			} catch (NodeNotFoundException e) {
-				infoFragment.setNode(null);
+				infoFragment.setNode(null, 0);
 			}
 			
 			return true;
@@ -259,5 +260,32 @@ public class MainActivity extends FragmentActivity implements
 		l3.setLongitude(l.getLongitude() - 0.005);
 		n.setLocation(l3);
 		n.setType(Node.Type.ANDROID);
+	}
+
+	@Override
+	public void onInfoWindowPageChanged(int position) {
+		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+		
+		try {
+			Node n = mNodeManager.get(position);
+			Marker marker = n.getMarker();
+
+			// move to the marker
+			map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
+			
+			// set selection marker
+			if (mSelectionMarker == null) {
+				mSelectionMarker = map.addMarker(new MarkerOptions()
+					.position(marker.getPosition())
+					.icon(BitmapDescriptorFactory.defaultMarker())
+				);
+			}
+			
+			// set position of selection marker
+			mSelectionMarker.setPosition(marker.getPosition());
+			mSelectionMarker.setVisible(true);
+		} catch (NodeNotFoundException e) {
+			// nothing to do.
+		}
 	}
 }

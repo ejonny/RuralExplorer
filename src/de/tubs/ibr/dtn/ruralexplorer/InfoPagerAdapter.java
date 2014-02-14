@@ -19,8 +19,12 @@ public class InfoPagerAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public Fragment getItem(int position) {
-		Node n = mNodeManager.get(position);
-		return NodeInfoFragment.newInstance(n);
+		try {
+			Node n = mNodeManager.get(position);
+			return NodeInfoFragment.newInstance(n);
+		} catch (NodeNotFoundException ex) {
+			return null;
+		}
 	}
 
 	@Override

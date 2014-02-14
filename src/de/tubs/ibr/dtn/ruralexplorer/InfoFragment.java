@@ -46,6 +46,20 @@ public class InfoFragment extends Fragment implements NodeManager.NodeManagerLis
 		
 		mViewPager = (ViewPager)v.findViewById(R.id.info_pager);
 		mViewPager.setAdapter(mInfoAdapter);
+		mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				mListener.onInfoWindowPageChanged(position);
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		});
 		
 		return v;
 	}
@@ -69,15 +83,17 @@ public class InfoFragment extends Fragment implements NodeManager.NodeManagerLis
 	
 	public interface OnInfoWindowListener {
 		public void onInfoWindowStateChanged(boolean visible, int height, int width);
+		public void onInfoWindowPageChanged(int position);
 	}
 
-	public void setNode(Node n) {
+	public void setNode(Node n, int position) {
 		if (n == null) {
 			mLayout.setVisibility(View.INVISIBLE);
 			mListener.onInfoWindowStateChanged(false, 0, 0);
 		} else {
 			mLayout.setVisibility(View.VISIBLE);
 			mListener.onInfoWindowStateChanged(true, mLayout.getHeight(), mLayout.getWidth());
+			mViewPager.setCurrentItem(position, true);
 		}
 	}
 	

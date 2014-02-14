@@ -15,7 +15,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 
-public class Node implements Serializable {
+public class Node implements Serializable, Comparable<Node> {
 	/**
 	 * serial ID
 	 */
@@ -125,7 +125,10 @@ public class Node implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		return getEndpoint().equals(o);
+		if (o instanceof Node) {
+			return getEndpoint().equals(((Node)o).getEndpoint());
+		}
+		return super.equals(o);
 	}
 
 	@Override
@@ -153,5 +156,11 @@ public class Node implements Serializable {
 			default:
 				return BitmapDescriptorFactory.fromResource(R.drawable.ic_node);
 		}
+	}
+
+	@Override
+	public int compareTo(Node another) {
+		if (mEndpoint == null) return -1;
+		return mEndpoint.compareTo(another.mEndpoint);
 	}
 }

@@ -1,6 +1,7 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
 import android.content.BroadcastReceiver;
@@ -39,6 +40,16 @@ public class NodeManager {
 		mContext = context;
 	}
 	
+	public int getIndex(Node n) throws NodeNotFoundException {
+		for (int i = 0; i < mNodes.size(); ++i) {
+			if (mNodes.get(i).equals( n )) {
+				return i;
+			}
+		}
+		
+		throw new NodeNotFoundException();
+	}
+	
 	public Node get(Marker m) throws NodeNotFoundException {
 		for (Node n : mNodes) {
 			if (n.equals( m )) {
@@ -49,8 +60,12 @@ public class NodeManager {
 		throw new NodeNotFoundException();
 	}
 	
-	public Node get(int position) {
-		return mNodes.get(position);
+	public Node get(int position) throws NodeNotFoundException {
+		try {
+			return mNodes.get(position);
+		} catch (IndexOutOfBoundsException ex) {
+			throw new NodeNotFoundException();
+		}
 	}
 	
 	public int getCount() {
@@ -68,6 +83,8 @@ public class NodeManager {
 		Node n = Node.create(mMap);
 		n.setEndpoint(endpoint);
 		mNodes.add(n);
+		
+		Collections.sort(mNodes);
 		
 		for (NodeManagerListener l : mListener) {
 			l.onNodeAdded(n);
