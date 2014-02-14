@@ -4,5 +4,6 @@
     <string name="app_name">Rural Explorer</string>
     <string name="action_settings">Settings</string>
     <string name="action_center_location">Center to Location</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

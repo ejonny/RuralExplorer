@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -21,22 +23,30 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
+import de.tubs.ibr.dtn.ruralexplorer.InfoFragment.OnInfoWindowListener;
 
 public class MainActivity extends Activity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener,
-		LocationListener {
+		LocationListener,
+		OnInfoWindowListener {
 
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
 	private LocationClient mLocationClient = null;
 	private NodeManager mNodeManager = null;
 	private Handler mBeaconHandler = null;
+	
+	private FrameLayout mLayoutDropShadow = null;
+	private Boolean mInfoVisible = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		// get info window drop shadow
+		mLayoutDropShadow = (FrameLayout)findViewById(R.id.info_drop_shadow);
 		
 		// create a new handler
 		mBeaconHandler = new Handler();
@@ -64,11 +74,38 @@ public class MainActivity extends Activity implements
 		mNodeManager = new NodeManager(this, map);
 	}
 	
+	@Override
+	public void onBackPressed() {
+		if (mInfoVisible) {
+			// show / hide marker frame
+			InfoFragment node = ((InfoFragment) getFragmentManager()
+					.findFragmentById(R.id.info));
+			
+			node.setNode(null);
+		} else {
+			super.onBackPressed();
+		}
+	}
+
 	private GoogleMap.OnMarkerClickListener mMarkerListener = new GoogleMap.OnMarkerClickListener() {
 		@Override
 		public boolean onMarkerClick(Marker marker) {
-			// TODO Auto-generated method stub
-			return false;
+			// move to the marker
+			GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+			map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
+			
+			// show / hide marker frame
+			InfoFragment node = ((InfoFragment) getFragmentManager()
+					.findFragmentById(R.id.info));
+			
+			try {
+				Node n = mNodeManager.get(marker);
+				node.setNode(n);
+			} catch (NodeNotFoundException e) {
+				node.setNode(null);
+			}
+			
+			return true;
 		}
 	};
 
@@ -100,7 +137,8 @@ public class MainActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_settings:
-				// TODO: show settings
+				Intent i = new Intent(this, SettingsActivity.class);
+				startActivity(i);
 				return true;
 			
 			default:
@@ -192,13 +230,29 @@ public class MainActivity extends Activity implements
 		@Override
 		public void run() {
 			// generate beacon
-			Intent intent = new Intent(MainActivity.this, ExplorerService.class);
-			intent.setAction(ExplorerService.ACTION_GENERATE_BEACON);
-			intent.putExtra(ExplorerService.EXTRA_LOCATION, mLocationClient.getLastLocation());
+			Intent intent = new Intent(MainActivity.this, CommService.class);
+			intent.setAction(CommService.ACTION_GENERATE_BEACON);
+			intent.putExtra(Database.EXTRA_LOCATION, mLocationClient.getLastLocation());
 			startService(intent);
 			
 			// next update in 10 seconds
 			mBeaconHandler.postDelayed(mBeaconProcess, 10000);
 		}
 	};
+
+	@Override
+	public void onInfoWindowStateChanged(boolean visible, int height, int width) {
+		GoogleMap map = ((MapFragment) getFragmentManager()
+				.findFragmentById(R.id.map)).getMap();
+		
+		if (visible) {
+			map.setPadding(0, 0, 0, height);
+			mLayoutDropShadow.setVisibility(View.VISIBLE);
+			mInfoVisible = true;
+		} else {
+			map.setPadding(0, 0, 0, 0);
+			mLayoutDropShadow.setVisibility(View.GONE);
+			mInfoVisible = false;
+		}
+	}
 }

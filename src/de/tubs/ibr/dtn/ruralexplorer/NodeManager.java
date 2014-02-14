@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 
@@ -20,6 +21,16 @@ public class NodeManager {
 	public NodeManager(Context context, GoogleMap map) {
 		mMap = map;
 		mContext = context;
+	}
+	
+	public Node get(Marker m) throws NodeNotFoundException {
+		for (Node n : mNodes) {
+			if (n.equals( m )) {
+				return n;
+			}
+		}
+		
+		throw new NodeNotFoundException();
 	}
 	
 	public Node get(SingletonEndpoint endpoint) {
@@ -38,7 +49,7 @@ public class NodeManager {
 	
 	public void onStart() {
 		// register to update intents
-		IntentFilter filter = new IntentFilter(ExplorerService.DATA_UPDATED);
+		IntentFilter filter = new IntentFilter(Database.DATA_UPDATED);
 		mContext.registerReceiver(mUpdateReceiver, filter);
 		
 		// load all nodes from the database and display them
@@ -54,16 +65,16 @@ public class NodeManager {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			
-			if (ExplorerService.DATA_UPDATED.equals(action)) {
+			if (Database.DATA_UPDATED.equals(action)) {
 				// update nodes
-				SingletonEndpoint endpoint = intent.getParcelableExtra(ExplorerService.EXTRA_ENDPOINT);
+				SingletonEndpoint endpoint = intent.getParcelableExtra(Database.EXTRA_ENDPOINT);
 				
 				// get node
 				Node n = NodeManager.this.get(endpoint);
 				
 				// set location if available
-				if (intent.hasExtra(ExplorerService.EXTRA_LOCATION)) {
-					Location l = intent.getParcelableExtra(ExplorerService.EXTRA_LOCATION);
+				if (intent.hasExtra(Database.EXTRA_LOCATION)) {
+					Location l = intent.getParcelableExtra(Database.EXTRA_LOCATION);
 					n.setLocation(l);
 				}
 			}

@@ -13,7 +13,7 @@ public class DtnIntentReceiver extends BroadcastReceiver {
 		{
 			// We received a notification about a new bundle and
 			// wake-up the local service to received the bundle.
-			Intent i = new Intent(context, ExplorerService.class);
+			Intent i = new Intent(context, CommService.class);
 			i.setAction(de.tubs.ibr.dtn.Intent.RECEIVE);
 			context.startService(i);
 		}
@@ -21,8 +21,8 @@ public class DtnIntentReceiver extends BroadcastReceiver {
 		{
 			// We received a status report about a bundle and
 			// wake-up the local service to process this report.
-			Intent i = new Intent(context, ExplorerService.class);
-			i.setAction(ExplorerService.REPORT_DELIVERED_INTENT);
+			Intent i = new Intent(context, CommService.class);
+			i.setAction(CommService.REPORT_DELIVERED_INTENT);
 			i.putExtra("source", intent.getParcelableExtra("source"));
 			i.putExtra("bundleid", intent.getParcelableExtra("bundleid"));
 			context.startService(i);

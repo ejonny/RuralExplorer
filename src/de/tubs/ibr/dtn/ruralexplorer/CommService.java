@@ -19,7 +19,7 @@ import de.tubs.ibr.dtn.api.SessionDestroyedException;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.api.TransferMode;
 
-public class ExplorerService extends IntentService {
+public class CommService extends IntentService {
 	
 	// This TAG is used to identify this class (e.g. for debugging)
 	private static final String TAG = "ExplorerService";
@@ -30,6 +30,7 @@ public class ExplorerService extends IntentService {
 	
 	// mark a specific bundle as delivered
 	public static final String MARK_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.MARK_DELIVERED";
+	public static final String EXTRA_BUNDLEID = "de.tubs.ibr.dtn.ruralexplorer.BUNDLEID";
 	
 	// process a status report
 	public static final String REPORT_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.REPORT_DELIVERED";
@@ -39,14 +40,6 @@ public class ExplorerService extends IntentService {
 	
 	// beacon parameters
 	public static final String EXTRA_BEACON_EMERGENCY = "de.tubs.ibr.dtn.ruralexplorer.BEACON_EMERGENCY";
-	
-	// indicates updated data to other components
-	public static final String DATA_UPDATED = "de.tubs.ibr.dtn.ruralexplorer.DATA_UPDATED";
-	
-	// additional parameters
-	public static final String EXTRA_ENDPOINT = "de.tubs.ibr.dtn.ruralexplorer.DATA_ENDPOINT";
-	public static final String EXTRA_BUNDLEID = "de.tubs.ibr.dtn.ruralexplorer.DATA_BUNDLEID";
-	public static final String EXTRA_LOCATION = "de.tubs.ibr.dtn.ruralexplorer.DATA_LOCATION";
 	
 	// The communication with the DTN service is done using the DTNClient
 	private DTNClient mClient = null;
@@ -173,19 +166,16 @@ public class ExplorerService extends IntentService {
 			BundleID received = new BundleID(mBundle);
 
 			// mark the bundle as delivered
-			Intent i = new Intent(ExplorerService.this, ExplorerService.class);
+			Intent i = new Intent(CommService.this, CommService.class);
 			i.setAction(MARK_DELIVERED_INTENT);
 			i.putExtra(EXTRA_BUNDLEID, received);
 			startService(i);
 
 			// free the bundle header
 			mBundle = null;
-
-			// notify other components of the updated value
-			Intent updatedIntent = new Intent(DATA_UPDATED);
-			updatedIntent.putExtra(EXTRA_ENDPOINT, (Parcelable)mBundle.getSource());
-			updatedIntent.putExtra(EXTRA_BUNDLEID, received);
-			sendBroadcast(updatedIntent);
+			
+			// process the data
+			Database.getInstance().process(CommService.this, mBundle);
 		}
 
 		@Override
@@ -228,7 +218,7 @@ public class ExplorerService extends IntentService {
 		}
 	};
 	
-	public ExplorerService() {
+	public CommService() {
 		super(TAG);
 	}
 }

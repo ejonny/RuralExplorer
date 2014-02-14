@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+	<fragment
           android:id="@+id/map"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:name="com.google.android.gms.maps.MapFragment"/>
+          android:name="com.google.android.gms.maps.MapFragment" />
+	
+	<FrameLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="@drawable/horizontal_dropshadow"
+	    android:layout_above="@+id/info"
+	    android:visibility="invisible"
+	    android:id="@+id/info_drop_shadow" />
+
+	<fragment
+          android:id="@+id/info"
+          android:layout_width="match_parent"
+          android:layout_height="?android:attr/listPreferredItemHeightLarge"
+          android:name="de.tubs.ibr.dtn.ruralexplorer.InfoFragment"
+          android:layout_alignParentBottom="true" />
+</RelativeLayout>

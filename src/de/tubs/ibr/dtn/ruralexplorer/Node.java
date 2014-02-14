@@ -130,6 +130,10 @@ public class Node {
 		return getEndpoint().toString();
 	}
 	
+	public boolean equals(Marker m) {
+		return mMarker.equals(m);
+	}
+	
 	private static BitmapDescriptor getBitmap(Node.Type t) {
 		switch (t) {
 			case ANDROID:

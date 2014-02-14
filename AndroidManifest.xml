@@ -9,14 +9,16 @@
         android:targetSdkVersion="19" />
 
     <!-- Required by Google Maps -->
-	<uses-permission android:name="android.permission.INTERNET"/>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-	<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
-	<!-- The following two permissions are not required to use
-	     Google Maps Android API v2, but are recommended. -->
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <!--
+         The following two permissions are not required to use
+	     Google Maps Android API v2, but are recommended.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- To communication with the DTN service we need the permission to do so -->
     <uses-permission android:name="de.tubs.ibr.dtn.permission.DTN_COMMUNICATION" />
@@ -29,10 +31,9 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-		<meta-data
-		    android:name="com.google.android.maps.v2.API_KEY"
-		    android:value="@string/google_play_api_key"/>
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_play_api_key" />
 
         <activity
             android:name="de.tubs.ibr.dtn.ruralexplorer.MainActivity"
@@ -49,10 +50,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".ExplorerService" />
+        <service android:name="de.tubs.ibr.dtn.ruralexplorer.CommService" />
 
         <receiver
-            android:name=".DtnIntentReceiver"
+            android:name="de.tubs.ibr.dtn.ruralexplorer.DtnIntentReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="de.tubs.ibr.dtn.permission.DTN_SERVER" >
@@ -70,6 +71,21 @@
                 <category android:name="de.tubs.ibr.dtn.ping" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="de.tubs.ibr.dtn.ruralexplorer.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="de.tubs.ibr.dtn.ruralexplorer.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.tubs.ibr.dtn.ruralexplorer.MainActivity" />
+        </activity>
+
+        <service
+            android:name="de.tubs.ibr.dtn.ruralexplorer.LocationService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
