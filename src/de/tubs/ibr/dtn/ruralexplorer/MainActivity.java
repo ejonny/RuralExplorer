@@ -19,8 +19,10 @@ import android.widget.FrameLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.InfoFragment.OnInfoWindowListener;
@@ -33,6 +35,7 @@ public class MainActivity extends Activity implements
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
 	private Boolean mInfoVisible = false;
+	private Marker mSelectionMarker = null;
 	
 	private LocationService mLocationService = null;
 	private boolean mBound = false;
@@ -92,6 +95,10 @@ public class MainActivity extends Activity implements
 					.findFragmentById(R.id.info));
 			
 			node.setNode(null);
+			
+			if (mSelectionMarker != null) {
+				mSelectionMarker.setVisible(false);
+			}
 		} else {
 			super.onBackPressed();
 		}
@@ -111,6 +118,18 @@ public class MainActivity extends Activity implements
 			try {
 				Node n = mNodeManager.get(marker);
 				node.setNode(n);
+				
+				// set selection marker
+				if (mSelectionMarker == null) {
+					mSelectionMarker = map.addMarker(new MarkerOptions()
+						.position(marker.getPosition())
+						.icon(BitmapDescriptorFactory.defaultMarker())
+					);
+				}
+				
+				// set position of selection marker
+				mSelectionMarker.setPosition(marker.getPosition());
+				mSelectionMarker.setVisible(true);
 			} catch (NodeNotFoundException e) {
 				node.setNode(null);
 			}

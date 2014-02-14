@@ -89,6 +89,7 @@ public class Node {
 							.position(position)
 							.icon(Node.getBitmap(mType))
 							.anchor(0.5f, 0.5f)
+							.flat(true)
 						);
 			} else {
 				mMarker.setPosition(position);
@@ -143,7 +144,7 @@ public class Node {
 			case PI:
 				return BitmapDescriptorFactory.fromResource(R.drawable.ic_raspberrypi);
 			default:
-				return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+				return BitmapDescriptorFactory.fromResource(R.drawable.ic_node);
 		}
 	}
 }
