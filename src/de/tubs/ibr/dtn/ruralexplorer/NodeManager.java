@@ -1,5 +1,6 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import android.content.BroadcastReceiver;
@@ -14,9 +15,24 @@ import com.google.android.gms.maps.model.Marker;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 
 public class NodeManager {
-	private HashSet<Node> mNodes = new HashSet<Node>();
+	private ArrayList<Node> mNodes = new ArrayList<Node>();
 	private GoogleMap mMap = null;
 	private Context mContext = null;
+	private HashSet<NodeManagerListener> mListener = new HashSet<NodeManagerListener>();
+	
+	public interface NodeManagerListener {
+		void onNodeAdded(Node n);
+		void onNodeRemoved(Node n);
+		void onNodeUpdated(Node n);
+	}
+	
+	public void addListener(NodeManagerListener listener) {
+		mListener.add(listener);
+	}
+	
+	public void removeListener(NodeManagerListener listener) {
+		mListener.remove(listener);
+	}
 	
 	public NodeManager(Context context, GoogleMap map) {
 		mMap = map;
@@ -33,6 +49,14 @@ public class NodeManager {
 		throw new NodeNotFoundException();
 	}
 	
+	public Node get(int position) {
+		return mNodes.get(position);
+	}
+	
+	public int getCount() {
+		return mNodes.size();
+	}
+	
 	public Node get(SingletonEndpoint endpoint) {
 		// check if the node already exists
 		for (Node n : mNodes) {
@@ -44,6 +68,11 @@ public class NodeManager {
 		Node n = Node.create(mMap);
 		n.setEndpoint(endpoint);
 		mNodes.add(n);
+		
+		for (NodeManagerListener l : mListener) {
+			l.onNodeAdded(n);
+		}
+		
 		return n;
 	}
 	
@@ -53,9 +82,16 @@ public class NodeManager {
 		mContext.registerReceiver(mUpdateReceiver, filter);
 		
 		// load all nodes from the database and display them
+		// TODO: announce all nodes to the listener
 	}
 	
 	public void onStop() {
+		for (Node n : mNodes) {
+			for (NodeManagerListener l : mListener) {
+				l.onNodeRemoved(n);
+			}
+		}
+		
 		// unregister from update intents
 		mContext.unregisterReceiver(mUpdateReceiver);
 	}

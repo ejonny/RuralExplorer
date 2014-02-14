@@ -1,7 +1,6 @@
 
 package de.tubs.ibr.dtn.ruralexplorer;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.InfoFragment.OnInfoWindowListener;
 
-public class MainActivity extends Activity implements
+public class MainActivity extends FragmentActivity implements
 		OnInfoWindowListener {
 
 	private NodeManager mNodeManager = null;
@@ -85,16 +85,26 @@ public class MainActivity extends Activity implements
 		
 		// create a new NodeManager
 		mNodeManager = new NodeManager(this, map);
+		
+		// get info fragment
+		InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.info));
+		
+		// assign node manager to info fragment
+		infoFragment.setNodeManager(mNodeManager);
+		
+		// add info fragment as listener of the node manager
+		mNodeManager.addListener(infoFragment);
 	}
 	
 	@Override
 	public void onBackPressed() {
 		if (mInfoVisible) {
 			// show / hide marker frame
-			InfoFragment node = ((InfoFragment) getFragmentManager()
+			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.info));
 			
-			node.setNode(null);
+			infoFragment.setNode(null);
 			
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);
@@ -112,12 +122,12 @@ public class MainActivity extends Activity implements
 			map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
 			
 			// show / hide marker frame
-			InfoFragment node = ((InfoFragment) getFragmentManager()
+			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.info));
 			
 			try {
 				Node n = mNodeManager.get(marker);
-				node.setNode(n);
+				infoFragment.setNode(n);
 				
 				// set selection marker
 				if (mSelectionMarker == null) {
@@ -131,7 +141,7 @@ public class MainActivity extends Activity implements
 				mSelectionMarker.setPosition(marker.getPosition());
 				mSelectionMarker.setVisible(true);
 			} catch (NodeNotFoundException e) {
-				node.setNode(null);
+				infoFragment.setNode(null);
 			}
 			
 			return true;

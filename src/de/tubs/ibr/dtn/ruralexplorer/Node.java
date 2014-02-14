@@ -1,5 +1,7 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
+import java.io.Serializable;
+
 import android.location.Location;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -13,7 +15,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 
-public class Node {
+public class Node implements Serializable {
+	/**
+	 * serial ID
+	 */
+	private static final long serialVersionUID = -3021339683598377878L;
+
 	public enum Type {
 		GENERIC,
 		ANDROID,
