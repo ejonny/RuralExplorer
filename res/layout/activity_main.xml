@@ -12,14 +12,20 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:background="@drawable/horizontal_dropshadow"
-	    android:layout_above="@+id/info"
+	    android:layout_above="@+id/info_short"
 	    android:visibility="invisible"
 	    android:id="@+id/info_drop_shadow" />
 
 	<fragment
-          android:id="@+id/info"
+          android:id="@+id/info_short"
           android:layout_width="match_parent"
           android:layout_height="?android:attr/listPreferredItemHeightLarge"
           android:name="de.tubs.ibr.dtn.ruralexplorer.InfoFragment"
           android:layout_alignParentBottom="true" />
+	
+	<fragment
+          android:id="@+id/info_extended"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:name="de.tubs.ibr.dtn.ruralexplorer.InfoExtendedFragment" />
 </RelativeLayout>

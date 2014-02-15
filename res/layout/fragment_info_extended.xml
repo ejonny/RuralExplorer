@@ -1,0 +1,10 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    android:padding="@dimen/info_padding"
+    android:background="@color/white_overlay"
+    android:id="@+id/extended_fragment_layout">
+    
+</FrameLayout>

@@ -90,7 +90,7 @@ public class MainActivity extends FragmentActivity implements
 		
 		// get info fragment
 		InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.info));
+				.findFragmentById(R.id.info_short));
 		
 		// assign node manager to info fragment
 		infoFragment.setNodeManager(mNodeManager);
@@ -104,7 +104,7 @@ public class MainActivity extends FragmentActivity implements
 		if (mInfoVisible) {
 			// show / hide marker frame
 			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.info));
+					.findFragmentById(R.id.info_short));
 			
 			infoFragment.setNode(null, 0);
 			
@@ -125,7 +125,7 @@ public class MainActivity extends FragmentActivity implements
 			
 			// show / hide marker frame
 			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.info));
+					.findFragmentById(R.id.info_short));
 			
 			try {
 				Node n = mNodeManager.get(marker);
