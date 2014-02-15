@@ -1,5 +1,8 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
+import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeManager;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;

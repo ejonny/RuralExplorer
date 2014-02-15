@@ -25,6 +25,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.ruralexplorer.InfoFragment.OnInfoWindowListener;
+import de.tubs.ibr.dtn.ruralexplorer.backend.LocationService;
+import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeManager;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
 
 public class MainActivity extends FragmentActivity implements
 		OnInfoWindowListener {

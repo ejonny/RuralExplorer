@@ -1,4 +1,4 @@
-package de.tubs.ibr.dtn.ruralexplorer;
+package de.tubs.ibr.dtn.ruralexplorer.backend;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

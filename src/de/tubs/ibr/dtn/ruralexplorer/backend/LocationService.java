@@ -1,5 +1,5 @@
 
-package de.tubs.ibr.dtn.ruralexplorer;
+package de.tubs.ibr.dtn.ruralexplorer.backend;
 
 import android.app.Service;
 import android.content.Intent;

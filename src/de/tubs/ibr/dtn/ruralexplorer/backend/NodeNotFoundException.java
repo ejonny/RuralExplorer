@@ -1,4 +1,4 @@
-package de.tubs.ibr.dtn.ruralexplorer;
+package de.tubs.ibr.dtn.ruralexplorer.backend;
 
 public class NodeNotFoundException extends Exception {
 

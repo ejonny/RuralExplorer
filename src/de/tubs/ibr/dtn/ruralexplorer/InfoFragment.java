@@ -1,6 +1,8 @@
 
 package de.tubs.ibr.dtn.ruralexplorer;
 
+import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeManager;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

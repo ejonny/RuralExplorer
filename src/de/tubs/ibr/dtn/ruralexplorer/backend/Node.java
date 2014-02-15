@@ -1,4 +1,4 @@
-package de.tubs.ibr.dtn.ruralexplorer;
+package de.tubs.ibr.dtn.ruralexplorer.backend;
 
 import java.io.Serializable;
 
@@ -14,6 +14,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
+import de.tubs.ibr.dtn.ruralexplorer.R;
+import de.tubs.ibr.dtn.ruralexplorer.R.color;
+import de.tubs.ibr.dtn.ruralexplorer.R.drawable;
 
 public class Node implements Serializable, Comparable<Node> {
 	/**
