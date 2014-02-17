@@ -32,6 +32,9 @@ public class MainActivity extends FragmentActivity implements
 	private FrameLayout mLayoutDropShadow = null;
 	private Boolean mInfoVisible = false;
 	private Marker mSelectionMarker = null;
+	
+	private MarkerFragment mMarkerInfo = null;
+	private GoogleMap mMap = null;
 
 	private DataService mDataService = null;
 	private boolean mBound = false;
@@ -56,35 +59,28 @@ public class MainActivity extends FragmentActivity implements
 		// get info window drop shadow
 		mLayoutDropShadow = (FrameLayout)findViewById(R.id.info_drop_shadow);
 		
-		GoogleMap map = ((MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map)).getMap();
+		// get google map fragment
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 
 		// Other supported types include: MAP_TYPE_NORMAL,
 		// MAP_TYPE_TERRAIN, MAP_TYPE_HYBRID and MAP_TYPE_NONE
-		map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+		mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 		
 		// enable own location
-		map.setMyLocationEnabled(true);
+		mMap.setMyLocationEnabled(true);
 		
 		// set listener for clicks on marker
-		map.setOnMarkerClickListener(mMarkerListener);
-		
-		// move camera to zoom level 20
-		map.moveCamera(CameraUpdateFactory.zoomTo(20.0f));
+		mMap.setOnMarkerClickListener(mMarkerListener);
 		
 		// get info fragment
-		MarkerFragment infoFragment = ((MarkerFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.info_short));
+		mMarkerInfo = ((MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_info_fragment));
 	}
 	
 	@Override
 	public void onBackPressed() {
 		if (mInfoVisible) {
 			// show / hide marker frame
-			MarkerFragment infoFragment = ((MarkerFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.info_short));
-			
-			infoFragment.setNode(null, 0);
+			mMarkerInfo.setNode(null, 0);
 			
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);
@@ -98,12 +94,9 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public boolean onMarkerClick(Marker marker) {
 			// move to the marker
-			GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-			map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+			mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 			
 			// show / hide marker frame
-			MarkerFragment infoFragment = ((MarkerFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.info_short));
 			
 //			try {
 //				Node n = mNodeManager.get(marker);
@@ -183,11 +176,13 @@ public class MainActivity extends FragmentActivity implements
 	}
 	
 	private void centerTo(Location location) {
-		GoogleMap map = ((MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map)).getMap();
-
 		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-		map.animateCamera(CameraUpdateFactory.newLatLng(position));
+		
+		if (!mLocationInitialized) {
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 20.0f));
+		} else {
+			mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
+		}
 	}
 
 	@Override
@@ -221,8 +216,6 @@ public class MainActivity extends FragmentActivity implements
 	
 	@Override
 	public void onInfoWindowPageChanged(int position) {
-		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		
 //		try {
 //			Node n = mNodeManager.get(position);
 //			Marker marker = n.getMarker();

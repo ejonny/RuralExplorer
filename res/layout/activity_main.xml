@@ -12,12 +12,12 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:background="@drawable/horizontal_dropshadow"
-	    android:layout_above="@+id/info_short"
+	    android:layout_above="@+id/marker_info_fragment"
 	    android:visibility="invisible"
 	    android:id="@+id/info_drop_shadow" />
 
 	<fragment
-          android:id="@+id/info_short"
+          android:id="@+id/marker_info_fragment"
           android:layout_width="match_parent"
           android:layout_height="?android:attr/listPreferredItemHeightLarge"
           android:name="de.tubs.ibr.dtn.ruralexplorer.MarkerFragment"

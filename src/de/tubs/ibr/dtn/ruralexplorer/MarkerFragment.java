@@ -2,39 +2,39 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Database;
 import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
 
-public class MarkerFragment extends Fragment {
-	
+public class MarkerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
 	private static final String TAG = "MarkerFragment";
 
 	private FrameLayout mLayout = null;
 
-	private MarkerPagerAdapter mMarkerAdapter = null;
+	private NodeAdapter mNodeAdapter = null;
+	private MarkerPagerAdapter mMarkerPagerAdapter = null;
 	private ViewPager mViewPager = null;
-	
+
 	private OnInfoWindowListener mListener = null;
 	private DataService mDataService = null;
 
@@ -49,11 +49,11 @@ public class MarkerFragment extends Fragment {
 	public MarkerFragment() {
 		// Required empty public constructor
 	}
-	
+
 	private ServiceConnection mServiceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			mDataService = ((DataService.LocalBinder)service).getService();
+			mDataService = ((DataService.LocalBinder) service).getService();
 		}
 
 		@Override
@@ -61,11 +61,16 @@ public class MarkerFragment extends Fragment {
 			mDataService = null;
 		}
 	};
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mMarkerAdapter = new MarkerPagerAdapter(getFragmentManager());
+
+		// Create an empty adapter we will use to display the loaded data.
+		mNodeAdapter = new NodeAdapter(getActivity(), null, new NodeAdapter.ColumnsMap());
+		
+		// create a marker pager adapter
+		mMarkerPagerAdapter = new MarkerPagerAdapter(getFragmentManager(), mNodeAdapter);
 	}
 
 	@Override
@@ -73,25 +78,25 @@ public class MarkerFragment extends Fragment {
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_marker, container, false);
-		mLayout = (FrameLayout)v.findViewById(R.id.node_fragment_layout);
-		
-		mViewPager = (ViewPager)v.findViewById(R.id.info_pager);
-		mViewPager.setAdapter(mMarkerAdapter);
+		mLayout = (FrameLayout) v.findViewById(R.id.node_fragment_layout);
+
+		mViewPager = (ViewPager) v.findViewById(R.id.info_pager);
+		mViewPager.setAdapter(mMarkerPagerAdapter);
 		mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
 				mListener.onInfoWindowPageChanged(position);
 			}
-			
+
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
 			}
-			
+
 			@Override
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		
+
 		return v;
 	}
 
@@ -104,10 +109,7 @@ public class MarkerFragment extends Fragment {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnInfoWindowListener");
 		}
-		
-		// register to data updates
-		activity.registerReceiver(mDataUpdateReceiver, new IntentFilter(Database.DATA_UPDATED));
-		
+
 		// bind to service
 		Intent service = new Intent(activity, DataService.class);
 		activity.bindService(service, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -117,21 +119,14 @@ public class MarkerFragment extends Fragment {
 	public void onDetach() {
 		mDataService = null;
 		getActivity().unbindService(mServiceConnection);
-		getActivity().unregisterReceiver(mDataUpdateReceiver);
-		
+
 		super.onDetach();
 		mListener = null;
 	}
-	
-	private BroadcastReceiver mDataUpdateReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			mMarkerAdapter.notifyDatabaseChanged();
-		}
-	};
-	
+
 	public interface OnInfoWindowListener {
 		public void onInfoWindowStateChanged(boolean visible, int height, int width);
+
 		public void onInfoWindowPageChanged(int position);
 	}
 
@@ -145,37 +140,51 @@ public class MarkerFragment extends Fragment {
 			mViewPager.setCurrentItem(position, true);
 		}
 	}
-	
+
 	private class MarkerPagerAdapter extends FragmentStatePagerAdapter {
-		private int mCount = 0;
-		
-		public MarkerPagerAdapter(FragmentManager fm) {
+		private NodeAdapter mAdapter = null;
+
+		public MarkerPagerAdapter(FragmentManager fm, NodeAdapter adapter) {
 			super(fm);
+			mAdapter = adapter;
+			mAdapter.registerDataSetObserver(mObserver);
 		}
+
+		private DataSetObserver mObserver = new DataSetObserver() {
+			@Override
+			public void onChanged() {
+				notifyDataSetChanged();
+				super.onChanged();
+			}
+
+			@Override
+			public void onInvalidated() {
+				notifyDataSetChanged();
+				super.onInvalidated();
+			}
+		};
 
 		@Override
 		public Fragment getItem(int position) {
 			try {
-				if (mDataService == null) throw new NodeNotFoundException();
-				
-				Database db = mDataService.getDatabase();
-				
-				// load node on position X
-				Cursor c = db.raw().query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION, null, null, null, null, Node.ENDPOINT, position + ",1");
-				
-				if (c == null) throw new NodeNotFoundException();
-				
-				Node n = null;
-				
-				if (c.moveToNext()) {
-					n = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
-					c.close();
-				} else {
-					c.close();
+				if (mDataService == null)
 					throw new NodeNotFoundException();
+
+				Cursor c = mAdapter.getCursor();
+
+				if (c == null)
+					throw new NodeNotFoundException();
+
+				// move to right position
+				if (c.move(position)) {
+					Node n = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
+					c.close();
+
+					return MarkerItemFragment.newInstance(n);
 				}
-				
-				return MarkerItemFragment.newInstance(n);
+
+				c.close();
+				throw new NodeNotFoundException();
 			} catch (NodeNotFoundException ex) {
 				return null;
 			}
@@ -183,16 +192,29 @@ public class MarkerFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return mCount;
+			return mAdapter.getCount();
 		}
-		
-		public void notifyDatabaseChanged() {
-			if (mDataService == null) {
-				mCount = 0;
-			} else {
-				mCount = mDataService.getDatabase().getCount();
-			}
-			notifyDataSetChanged();
-		}
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		// Now create and return a CursorLoader that will take care of
+		// creating a Cursor for the data being displayed.
+		return new MarkerLoader(getActivity(), mDataService);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		// Swap the new cursor in. (The framework will take care of closing the
+		// old cursor once we return.)
+		mNodeAdapter.swapCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> data) {
+		// This is called when the last Cursor provided to onLoadFinished()
+		// above is about to be closed. We need to make sure we are no
+		// longer using it.
+		mNodeAdapter.swapCursor(null);
 	}
 }
