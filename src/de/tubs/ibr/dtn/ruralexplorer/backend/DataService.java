@@ -3,6 +3,7 @@ package de.tubs.ibr.dtn.ruralexplorer.backend;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Binder;
@@ -121,6 +122,11 @@ public class DataService extends Service {
 			intent.setAction(CommService.ACTION_GENERATE_BEACON);
 			intent.putExtra(EXTRA_LOCATION, location);
 			startService(intent);
+			
+			// send location update intent
+			Intent locationIntent = new Intent(LOCATION_UPDATED);
+			locationIntent.putExtra(EXTRA_LOCATION, location);
+			sendBroadcast(locationIntent);
 		}
 		
 	};
