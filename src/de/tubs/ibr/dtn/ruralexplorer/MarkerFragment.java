@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
 public class MarkerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String TAG = "MarkerFragment";
+	
+	private static final int MARKER_LOADER_ID = 1;
 
 	private FrameLayout mLayout = null;
 
@@ -54,13 +57,27 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mDataService = ((DataService.LocalBinder) service).getService();
+			
+			getLoaderManager().initLoader(MARKER_LOADER_ID,  null, MarkerFragment.this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
+			getLoaderManager().destroyLoader(MARKER_LOADER_ID);
 			mDataService = null;
 		}
 	};
+	
+	public void setVisible(boolean visible) {
+		if (!visible) {
+			mLayout.setVisibility(View.INVISIBLE);
+			mListener.onInfoWindowStateChanged(false, 0, 0);
+		} else {
+			mLayout.setVisibility(View.VISIBLE);
+			mListener.onInfoWindowStateChanged(true, mLayout.getHeight(), mLayout.getWidth());
+			//mViewPager.setCurrentItem(position, true);
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -119,6 +136,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	public void onDetach() {
 		mDataService = null;
 		getActivity().unbindService(mServiceConnection);
+		getLoaderManager().destroyLoader(MARKER_LOADER_ID);
 
 		super.onDetach();
 		mListener = null;
@@ -176,15 +194,10 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 					throw new NodeNotFoundException();
 
 				// move to right position
-				if (c.move(position)) {
-					Node n = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
-					c.close();
-
-					return MarkerItemFragment.newInstance(n);
-				}
-
-				c.close();
-				throw new NodeNotFoundException();
+				if (!c.moveToPosition(position)) throw new NodeNotFoundException();
+				
+				Node n = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
+				return MarkerItemFragment.newInstance(n);
 			} catch (NodeNotFoundException ex) {
 				return null;
 			}
@@ -192,6 +205,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 
 		@Override
 		public int getCount() {
+			Log.d(TAG, "count: " + mAdapter.getCount());
 			return mAdapter.getCount();
 		}
 	}

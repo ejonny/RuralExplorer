@@ -3,7 +3,6 @@ package de.tubs.ibr.dtn.ruralexplorer.backend;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Binder;

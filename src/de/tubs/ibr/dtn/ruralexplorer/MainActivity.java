@@ -7,10 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,9 +29,17 @@ import com.google.android.gms.maps.model.Marker;
 
 import de.tubs.ibr.dtn.ruralexplorer.MarkerFragment.OnInfoWindowListener;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 
 public class MainActivity extends FragmentActivity implements
-		OnInfoWindowListener {
+		OnInfoWindowListener,
+		LoaderManager.LoaderCallbacks<Cursor> {
+	
+	private static final String TAG = "MainActivity";
+	
+	private static final int MARKER_LOADER_ID = 1;
+	
+	private NodeAdapter mNodeAdapter = null;
 
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
@@ -43,10 +56,13 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mDataService = ((DataService.LocalBinder)service).getService();
+			
+			getSupportLoaderManager().initLoader(MARKER_LOADER_ID,  null, MainActivity.this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
+			getLoaderManager().destroyLoader(MARKER_LOADER_ID);
 			mDataService = null;
 		}
 	};
@@ -74,6 +90,10 @@ public class MainActivity extends FragmentActivity implements
 		
 		// get info fragment
 		mMarkerInfo = ((MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_info_fragment));
+		
+		// Create an empty adapter we will use to display the loaded data.
+		mNodeAdapter = new NodeAdapter(this, null, new NodeAdapter.ColumnsMap());
+		mNodeAdapter.registerDataSetObserver(mMarkerObserver);
 	}
 	
 	@Override
@@ -132,6 +152,9 @@ public class MainActivity extends FragmentActivity implements
 		if (mBound) {
 			unregisterReceiver(mLocationReceiver);
 			unbindService(mDataHandler);
+			
+			getLoaderManager().destroyLoader(MARKER_LOADER_ID);
+			
 			mBound = false;
 		}
 
@@ -153,6 +176,9 @@ public class MainActivity extends FragmentActivity implements
 			bindService(new Intent(this, DataService.class), mDataHandler, Context.BIND_AUTO_CREATE);
 			mBound = true;
 		}
+		
+		// show marker info
+		mMarkerInfo.setVisible(true);
 	}
 
 	@Override
@@ -187,15 +213,12 @@ public class MainActivity extends FragmentActivity implements
 
 	@Override
 	public void onInfoWindowStateChanged(boolean visible, int height, int width) {
-		GoogleMap map = ((MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map)).getMap();
-		
 		if (visible) {
-			map.setPadding(0, 0, 0, height);
+			mMap.setPadding(0, 0, 0, height);
 			mLayoutDropShadow.setVisibility(View.VISIBLE);
 			mInfoVisible = true;
 		} else {
-			map.setPadding(0, 0, 0, 0);
+			mMap.setPadding(0, 0, 0, 0);
 			mLayoutDropShadow.setVisibility(View.GONE);
 			mInfoVisible = false;
 		}
@@ -238,4 +261,41 @@ public class MainActivity extends FragmentActivity implements
 //			// nothing to do.
 //		}
 	}
+	
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		Log.d(TAG, "Marker: onCreateLoader()");
+		// Now create and return a CursorLoader that will take care of
+		// creating a Cursor for the data being displayed.
+		return new MarkerLoader(this, mDataService);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		// Swap the new cursor in. (The framework will take care of closing the
+		// old cursor once we return.)
+		mNodeAdapter.swapCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> data) {
+		// This is called when the last Cursor provided to onLoadFinished()
+		// above is about to be closed. We need to make sure we are no
+		// longer using it.
+		mNodeAdapter.swapCursor(null);
+	}
+	
+	private DataSetObserver mMarkerObserver = new DataSetObserver() {
+		@Override
+		public void onChanged() {
+			Log.d(TAG, "Marker: onChanged()");
+			super.onChanged();
+		}
+
+		@Override
+		public void onInvalidated() {
+			Log.d(TAG, "Marker: onInvalidated()");
+			super.onInvalidated();
+		}
+	};
 }
