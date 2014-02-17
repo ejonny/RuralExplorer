@@ -1,13 +1,13 @@
 
 package de.tubs.ibr.dtn.ruralexplorer;
 
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 
 public class StatsFragment extends Fragment {
 	
