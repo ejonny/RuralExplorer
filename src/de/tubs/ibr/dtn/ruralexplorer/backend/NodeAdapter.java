@@ -26,7 +26,12 @@ public class NodeAdapter extends CursorAdapter {
 			BaseColumns._ID,
 			Node.ENDPOINT,
 			Node.TYPE,
-			Node.LOCATION
+			NodeLocation.LAT,
+			NodeLocation.LNG,
+			NodeLocation.ALT,
+			NodeLocation.BEARING,
+			NodeLocation.SPEED,
+			NodeLocation.ACCURACY
 	};
 
 	// The indexes of the default columns which must be consistent
@@ -34,7 +39,12 @@ public class NodeAdapter extends CursorAdapter {
 	static final int COLUMN_NODE_ID = 0;
 	static final int COLUMN_NODE_ENDPOINT = 1;
 	static final int COLUMN_NODE_TYPE = 2;
-	static final int COLUMN_NODE_LOCATION = 3;
+	static final int COLUMN_NODE_LOCATION_LAT = 3;
+	static final int COLUMN_NODE_LOCATION_LNG = 4;
+	static final int COLUMN_NODE_LOCATION_ALT = 5;
+	static final int COLUMN_NODE_LOCATION_BEARING = 6;
+	static final int COLUMN_NODE_LOCATION_SPEED = 7;
+	static final int COLUMN_NODE_LOCATION_ACCURACY = 8;
 
 	private static final int CACHE_SIZE = 50;
 
@@ -76,13 +86,23 @@ public class NodeAdapter extends CursorAdapter {
 		public int mColumnId;
 		public int mColumnEndpoint;
 		public int mColumnType;
-		public int mColumnLocation;
+		public int mColumnLocationLat;
+		public int mColumnLocationLng;
+		public int mColumnLocationAlt;
+		public int mColumnLocationSpeed;
+		public int mColumnLocationBearing;
+		public int mColumnLocationAccuracy;
 
 		public ColumnsMap() {
 			mColumnId = COLUMN_NODE_ID;
 			mColumnEndpoint = COLUMN_NODE_ENDPOINT;
 			mColumnType = COLUMN_NODE_TYPE;
-			mColumnLocation = COLUMN_NODE_LOCATION;
+			mColumnLocationLat = COLUMN_NODE_LOCATION_LAT;
+			mColumnLocationLng = COLUMN_NODE_LOCATION_LNG;
+			mColumnLocationAlt = COLUMN_NODE_LOCATION_ALT;
+			mColumnLocationSpeed = COLUMN_NODE_LOCATION_SPEED;
+			mColumnLocationBearing = COLUMN_NODE_LOCATION_BEARING;
+			mColumnLocationAccuracy = COLUMN_NODE_LOCATION_ACCURACY;
 		}
 
 		public ColumnsMap(Cursor cursor) {
@@ -107,7 +127,37 @@ public class NodeAdapter extends CursorAdapter {
 			}
 
 			try {
-				mColumnLocation = cursor.getColumnIndexOrThrow(Node.LOCATION);
+				mColumnLocationLat = cursor.getColumnIndexOrThrow(NodeLocation.LAT);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnLocationLng = cursor.getColumnIndexOrThrow(NodeLocation.LNG);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnLocationAlt = cursor.getColumnIndexOrThrow(NodeLocation.ALT);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnLocationBearing = cursor.getColumnIndexOrThrow(NodeLocation.BEARING);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnLocationSpeed = cursor.getColumnIndexOrThrow(NodeLocation.SPEED);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnLocationAccuracy = cursor.getColumnIndexOrThrow(NodeLocation.ACCURACY);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}

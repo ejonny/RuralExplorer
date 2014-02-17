@@ -1,16 +1,10 @@
 package de.tubs.ibr.dtn.ruralexplorer.backend;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.location.Location;
 import android.provider.BaseColumns;
-import android.util.Base64;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 
 public class Node implements Serializable, Comparable<Node> {
@@ -24,7 +18,6 @@ public class Node implements Serializable, Comparable<Node> {
 	public static final String ID = BaseColumns._ID;
 	public static final String ENDPOINT = "endpoint";
 	public static final String TYPE = "type";
-	public static final String LOCATION = "location";
 
 	public enum Type {
 		GENERIC,
@@ -36,11 +29,12 @@ public class Node implements Serializable, Comparable<Node> {
 	private Long mId = null;
 	private final SingletonEndpoint mEndpoint;
 	private final Type mType;
-	private Location mLocation = null;
+	private NodeLocation mLocation = null;
 	
 	public Node(Node.Type t, SingletonEndpoint endpoint) {
 		mType = t;
 		mEndpoint = endpoint;
+		mLocation = new NodeLocation();
 	}
 	
 	public Node(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
@@ -48,21 +42,7 @@ public class Node implements Serializable, Comparable<Node> {
 		this.mId = cursor.getLong(cmap.mColumnId);
 		this.mEndpoint = new SingletonEndpoint( cursor.getString(cmap.mColumnEndpoint) );
 		this.mType = Type.valueOf( cursor.getString(cmap.mColumnType) );
-		
-//		String locationData = cursor.getString(cmap.mColumnLocation);
-//		byte [] data = Base64.decode( locationData, Base64.DEFAULT );
-//		
-//		try {
-//			ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream(  data ) );
-//			mLocation  = (Location)ois.readObject();
-//			ois.close();
-//		} catch (StreamCorruptedException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
+		this.mLocation = new NodeLocation(context, cursor, cmap);
 	}
 
 	public Long getId() {
@@ -110,11 +90,12 @@ public class Node implements Serializable, Comparable<Node> {
 		return mType;
 	}
 	
-	public Location getLocation() {
-		return mLocation;
+	public void setLocation(NodeLocation l) {
+		mLocation = l;
 	}
 	
-	public void setLocation(Location location) {
+	public NodeLocation getLocation() {
+		return mLocation;
 //		if (location == null) {
 //			if (mMarker == null) return;
 //			
@@ -135,8 +116,6 @@ public class Node implements Serializable, Comparable<Node> {
 //				mMarker.setPosition(position);
 //			}
 //		}
-		
-		mLocation = location;
 	}
 	
 //	public Marker getMarker() {

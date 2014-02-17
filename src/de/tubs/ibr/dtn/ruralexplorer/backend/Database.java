@@ -31,13 +31,18 @@ public class Database {
 				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				Node.ENDPOINT + " TEXT NOT NULL, " +
 				Node.TYPE + " TEXT NOT NULL, " +
-				Node.LOCATION + " TEXT" +
+				NodeLocation.LAT + " DOUBLE, " +
+				NodeLocation.LNG + " DOUBLE, " +
+				NodeLocation.ALT + " DOUBLE, " +
+				NodeLocation.BEARING + " FLOAT, " +
+				NodeLocation.SPEED + " FLOAT, " +
+				NodeLocation.ACCURACY + " FLOAT" +
 			");";
 	
 	private class DBOpenHelper extends SQLiteOpenHelper {
 		
 		private static final String DATABASE_NAME = "rural_explorer";
-		private static final int DATABASE_VERSION = 1;
+		private static final int DATABASE_VERSION = 2;
 		
 		public DBOpenHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -53,7 +58,7 @@ public class Database {
 			Log.w(DBOpenHelper.class.getName(),
 					"Upgrading database from version " + oldVersion + " to "
 							+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + DATABASE_CREATE_NODES);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_NODES);
 			onCreate(db);
 		}
 	};
@@ -76,19 +81,19 @@ public class Database {
 			l.setLongitude(10.524711);
 			
 			Node n = new Node( Node.Type.INGA, new SingletonEndpoint("dtn://test1") );
-			Location l1 = new Location(l);
+			NodeLocation l1 = new NodeLocation(l);
 			l1.setLatitude(l.getLatitude() + 0.005);
 			n.setLocation(l1);
 			update(n);
 			
 			n = new Node( Node.Type.PI, new SingletonEndpoint("dtn://test2") );
-			Location l2 = new Location(l);
+			NodeLocation l2 = new NodeLocation(l);
 			l2.setLatitude(l.getLatitude() - 0.005);
 			n.setLocation(l2);
 			update(n);
 			
 			n = new Node( Node.Type.ANDROID, new SingletonEndpoint("dtn://test3") );
-			Location l3 = new Location(l);
+			NodeLocation l3 = new NodeLocation(l);
 			l3.setLongitude(l.getLongitude() - 0.005);
 			n.setLocation(l3);
 			update(n);
@@ -142,32 +147,63 @@ public class Database {
 		return null;
 	}
 	
+	private void updateLocation(Long nodeId, NodeLocation l) {
+		ContentValues values = new ContentValues();
+		
+		if (l.hasLatitude()) {
+			values.put(NodeLocation.LAT, l.getLatitude());
+		} else {
+			values.putNull(NodeLocation.LAT);
+		}
+		
+		if (l.hasLongitude()) {
+			values.put(NodeLocation.LNG, l.getLongitude());
+		} else {
+			values.putNull(NodeLocation.LNG);
+		}
+		
+		if (l.hasAltitude()) {
+			values.put(NodeLocation.ALT, l.getAltitude());
+		} else {
+			values.putNull(NodeLocation.ALT);
+		}
+		
+		if (l.hasBearing()) {
+			values.put(NodeLocation.BEARING, l.getBearing());
+		} else {
+			values.putNull(NodeLocation.BEARING);
+		}
+		
+		if (l.hasSpeed()) {
+			values.put(NodeLocation.SPEED, l.getSpeed());
+		} else {
+			values.putNull(NodeLocation.SPEED);
+		}
+		
+		if (l.hasAccurarcy()) {
+			values.put(NodeLocation.ACCURACY, l.getAccurarcy());
+		} else {
+			values.putNull(NodeLocation.ACCURACY);
+		}
+
+		try {
+			// update buddy data
+			mDatabase.update(TABLE_NAME_NODES, values, Node.ID + " = ?", new String[] { nodeId.toString() });
+		} catch (Exception e) {
+			// could not create node
+			e.printStackTrace();
+		}
+	}
+	
 	public void update(Node n) {
 		if (n.getId() == null) {
 			// create a new node
 			createNode(n);
 		}
-		
-		ContentValues values = new ContentValues();
-		
-//		if (n.getLocation() != null) {
-//			try {
-//				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//				ObjectOutputStream oos = new ObjectOutputStream( baos );
-//				oos.writeObject(n.getLocation());
-//			
-//				// update node's location
-//				values.put(Node.LOCATION, Base64.encodeBytes(baos.toByteArray()));
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		} else {
-			values.putNull(Node.LOCATION);
-//		}
-		
-		// update buddy data
-		mDatabase.update(TABLE_NAME_NODES, values, Node.ID + " = ?", new String[] { n.getId().toString() });
-		
+
+		// store location
+		updateLocation(n.getId(), n.getLocation());
+
 		// send refresh intent
 		notifyNodeChanged(n.getId());
 	}
