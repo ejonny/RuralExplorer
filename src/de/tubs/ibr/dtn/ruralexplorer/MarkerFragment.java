@@ -161,7 +161,8 @@ public class MarkerFragment extends Fragment {
 				Database db = mDataService.getDatabase();
 				
 				// load node on position X
-				Cursor c = db.raw().query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION, null, null, null, Node.ENDPOINT, position + ",1");
+				Cursor c = db.raw().query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION, null, null, null, null, Node.ENDPOINT, position + ",1");
+				
 				if (c == null) throw new NodeNotFoundException();
 				
 				Node n = null;
