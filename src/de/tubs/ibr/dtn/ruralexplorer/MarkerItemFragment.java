@@ -10,20 +10,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 
-public class NodeInfoFragment extends Fragment {
+public class MarkerItemFragment extends Fragment {
 
 	private Node mNode = null;
 	private TextView mInfoTitle = null;
 	private ImageView mInfoIcon = null;
 	private ImageButton mInfoButton = null;
 	
-	public static NodeInfoFragment newInstance(Node n) {
-		NodeInfoFragment f = new NodeInfoFragment();
+	public static MarkerItemFragment newInstance(Node n) {
+		MarkerItemFragment f = new MarkerItemFragment();
 		f.mNode = n;
 		return f;
 	}
 	
-	public NodeInfoFragment() {
+	public MarkerItemFragment() {
 		// Required empty public constructor
 	}
 	
@@ -31,7 +31,7 @@ public class NodeInfoFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View v = inflater.inflate(R.layout.fragment_info_node, container, false);
+		View v = inflater.inflate(R.layout.fragment_marker_item, container, false);
 		mInfoTitle = (TextView)v.findViewById(R.id.info_title);
 		mInfoIcon = (ImageView)v.findViewById(R.id.device_icon);
 		mInfoButton = (ImageButton)v.findViewById(R.id.info_button);
@@ -39,7 +39,7 @@ public class NodeInfoFragment extends Fragment {
 		mInfoButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				InfoExtendedFragment f = (InfoExtendedFragment)getFragmentManager().findFragmentById(R.id.info_extended);
+				StatsFragment f = (StatsFragment)getFragmentManager().findFragmentById(R.id.info_extended);
 				f.setNode(mNode);
 			}
 		});

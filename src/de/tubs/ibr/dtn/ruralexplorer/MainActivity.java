@@ -19,45 +19,32 @@ import android.widget.FrameLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import de.tubs.ibr.dtn.ruralexplorer.InfoFragment.OnInfoWindowListener;
-import de.tubs.ibr.dtn.ruralexplorer.backend.LocationService;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
-import de.tubs.ibr.dtn.ruralexplorer.backend.NodeManager;
-import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
+import de.tubs.ibr.dtn.ruralexplorer.MarkerFragment.OnInfoWindowListener;
+import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
 
 public class MainActivity extends FragmentActivity implements
 		OnInfoWindowListener {
 
-	private NodeManager mNodeManager = null;
-	
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
 	private Boolean mInfoVisible = false;
 	private Marker mSelectionMarker = null;
-	
-	private LocationService mLocationService = null;
+
+	private DataService mDataService = null;
 	private boolean mBound = false;
 	
-	private ServiceConnection mServiceHandler = new ServiceConnection() {
+	private ServiceConnection mDataHandler = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			mLocationService = ((LocationService.LocalBinder)service).getService();
-			
-			Location l = mLocationService.getMyLocation();
-			if ((l != null) && (!mLocationInitialized)) {
-				centerTo(l);
-				mLocationInitialized = true;
-			}
+			mDataService = ((DataService.LocalBinder)service).getService();
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			mLocationService = null;
+			mDataService = null;
 		}
 	};
 
@@ -85,25 +72,16 @@ public class MainActivity extends FragmentActivity implements
 		// move camera to zoom level 20
 		map.moveCamera(CameraUpdateFactory.zoomTo(20.0f));
 		
-		// create a new NodeManager
-		mNodeManager = new NodeManager(this, map);
-		
 		// get info fragment
-		InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
+		MarkerFragment infoFragment = ((MarkerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.info_short));
-		
-		// assign node manager to info fragment
-		infoFragment.setNodeManager(mNodeManager);
-		
-		// add info fragment as listener of the node manager
-		mNodeManager.addListener(infoFragment);
 	}
 	
 	@Override
 	public void onBackPressed() {
 		if (mInfoVisible) {
 			// show / hide marker frame
-			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
+			MarkerFragment infoFragment = ((MarkerFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.info_short));
 			
 			infoFragment.setNode(null, 0);
@@ -124,28 +102,28 @@ public class MainActivity extends FragmentActivity implements
 			map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 			
 			// show / hide marker frame
-			InfoFragment infoFragment = ((InfoFragment) getSupportFragmentManager()
+			MarkerFragment infoFragment = ((MarkerFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.info_short));
 			
-			try {
-				Node n = mNodeManager.get(marker);
-				int position = mNodeManager.getIndex(n);
-				infoFragment.setNode(n, position);
-				
-				// set selection marker
-				if (mSelectionMarker == null) {
-					mSelectionMarker = map.addMarker(new MarkerOptions()
-						.position(marker.getPosition())
-						.icon(BitmapDescriptorFactory.defaultMarker())
-					);
-				}
-				
-				// set position of selection marker
-				mSelectionMarker.setPosition(marker.getPosition());
-				mSelectionMarker.setVisible(true);
-			} catch (NodeNotFoundException e) {
-				infoFragment.setNode(null, 0);
-			}
+//			try {
+//				Node n = mNodeManager.get(marker);
+//				int position = mNodeManager.getIndex(n);
+//				infoFragment.setNode(n, position);
+//				
+//				// set selection marker
+//				if (mSelectionMarker == null) {
+//					mSelectionMarker = map.addMarker(new MarkerOptions()
+//						.position(marker.getPosition())
+//						.icon(BitmapDescriptorFactory.defaultMarker())
+//					);
+//				}
+//				
+//				// set position of selection marker
+//				mSelectionMarker.setPosition(marker.getPosition());
+//				mSelectionMarker.setVisible(true);
+//			} catch (NodeNotFoundException e) {
+//				infoFragment.setNode(null, 0);
+//			}
 			
 			return true;
 		}
@@ -154,18 +132,16 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	protected void onStart() {
 		super.onStart();
-		mNodeManager.onStart();
 	}
 
 	@Override
 	protected void onStop() {
 		if (mBound) {
 			unregisterReceiver(mLocationReceiver);
-			unbindService(mServiceHandler);
+			unbindService(mDataHandler);
 			mBound = false;
 		}
-		
-		mNodeManager.onStop();
+
 		super.onStop();
 	}
 	
@@ -179,11 +155,9 @@ public class MainActivity extends FragmentActivity implements
 		super.onResume();
 		
 		if (!mBound) {
-			IntentFilter filter = new IntentFilter(LocationService.LOCATION_UPDATED);
+			IntentFilter filter = new IntentFilter(DataService.LOCATION_UPDATED);
 			registerReceiver(mLocationReceiver, filter);
-			
-			Intent i = new Intent(this, LocationService.class);
-			bindService(i, mServiceHandler, Context.BIND_AUTO_CREATE);
+			bindService(new Intent(this, DataService.class), mDataHandler, Context.BIND_AUTO_CREATE);
 			mBound = true;
 		}
 	}
@@ -235,10 +209,12 @@ public class MainActivity extends FragmentActivity implements
 	private BroadcastReceiver mLocationReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (!mLocationInitialized && LocationService.LOCATION_UPDATED.equals(intent.getAction())) {
-				Location l = intent.getParcelableExtra(LocationService.EXTRA_LOCATION);
-				centerTo(l);
-				mLocationInitialized = true;
+			if (!mLocationInitialized && DataService.LOCATION_UPDATED.equals(intent.getAction())) {
+				Location l = intent.getParcelableExtra(DataService.EXTRA_LOCATION);
+				if ( l != null ) {
+					centerTo(l);
+					mLocationInitialized = true;
+				}
 			}
 		}
 	};
@@ -247,26 +223,26 @@ public class MainActivity extends FragmentActivity implements
 	public void onInfoWindowPageChanged(int position) {
 		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		
-		try {
-			Node n = mNodeManager.get(position);
-			Marker marker = n.getMarker();
-
-			// move to the marker
-			map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-			
-			// set selection marker
-			if (mSelectionMarker == null) {
-				mSelectionMarker = map.addMarker(new MarkerOptions()
-					.position(marker.getPosition())
-					.icon(BitmapDescriptorFactory.defaultMarker())
-				);
-			}
-			
-			// set position of selection marker
-			mSelectionMarker.setPosition(marker.getPosition());
-			mSelectionMarker.setVisible(true);
-		} catch (NodeNotFoundException e) {
-			// nothing to do.
-		}
+//		try {
+//			Node n = mNodeManager.get(position);
+//			Marker marker = n.getMarker();
+//
+//			// move to the marker
+//			map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+//			
+//			// set selection marker
+//			if (mSelectionMarker == null) {
+//				mSelectionMarker = map.addMarker(new MarkerOptions()
+//					.position(marker.getPosition())
+//					.icon(BitmapDescriptorFactory.defaultMarker())
+//				);
+//			}
+//			
+//			// set position of selection marker
+//			mSelectionMarker.setPosition(marker.getPosition());
+//			mSelectionMarker.setVisible(true);
+//		} catch (NodeNotFoundException e) {
+//			// nothing to do.
+//		}
 	}
 }

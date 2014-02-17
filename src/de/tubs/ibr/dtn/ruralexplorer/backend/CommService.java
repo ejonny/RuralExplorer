@@ -175,7 +175,8 @@ public class CommService extends IntentService {
 			mBundle = null;
 			
 			// process the data
-			Database.getInstance().process(CommService.this, mBundle);
+			// TODO: forward data to DataService
+			// Database.getInstance().process(CommService.this, mBundle);
 		}
 
 		@Override

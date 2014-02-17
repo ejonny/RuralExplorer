@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InfoFragment"
+    tools:context=".MarkerFragment"
     android:visibility="invisible"
     android:background="@color/white_overlay"
     android:id="@+id/node_fragment_layout" >

@@ -82,7 +82,7 @@
         </activity>
 
         <service
-            android:name="de.tubs.ibr.dtn.ruralexplorer.backend.LocationService"
+            android:name="de.tubs.ibr.dtn.ruralexplorer.backend.DataService"
             android:enabled="true"
             android:exported="false" >
         </service>

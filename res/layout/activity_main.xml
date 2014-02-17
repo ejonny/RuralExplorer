@@ -20,12 +20,12 @@
           android:id="@+id/info_short"
           android:layout_width="match_parent"
           android:layout_height="?android:attr/listPreferredItemHeightLarge"
-          android:name="de.tubs.ibr.dtn.ruralexplorer.InfoFragment"
+          android:name="de.tubs.ibr.dtn.ruralexplorer.MarkerFragment"
           android:layout_alignParentBottom="true" />
 	
 	<fragment
           android:id="@+id/info_extended"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:name="de.tubs.ibr.dtn.ruralexplorer.InfoExtendedFragment" />
+          android:name="de.tubs.ibr.dtn.ruralexplorer.StatsFragment" />
 </RelativeLayout>
