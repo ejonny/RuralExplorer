@@ -90,10 +90,6 @@ public class DataService extends Service {
 		@Override
 		public void onConnected(Bundle arg0) {
 			Log.d(TAG, "Location services connected");
-			
-			// start beaconing
-			mServiceHandler.post(mBeaconProcess);
-			
 			// request location updates
 			mLocationClient.requestLocationUpdates(mLocationRequest, locationListener);
 		}
@@ -101,9 +97,6 @@ public class DataService extends Service {
 		@Override
 		public void onDisconnected() {
 			Log.d(TAG, "Location services disconnected");
-			
-			// stop beaconing
-			mServiceHandler.removeCallbacks(mBeaconProcess);
 		}
 		
 	};
@@ -121,8 +114,13 @@ public class DataService extends Service {
 
 		@Override
 		public void onLocationChanged(Location location) {
-			// 
 			Log.d(TAG, "Location changed: " + location.toString());
+			
+			// generate beacon
+			Intent intent = new Intent(DataService.this, CommService.class);
+			intent.setAction(CommService.ACTION_GENERATE_BEACON);
+			intent.putExtra(EXTRA_LOCATION, location);
+			startService(intent);
 		}
 		
 	};
@@ -149,7 +147,7 @@ public class DataService extends Service {
 		mLocationRequest = LocationRequest.create();
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 		mLocationRequest.setInterval(20000);
-		mLocationRequest.setFastestInterval(5000);
+		mLocationRequest.setFastestInterval(10000);
 		
 		// create a new location client
 		mLocationClient = new LocationClient(this, mConnectionCallbacks, mConnectionFailedListener);
@@ -160,9 +158,6 @@ public class DataService extends Service {
 
 	@Override
 	public void onDestroy() {
-		// stop beaconing
-		mServiceHandler.removeCallbacks(mBeaconProcess);
-		
 		// disconnect from location services
 		mLocationClient.disconnect();
 		
@@ -212,18 +207,4 @@ public class DataService extends Service {
 	public Database getDatabase() {
 		return mDatabase;
 	}
-	
-	private Runnable mBeaconProcess = new Runnable() {
-		@Override
-		public void run() {
-			// generate beacon
-			Intent intent = new Intent(DataService.this, CommService.class);
-			intent.setAction(CommService.ACTION_GENERATE_BEACON);
-			intent.putExtra(EXTRA_LOCATION, mLocationClient.getLastLocation());
-			startService(intent);
-			
-			// next update in 10 seconds
-			mServiceHandler.postDelayed(mBeaconProcess, 10000);
-		}
-	};
 }
