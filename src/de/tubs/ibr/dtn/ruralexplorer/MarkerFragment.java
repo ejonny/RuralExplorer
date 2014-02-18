@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 
 	private FrameLayout mLayout = null;
 
+	private Node mNode = null;
 	private NodeAdapter mNodeAdapter = null;
 	private MarkerPagerAdapter mMarkerPagerAdapter = null;
 	private ViewPager mViewPager = null;
@@ -97,6 +99,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 			public void onPageSelected(int position) {
 				MarkerItemFragment f = (MarkerItemFragment)mMarkerPagerAdapter.getItem(position);
 				if (f != null) {
+					mNode = f.getNode();
 					mListener.onMarkerNodeSelected(f.getNode());
 				}
 			}
@@ -139,6 +142,8 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	}
 
 	public void setNode(Node n) {
+		mNode = n;
+		
 		if (n == null) {
 			mLayout.setVisibility(View.INVISIBLE);
 			mListener.onMarkerWindowChanged(false, 0, 0);
@@ -199,6 +204,11 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 			} catch (NodeNotFoundException ex) {
 				return null;
 			}
+		}
+		
+		@Override
+		public int getItemPosition(Object object) {
+			return PagerAdapter.POSITION_NONE;
 		}
 
 		@Override
