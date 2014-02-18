@@ -1,6 +1,8 @@
 
 package de.tubs.ibr.dtn.ruralexplorer;
 
+import java.util.HashMap;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -24,22 +25,26 @@ import android.widget.FrameLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import de.tubs.ibr.dtn.ruralexplorer.MarkerFragment.OnInfoWindowListener;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
+import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeLocation;
 
 public class MainActivity extends FragmentActivity implements
-		OnInfoWindowListener,
+		MarkerFragment.OnWindowChangedListener,
 		LoaderManager.LoaderCallbacks<Cursor> {
 	
 	private static final String TAG = "MainActivity";
 	
 	private static final int MARKER_LOADER_ID = 1;
 	
-	private NodeAdapter mNodeAdapter = null;
+	private HashMap<Long, Marker> mMarkerSet = new HashMap<Long, Marker>();
+	private HashMap<Marker, Node> mNodeSet = new HashMap<Marker, Node>();
 
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
@@ -90,17 +95,13 @@ public class MainActivity extends FragmentActivity implements
 		
 		// get info fragment
 		mMarkerInfo = ((MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_info_fragment));
-		
-		// Create an empty adapter we will use to display the loaded data.
-		mNodeAdapter = new NodeAdapter(this, null, new NodeAdapter.ColumnsMap());
-		mNodeAdapter.registerDataSetObserver(mMarkerObserver);
 	}
 	
 	@Override
 	public void onBackPressed() {
 		if (mInfoVisible) {
 			// show / hide marker frame
-			mMarkerInfo.setNode(null, 0);
+			mMarkerInfo.setNode(null);
 			
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);
@@ -117,26 +118,25 @@ public class MainActivity extends FragmentActivity implements
 			mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 			
 			// show / hide marker frame
+			Node n = mNodeSet.get(marker);
 			
-//			try {
-//				Node n = mNodeManager.get(marker);
-//				int position = mNodeManager.getIndex(n);
-//				infoFragment.setNode(n, position);
-//				
-//				// set selection marker
-//				if (mSelectionMarker == null) {
-//					mSelectionMarker = map.addMarker(new MarkerOptions()
-//						.position(marker.getPosition())
-//						.icon(BitmapDescriptorFactory.defaultMarker())
-//					);
-//				}
-//				
-//				// set position of selection marker
-//				mSelectionMarker.setPosition(marker.getPosition());
-//				mSelectionMarker.setVisible(true);
-//			} catch (NodeNotFoundException e) {
-//				infoFragment.setNode(null, 0);
-//			}
+			if (n == null) {
+				mMarkerInfo.setNode(null);
+				return true;
+			}
+			mMarkerInfo.setNode(n);
+			
+			// set selection marker
+			if (mSelectionMarker == null) {
+				mSelectionMarker = mMap.addMarker(new MarkerOptions()
+					.position(marker.getPosition())
+					.icon(BitmapDescriptorFactory.defaultMarker())
+				);
+			}
+			
+			// set position of selection marker
+			mSelectionMarker.setPosition(marker.getPosition());
+			mSelectionMarker.setVisible(true);
 			
 			return true;
 		}
@@ -176,9 +176,6 @@ public class MainActivity extends FragmentActivity implements
 			bindService(new Intent(this, DataService.class), mDataHandler, Context.BIND_AUTO_CREATE);
 			mBound = true;
 		}
-		
-		// show marker info
-		mMarkerInfo.setVisible(true);
 	}
 
 	@Override
@@ -212,7 +209,7 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onInfoWindowStateChanged(boolean visible, int height, int width) {
+	public void onWindowChanged(boolean visible, int height, int width) {
 		if (visible) {
 			mMap.setPadding(0, 0, 0, height);
 			mLayoutDropShadow.setVisibility(View.VISIBLE);
@@ -238,64 +235,77 @@ public class MainActivity extends FragmentActivity implements
 	};
 	
 	@Override
-	public void onInfoWindowPageChanged(int position) {
-//		try {
-//			Node n = mNodeManager.get(position);
-//			Marker marker = n.getMarker();
-//
-//			// move to the marker
-//			map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-//			
-//			// set selection marker
-//			if (mSelectionMarker == null) {
-//				mSelectionMarker = map.addMarker(new MarkerOptions()
-//					.position(marker.getPosition())
-//					.icon(BitmapDescriptorFactory.defaultMarker())
-//				);
-//			}
-//			
-//			// set position of selection marker
-//			mSelectionMarker.setPosition(marker.getPosition());
-//			mSelectionMarker.setVisible(true);
-//		} catch (NodeNotFoundException e) {
-//			// nothing to do.
-//		}
+	public void onNodeSelected(Node n) {
+		Marker marker = mMarkerSet.get(n.getId());
+		
+		if (marker == null) return;
+
+		// move to the marker
+		mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+		
+		// set selection marker
+		if (mSelectionMarker == null) {
+			mSelectionMarker = mMap.addMarker(new MarkerOptions()
+				.position(marker.getPosition())
+				.icon(BitmapDescriptorFactory.defaultMarker())
+			);
+		}
+		
+		// set position of selection marker
+		mSelectionMarker.setPosition(marker.getPosition());
+		mSelectionMarker.setVisible(true);
 	}
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.d(TAG, "Marker: onCreateLoader()");
 		// Now create and return a CursorLoader that will take care of
 		// creating a Cursor for the data being displayed.
 		return new MarkerLoader(this, mDataService);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		// Swap the new cursor in. (The framework will take care of closing the
-		// old cursor once we return.)
-		mNodeAdapter.swapCursor(data);
+	public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+		NodeAdapter.ColumnsMap cm = new NodeAdapter.ColumnsMap();
+		
+		while (c.moveToNext()) {
+			Node n = new Node(this, c, cm);
+			
+			NodeLocation l = n.getLocation();
+			Marker m = mMarkerSet.get(n.getId());
+			
+			if (l.hasLatitude() && l.hasLongitude()) {
+				LatLng position = new LatLng(l.getLatitude(), l.getLongitude());
+				
+				if (m == null) {
+					// create a new marker
+					m = mMap.addMarker(
+					new MarkerOptions()
+							.position(position)
+							.icon(Node.getBitmap(n.getType()))
+							.anchor(0.5f, 0.5f)
+							.flat(true)
+						);
+				} else {
+					// update marker
+					m.setPosition(position);
+				}
+				
+				m.setVisible(true);
+				
+				mMarkerSet.put(n.getId(), m);
+				mNodeSet.put(m, n);
+			} else {
+				if (m != null) m.setVisible(false);
+			}
+		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> data) {
-		// This is called when the last Cursor provided to onLoadFinished()
-		// above is about to be closed. We need to make sure we are no
-		// longer using it.
-		mNodeAdapter.swapCursor(null);
+		for (Marker m : mMarkerSet.values()) {
+			m.remove();
+		}
+		mMarkerSet.clear();
+		mNodeSet.clear();
 	}
-	
-	private DataSetObserver mMarkerObserver = new DataSetObserver() {
-		@Override
-		public void onChanged() {
-			Log.d(TAG, "Marker: onChanged()");
-			super.onChanged();
-		}
-
-		@Override
-		public void onInvalidated() {
-			Log.d(TAG, "Marker: onInvalidated()");
-			super.onInvalidated();
-		}
-	};
 }

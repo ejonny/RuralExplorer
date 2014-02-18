@@ -52,6 +52,10 @@ public class MarkerItemFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		bind(mNode);
 	}
+	
+	public Node getNode() {
+		return mNode;
+	}
 
 	public void bind(Node n) {
 		mNode = n;

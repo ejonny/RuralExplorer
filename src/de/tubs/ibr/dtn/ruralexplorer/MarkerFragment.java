@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	private MarkerPagerAdapter mMarkerPagerAdapter = null;
 	private ViewPager mViewPager = null;
 
-	private OnInfoWindowListener mListener = null;
+	private OnWindowChangedListener mListener = null;
 	private DataService mDataService = null;
 
 	public static MarkerFragment newInstance() {
@@ -68,17 +67,6 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		}
 	};
 	
-	public void setVisible(boolean visible) {
-		if (!visible) {
-			mLayout.setVisibility(View.INVISIBLE);
-			mListener.onInfoWindowStateChanged(false, 0, 0);
-		} else {
-			mLayout.setVisibility(View.VISIBLE);
-			mListener.onInfoWindowStateChanged(true, mLayout.getHeight(), mLayout.getWidth());
-			//mViewPager.setCurrentItem(position, true);
-		}
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -102,7 +90,10 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				mListener.onInfoWindowPageChanged(position);
+				MarkerItemFragment f = (MarkerItemFragment)mMarkerPagerAdapter.getItem(position);
+				if (f != null) {
+					mListener.onNodeSelected(f.getNode());
+				}
 			}
 
 			@Override
@@ -121,7 +112,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			mListener = (OnInfoWindowListener) activity;
+			mListener = (OnWindowChangedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnInfoWindowListener");
@@ -142,20 +133,36 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		mListener = null;
 	}
 
-	public interface OnInfoWindowListener {
-		public void onInfoWindowStateChanged(boolean visible, int height, int width);
-
-		public void onInfoWindowPageChanged(int position);
+	public interface OnWindowChangedListener {
+		public void onWindowChanged(boolean visible, int height, int width);
+		public void onNodeSelected(Node n);
 	}
-
-	public void setNode(Node n, int position) {
-		if (n == null) {
+	
+	public void setVisible(boolean visible) {
+		if (!visible) {
 			mLayout.setVisibility(View.INVISIBLE);
-			mListener.onInfoWindowStateChanged(false, 0, 0);
+			mListener.onWindowChanged(false, 0, 0);
 		} else {
 			mLayout.setVisibility(View.VISIBLE);
-			mListener.onInfoWindowStateChanged(true, mLayout.getHeight(), mLayout.getWidth());
-			mViewPager.setCurrentItem(position, true);
+			mListener.onWindowChanged(true, mLayout.getHeight(), mLayout.getWidth());
+			//mViewPager.setCurrentItem(position, true);
+		}
+	}
+
+	public void setNode(Node n) {
+		if (n == null) {
+			mLayout.setVisibility(View.INVISIBLE);
+			mListener.onWindowChanged(false, 0, 0);
+		} else {
+			mLayout.setVisibility(View.VISIBLE);
+			mListener.onWindowChanged(true, mLayout.getHeight(), mLayout.getWidth());
+			
+			try {
+				// set pager to position
+				mViewPager.setCurrentItem(mMarkerPagerAdapter.getPosition(n), true);
+			} catch (NodeNotFoundException e) {
+				// node not found
+			}
 		}
 	}
 
@@ -197,6 +204,8 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 				if (!c.moveToPosition(position)) throw new NodeNotFoundException();
 				
 				Node n = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
+				
+				//Node n = (Node)mAdapter.getItem(position);
 				return MarkerItemFragment.newInstance(n);
 			} catch (NodeNotFoundException ex) {
 				return null;
@@ -205,8 +214,32 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 
 		@Override
 		public int getCount() {
-			Log.d(TAG, "count: " + mAdapter.getCount());
 			return mAdapter.getCount();
+		}
+		
+		public int getPosition(Node n) throws NodeNotFoundException {
+			if (mDataService == null)
+				throw new NodeNotFoundException();
+			
+			Cursor c = mAdapter.getCursor();
+
+			if (c == null)
+				throw new NodeNotFoundException();
+
+			// move to initial position
+			c.moveToPosition(-1);
+			
+			int ret = 0;
+			
+			while (c.moveToNext()) {
+				Node node = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
+				if (node.equals(n)) {
+					return ret;
+				}
+				ret++;
+			}
+			
+			throw new NodeNotFoundException();
 		}
 	}
 

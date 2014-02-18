@@ -25,11 +25,11 @@ public class NodeLocation {
 	public NodeLocation(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
 	{
 		mLatitude = cursor.getDouble(cmap.mColumnLocationLat);
-		mLongitude = cursor.getDouble(cmap.mColumnLocationLat);
-		mAltitude = cursor.getDouble(cmap.mColumnLocationLat);
-		mBearing = cursor.getFloat(cmap.mColumnLocationLat);
-		mSpeed = cursor.getFloat(cmap.mColumnLocationLat);
-		mAccurarcy = cursor.getFloat(cmap.mColumnLocationLat);
+		mLongitude = cursor.getDouble(cmap.mColumnLocationLng);
+		mAltitude = cursor.getDouble(cmap.mColumnLocationAlt);
+		mBearing = cursor.getFloat(cmap.mColumnLocationBearing);
+		mSpeed = cursor.getFloat(cmap.mColumnLocationSpeed);
+		mAccurarcy = cursor.getFloat(cmap.mColumnLocationAccuracy);
 	}
 	
 	public NodeLocation(Location l) {

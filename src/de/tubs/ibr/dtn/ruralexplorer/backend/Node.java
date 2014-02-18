@@ -5,7 +5,12 @@ import java.io.Serializable;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.BaseColumns;
+
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
+import de.tubs.ibr.dtn.ruralexplorer.R;
 
 public class Node implements Serializable, Comparable<Node> {
 	/**
@@ -53,39 +58,6 @@ public class Node implements Serializable, Comparable<Node> {
 		mId = id;
 	}
 	
-//	private Marker mMarker = null;
-//	private GoogleMap mMap = null;
-	
-//	private Node(GoogleMap map) {
-//		mMap = map;
-//	}
-//	
-//	public static Node create(GoogleMap map) {
-//		if (map == null) return null;
-//		return new Node(map);
-//	}
-	
-//	public void setHightlight(boolean val) {
-//		if (mLocation == null) return;
-//		
-//		LatLng position = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-//		
-//		if (val) {
-//			if (mCircle != null) return;
-//			mCircle = mMap.addCircle(
-//					new CircleOptions()
-//						.center(position)
-//						.radius(300)
-//						.fillColor(R.color.light_blue)
-//						.strokeColor(R.color.dark_blue)
-//						.strokeWidth(2)
-//					);
-//		} else {
-//			if (mCircle == null) return;
-//			mCircle.remove();
-//		}
-//	}
-	
 	public Type getType() {
 		return mType;
 	}
@@ -96,36 +68,8 @@ public class Node implements Serializable, Comparable<Node> {
 	
 	public NodeLocation getLocation() {
 		return mLocation;
-//		if (location == null) {
-//			if (mMarker == null) return;
-//			
-//			// clear marker
-//			mMarker.remove();
-//		} else {
-//			LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-//			
-//			if (mMarker == null) {
-//				mMarker = mMap.addMarker(
-//					new MarkerOptions()
-//							.position(position)
-//							.icon(Node.getBitmap(mType))
-//							.anchor(0.5f, 0.5f)
-//							.flat(true)
-//						);
-//			} else {
-//				mMarker.setPosition(position);
-//			}
-//		}
 	}
 	
-//	public Marker getMarker() {
-//		return mMarker;
-//	}
-//	
-//	public void setMarker(Marker marker) {
-//		mMarker = marker;
-//	}
-
 	public SingletonEndpoint getEndpoint() {
 		if (mEndpoint == null) return new SingletonEndpoint("dtn:none");
 		return mEndpoint;
@@ -149,22 +93,18 @@ public class Node implements Serializable, Comparable<Node> {
 		return getEndpoint().toString();
 	}
 	
-//	public boolean equals(Marker m) {
-//		return mMarker.equals(m);
-//	}
-//	
-//	private static BitmapDescriptor getBitmap(Node.Type t) {
-//		switch (t) {
-//			case ANDROID:
-//				return BitmapDescriptorFactory.fromResource(R.drawable.ic_android);
-//			case INGA:
-//				return BitmapDescriptorFactory.fromResource(R.drawable.ic_inga);
-//			case PI:
-//				return BitmapDescriptorFactory.fromResource(R.drawable.ic_raspberrypi);
-//			default:
-//				return BitmapDescriptorFactory.fromResource(R.drawable.ic_node);
-//		}
-//	}
+	public static BitmapDescriptor getBitmap(Node.Type t) {
+		switch (t) {
+			case ANDROID:
+				return BitmapDescriptorFactory.fromResource(R.drawable.ic_android);
+			case INGA:
+				return BitmapDescriptorFactory.fromResource(R.drawable.ic_inga);
+			case PI:
+				return BitmapDescriptorFactory.fromResource(R.drawable.ic_raspberrypi);
+			default:
+				return BitmapDescriptorFactory.fromResource(R.drawable.ic_node);
+		}
+	}
 
 	@Override
 	public int compareTo(Node another) {
