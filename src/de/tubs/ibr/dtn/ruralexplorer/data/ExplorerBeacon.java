@@ -241,7 +241,7 @@ public class ExplorerBeacon implements Parcelable {
 			
 			ret.mRescueLocation = nullMarker[4] ? (Location)source.readParcelable(Location.class.getClassLoader()) : null;
 
-			return null;
+			return ret;
 		}
 
 		@Override
