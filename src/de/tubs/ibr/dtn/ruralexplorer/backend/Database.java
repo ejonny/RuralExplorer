@@ -195,6 +195,17 @@ public class Database {
 		}
 	}
 	
+	public Node getNode(SingletonEndpoint endpoint) {
+		// node data
+		Cursor c = mDatabase.query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION, Node.ENDPOINT + " = ?", new String[] { endpoint.toString() }, null, null, Node.ENDPOINT);
+		
+		if (c.moveToNext()) {
+			return new Node(mContext, c, new NodeAdapter.ColumnsMap());
+		}
+		
+		return null;
+	}
+	
 	public void update(Node n) {
 		if (n.getId() == null) {
 			// create a new node

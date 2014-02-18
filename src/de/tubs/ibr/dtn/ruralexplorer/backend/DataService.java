@@ -112,8 +112,21 @@ public class DataService extends Service {
 					break;
 			}
 			
-			// TODO: ...
+			// debug
 			Log.d(TAG, "new beacon received from " + source.toString());
+			
+			// get node from database
+			Node n = mDatabase.getNode(source);
+			
+			if (n == null) {
+				n = new Node(type, source);
+			}
+			
+			// update location
+			n.setLocation(new NodeLocation(b.getPosition()));
+			
+			// write changed to the database
+			mDatabase.update(n);
 		}
 		
 		// stop the service if not persistent
