@@ -1,8 +1,16 @@
 package de.tubs.ibr.dtn.ruralexplorer.backend;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import android.app.IntentService;
 import android.content.Intent;
+import android.location.Location;
 import android.os.ParcelFileDescriptor;
+import android.os.Parcelable;
 import android.util.Log;
 import de.tubs.ibr.dtn.api.Block;
 import de.tubs.ibr.dtn.api.Bundle;
@@ -17,6 +25,7 @@ import de.tubs.ibr.dtn.api.SessionConnection;
 import de.tubs.ibr.dtn.api.SessionDestroyedException;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.api.TransferMode;
+import de.tubs.ibr.dtn.ruralexplorer.data.ExplorerBeacon;
 
 public class CommService extends IntentService {
 	
@@ -27,16 +36,22 @@ public class CommService extends IntentService {
 	public static final GroupEndpoint RURAL_GROUP_DTN_EID = new GroupEndpoint("dtn://broadcast.dtn/rural-explorer");
 	public static final GroupEndpoint RURAL_GROUP_IPN_EID = new GroupEndpoint("ipn:666.2990520854");
 	
-	// mark a specific bundle as delivered
+	// mark a specific bundle as delivered: contains EXTRA_BUNDLEID
 	public static final String MARK_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.MARK_DELIVERED";
+	
+	// beacon received: contains EXTRA_ENDPOINT and EXTRA_BEACON
+	public static final String BEACON_RECEIVED = "de.tubs.ibr.dtn.ruralexplorer.BEACON_RECEIVED";
+	
+	// extras
 	public static final String EXTRA_BUNDLEID = "de.tubs.ibr.dtn.ruralexplorer.BUNDLEID";
 	public static final String EXTRA_ENDPOINT = "de.tubs.ibr.dtn.ruralexplorer.ENDPOINT";
+	public static final String EXTRA_BEACON = "de.tubs.ibr.dtn.ruralexplorer.BEACON";
 	
 	// process a status report
 	public static final String REPORT_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.REPORT_DELIVERED";
 
 	// this action generated a beacon
-	public static final String ACTION_GENERATE_BEACON = "de.tubs.ibr.dtn.ruralexplorer.GENERATE_BEACON";
+	public static final String GENERATE_BEACON = "de.tubs.ibr.dtn.ruralexplorer.GENERATE_BEACON";
 	
 	// beacon parameters
 	public static final String EXTRA_BEACON_EMERGENCY = "de.tubs.ibr.dtn.ruralexplorer.BEACON_EMERGENCY";
@@ -85,15 +100,32 @@ public class CommService extends IntentService {
 					"Status report received for " + bundleid.toString() + " from "
 							+ source.toString());
 		}
-		else if (ACTION_GENERATE_BEACON.equals(action))
+		else if (GENERATE_BEACON.equals(action))
 		{
-			Log.d(TAG, "send beacon");
+			// create a new beacon
+			ExplorerBeacon b = new ExplorerBeacon();
+			
+			// set location
+			b.setPosition((Location)intent.getParcelableExtra(DataService.EXTRA_LOCATION));
+			
+			ByteArrayOutputStream array = new ByteArrayOutputStream();
+			DataOutputStream out = new DataOutputStream(array);
+			
 			try {
-				mClient.getSession().send(RURAL_GROUP_DTN_EID, 20, "Hello World".getBytes());
+				// write beacon to byte array
+				ExplorerBeacon.write(out, b);
+				
+				// flush and close the stream
+				out.close();
+				
+				// send beacon
+				mClient.getSession().send(RURAL_GROUP_DTN_EID, 20, array.toByteArray());
 			} catch (SessionDestroyedException e) {
-				Log.e(TAG, "Can not query for bundle", e);
+				Log.e(TAG, "Beacon send failed", e);
 			} catch (InterruptedException e) {
-				Log.e(TAG, "Can not query for bundle", e);
+				Log.e(TAG, "Beacon send failed.", e);
+			} catch (IOException e) {
+				Log.e(TAG, "Beacon preparation failed.", e);
 			}
 		}
 	}
@@ -207,8 +239,29 @@ public class CommService extends IntentService {
 
 		@Override
 		public void payload(byte[] data) {
-			// payload is received here
-			Log.d(TAG, "payload received: " + data);
+			// beacon data is received
+			DataInputStream in = new DataInputStream( new ByteArrayInputStream(data) );
+			
+			try {
+				try {
+					ExplorerBeacon beacon = ExplorerBeacon.parse(in);
+					
+					// start data service to process the incoming beacon
+					Intent i = new Intent(CommService.this, DataService.class);
+					i.setAction(BEACON_RECEIVED);
+					i.putExtra(EXTRA_BEACON, (Parcelable)beacon);
+					i.putExtra(EXTRA_ENDPOINT, (Parcelable)mBundle.getSource());
+					startService(i);
+				} catch (IOException e) {
+					// error
+					Log.e(TAG, "Error while parsing data beacon.", e);
+				}
+			
+				in.close();
+			} catch (IOException e) {
+				// error
+				Log.e(TAG, "Error while closing data.", e);
+			}
 		}
 
 		@Override

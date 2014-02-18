@@ -141,7 +141,7 @@ public class Database {
 			return n;
 		} catch (Exception e) {
 			// could not create node
-			e.printStackTrace();
+			Log.e(TAG, "Could not create node.", e);
 		}
 		
 		return null;
@@ -190,8 +190,8 @@ public class Database {
 			// update buddy data
 			mDatabase.update(TABLE_NAME_NODES, values, Node.ID + " = ?", new String[] { nodeId.toString() });
 		} catch (Exception e) {
-			// could not create node
-			e.printStackTrace();
+			// could not update location
+			Log.e(TAG, "Location update failed.", e);
 		}
 	}
 	

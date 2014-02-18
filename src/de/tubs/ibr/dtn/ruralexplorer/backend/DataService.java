@@ -20,6 +20,9 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
+import de.tubs.ibr.dtn.api.SingletonEndpoint;
+import de.tubs.ibr.dtn.ruralexplorer.data.ExplorerBeacon;
+
 public class DataService extends Service {
 
 	private static final String TAG = "DataService";
@@ -79,7 +82,39 @@ public class DataService extends Service {
 	public void onHandleIntent(Intent intent, int startId) {
 		String action = intent.getAction();
 		
-		// TODO: react to intent
+		// react to new beacon
+		if (CommService.BEACON_RECEIVED.equals(action)) {
+			// get beacon object
+			ExplorerBeacon b = (ExplorerBeacon)intent.getParcelableExtra(CommService.EXTRA_BEACON);
+			
+			// get beacon source
+			SingletonEndpoint source = (SingletonEndpoint)intent.getParcelableExtra(CommService.EXTRA_ENDPOINT);
+			
+			// source node type
+			Node.Type type;
+			
+			switch (b.getType())
+			{
+				case 1:
+					type = Node.Type.ANDROID;
+					break;
+					
+				case 2:
+					type = Node.Type.INGA;
+					break;
+					
+				case 3:
+					type = Node.Type.PI;
+					break;
+					
+				default:
+					type = Node.Type.GENERIC;
+					break;
+			}
+			
+			// TODO: ...
+			Log.d(TAG, "new beacon received from " + source.toString());
+		}
 		
 		// stop the service if not persistent
 		if (!mPersistent && (startId != -1)) stopSelf(startId);
@@ -114,11 +149,9 @@ public class DataService extends Service {
 
 		@Override
 		public void onLocationChanged(Location location) {
-			Log.d(TAG, "Location changed: " + location.toString());
-			
 			// generate beacon
 			Intent intent = new Intent(DataService.this, CommService.class);
-			intent.setAction(CommService.ACTION_GENERATE_BEACON);
+			intent.setAction(CommService.GENERATE_BEACON);
 			intent.putExtra(EXTRA_LOCATION, location);
 			startService(intent);
 			
