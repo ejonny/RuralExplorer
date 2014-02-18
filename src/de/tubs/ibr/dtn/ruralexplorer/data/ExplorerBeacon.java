@@ -96,6 +96,9 @@ public class ExplorerBeacon implements Parcelable {
 		int items = 0;
 		Location l = b.getPosition();
 		
+		// we plan to add a beacon
+		items++;
+		
 		// we plan to add location as an item
 		if (l != null) items++;
 		
@@ -154,6 +157,10 @@ public class ExplorerBeacon implements Parcelable {
 					break;
 					
 				case TLV_TYPE_GPS:
+				{
+					// open TLV data
+					decoder.open();
+					
 					Location l = new Location("beacon");
 					l.setLatitude((Float)decoder.read());
 					l.setLongitude((Float)decoder.read());
@@ -161,6 +168,7 @@ public class ExplorerBeacon implements Parcelable {
 					l.setBearing((Float)decoder.read());
 					ret.setPosition(l);
 					break;
+				}
 					
 //				case TLV_TYPE_ACC:
 //					break;

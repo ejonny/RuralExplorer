@@ -32,7 +32,7 @@ public class TypeLengthValue {
 		 */
 		public int next() throws IOException {
 			// return the TLV type
-			return mInput.readByte();
+			return mInput.readUnsignedByte();
 		}
 		
 		/**
@@ -45,10 +45,10 @@ public class TypeLengthValue {
 		}
 		
 		public Object read() throws IOException {
-			int type = mInput.readByte();
+			int type = mInput.readUnsignedByte();
 			switch (type) {
 				case TLV_BOOLEAN:
-					return Boolean.valueOf(mInput.readByte() == 1);
+					return Boolean.valueOf(mInput.readUnsignedByte() == 1);
 					
 				case TLV_UINT64:
 					return Integer.valueOf(SDNV.Read(mInput));
