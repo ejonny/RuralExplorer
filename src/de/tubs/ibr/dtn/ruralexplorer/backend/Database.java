@@ -25,6 +25,7 @@ public class Database {
 	private Context mContext = null;
 	
 	public static final String TABLE_NAME_NODES = "nodes";
+	public static final String TABLE_NAME_MARKER = "marker";
 	
 	private static final String DATABASE_CREATE_NODES =
 			"CREATE TABLE " + TABLE_NAME_NODES + " (" +
@@ -39,10 +40,22 @@ public class Database {
 				RuralLocation.ACCURACY + " FLOAT" +
 			");";
 	
+	private static final String DATABASE_CREATE_MARKER =
+			"CREATE TABLE " + TABLE_NAME_MARKER + " (" +
+				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+				Marker.NODE_ID + " INTEGER NOT NULL, " +
+				RuralLocation.LAT + " DOUBLE, " +
+				RuralLocation.LNG + " DOUBLE, " +
+				RuralLocation.ALT + " DOUBLE, " +
+				RuralLocation.BEARING + " FLOAT, " +
+				RuralLocation.SPEED + " FLOAT, " +
+				RuralLocation.ACCURACY + " FLOAT" +
+			");";
+	
 	private class DBOpenHelper extends SQLiteOpenHelper {
 		
 		private static final String DATABASE_NAME = "rural_explorer";
-		private static final int DATABASE_VERSION = 2;
+		private static final int DATABASE_VERSION = 3;
 		
 		public DBOpenHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,6 +64,7 @@ public class Database {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(DATABASE_CREATE_NODES);
+			db.execSQL(DATABASE_CREATE_MARKER);
 		}
 
 		@Override
@@ -59,6 +73,7 @@ public class Database {
 					"Upgrading database from version " + oldVersion + " to "
 							+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_NODES);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_MARKER);
 			onCreate(db);
 		}
 	};
