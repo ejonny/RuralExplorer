@@ -1,10 +1,29 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
-    android:padding="@dimen/info_padding"
-    android:background="@color/white_overlay"
-    android:id="@+id/extended_fragment_layout">
+    android:padding="@dimen/stats_padding"
+    android:background="@android:color/white"
+    android:id="@+id/stats_fragment_layout">
     
-</FrameLayout>
+    <ImageView
+        android:contentDescription="@string/info_device_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="?android:attr/listPreferredItemHeightLarge"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/stats_icon"
+        android:src="@drawable/ic_node" />
+
+	<TextView
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:textSize="@dimen/stats_title_size"
+	    android:id="@+id/stats_title"
+	    android:textColor="@color/blue"
+	    android:layout_toRightOf="@id/stats_icon"
+	    android:layout_alignParentTop="true"
+	    android:padding="@dimen/stats_padding"
+	    android:textStyle="bold" />
+    
+</RelativeLayout>

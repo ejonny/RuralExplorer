@@ -39,6 +39,11 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 
 	private OnWindowChangedListener mListener = null;
 	private DataService mDataService = null;
+	
+	public interface OnWindowChangedListener {
+		public void onMarkerWindowChanged(boolean visible, int height, int width);
+		public void onMarkerNodeSelected(Node n);
+	}
 
 	public static MarkerFragment newInstance() {
 		MarkerFragment fragment = new MarkerFragment();
@@ -92,7 +97,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 			public void onPageSelected(int position) {
 				MarkerItemFragment f = (MarkerItemFragment)mMarkerPagerAdapter.getItem(position);
 				if (f != null) {
-					mListener.onNodeSelected(f.getNode());
+					mListener.onMarkerNodeSelected(f.getNode());
 				}
 			}
 
@@ -133,29 +138,13 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		mListener = null;
 	}
 
-	public interface OnWindowChangedListener {
-		public void onWindowChanged(boolean visible, int height, int width);
-		public void onNodeSelected(Node n);
-	}
-	
-	public void setVisible(boolean visible) {
-		if (!visible) {
-			mLayout.setVisibility(View.INVISIBLE);
-			mListener.onWindowChanged(false, 0, 0);
-		} else {
-			mLayout.setVisibility(View.VISIBLE);
-			mListener.onWindowChanged(true, mLayout.getHeight(), mLayout.getWidth());
-			//mViewPager.setCurrentItem(position, true);
-		}
-	}
-
 	public void setNode(Node n) {
 		if (n == null) {
 			mLayout.setVisibility(View.INVISIBLE);
-			mListener.onWindowChanged(false, 0, 0);
+			mListener.onMarkerWindowChanged(false, 0, 0);
 		} else {
 			mLayout.setVisibility(View.VISIBLE);
-			mListener.onWindowChanged(true, mLayout.getHeight(), mLayout.getWidth());
+			mListener.onMarkerWindowChanged(true, mLayout.getHeight(), mLayout.getWidth());
 			
 			try {
 				// set pager to position

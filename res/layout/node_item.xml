@@ -2,32 +2,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/info_padding">
+    android:padding="@dimen/marker_padding">
     
     <ImageView
         android:contentDescription="@string/info_device_icon"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:id="@+id/device_icon"
+        android:id="@+id/marker_icon"
         android:src="@drawable/ic_node" />
 
 	<TextView
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:textSize="@dimen/info_title_size"
-	    android:id="@+id/info_title"
+	    android:textSize="@dimen/marker_title_size"
+	    android:id="@+id/marker_title"
 	    android:textColor="@color/blue"
-	    android:layout_toRightOf="@id/device_icon"
-	    android:padding="@dimen/info_padding" />
-	
-	<ImageButton
-	    android:id="@+id/info_button"
-	    android:contentDescription="@string/button_info"
-	    android:layout_width="wrap_content"
-	    android:layout_height="match_parent"
-	    android:src="@drawable/ic_button_info"
-	    android:layout_alignParentRight="true"
-	    android:background="@android:color/transparent" />
+	    android:layout_toRightOf="@id/marker_icon"
+	    android:padding="@dimen/marker_padding" />
 
 </RelativeLayout>

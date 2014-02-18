@@ -37,6 +37,7 @@ import de.tubs.ibr.dtn.ruralexplorer.backend.NodeLocation;
 
 public class MainActivity extends FragmentActivity implements
 		MarkerFragment.OnWindowChangedListener,
+		StatsFragment.OnWindowChangedListener,
 		LoaderManager.LoaderCallbacks<Cursor> {
 	
 	private static final String TAG = "MainActivity";
@@ -49,9 +50,11 @@ public class MainActivity extends FragmentActivity implements
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
 	private Boolean mInfoVisible = false;
+	private Boolean mStatsVisible = false;
 	private Marker mSelectionMarker = null;
 	
-	private MarkerFragment mMarkerInfo = null;
+	private StatsFragment mStatsFragment = null;
+	private MarkerFragment mMarkerFragment = null;
 	private GoogleMap mMap = null;
 
 	private DataService mDataService = null;
@@ -93,15 +96,21 @@ public class MainActivity extends FragmentActivity implements
 		// set listener for clicks on marker
 		mMap.setOnMarkerClickListener(mMarkerListener);
 		
-		// get info fragment
-		mMarkerInfo = ((MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_info_fragment));
+		// get marker fragment
+		mMarkerFragment = ((MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_fragment));
+		
+		// get stats fragment
+		mStatsFragment = ((StatsFragment) getSupportFragmentManager().findFragmentById(R.id.stats_fragment));
 	}
 	
 	@Override
 	public void onBackPressed() {
-		if (mInfoVisible) {
+		if (mStatsVisible) {
+			mStatsFragment.setNode(null);
+		}
+		else if (mInfoVisible) {
 			// show / hide marker frame
-			mMarkerInfo.setNode(null);
+			mMarkerFragment.setNode(null);
 			
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);
@@ -121,10 +130,10 @@ public class MainActivity extends FragmentActivity implements
 			Node n = mNodeSet.get(marker);
 			
 			if (n == null) {
-				mMarkerInfo.setNode(null);
+				mMarkerFragment.setNode(null);
 				return true;
 			}
-			mMarkerInfo.setNode(n);
+			mMarkerFragment.setNode(n);
 			
 			// set selection marker
 			if (mSelectionMarker == null) {
@@ -209,7 +218,7 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onWindowChanged(boolean visible, int height, int width) {
+	public void onMarkerWindowChanged(boolean visible, int height, int width) {
 		if (visible) {
 			mMap.setPadding(0, 0, 0, height);
 			mLayoutDropShadow.setVisibility(View.VISIBLE);
@@ -219,6 +228,11 @@ public class MainActivity extends FragmentActivity implements
 			mLayoutDropShadow.setVisibility(View.GONE);
 			mInfoVisible = false;
 		}
+	}
+	
+	@Override
+	public void onStatsWindowChanged(boolean visible) {
+		mStatsVisible = visible;
 	}
 	
 	private BroadcastReceiver mLocationReceiver = new BroadcastReceiver() {
@@ -235,7 +249,7 @@ public class MainActivity extends FragmentActivity implements
 	};
 	
 	@Override
-	public void onNodeSelected(Node n) {
+	public void onMarkerNodeSelected(Node n) {
 		Marker marker = mMarkerSet.get(n.getId());
 		
 		if (marker == null) return;

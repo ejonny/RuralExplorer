@@ -105,6 +105,19 @@ public class Node implements Serializable, Comparable<Node> {
 				return BitmapDescriptorFactory.fromResource(R.drawable.ic_node);
 		}
 	}
+	
+	public static int getResource(Node.Type t) {
+		switch (t) {
+			case ANDROID:
+				return R.drawable.ic_android;
+			case INGA:
+				return R.drawable.ic_inga;
+			case PI:
+				return R.drawable.ic_raspberrypi;
+			default:
+				return R.drawable.ic_node;
+		}
+	}
 
 	@Override
 	public int compareTo(Node another) {
