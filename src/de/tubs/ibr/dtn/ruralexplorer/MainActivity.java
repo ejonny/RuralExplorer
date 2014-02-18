@@ -2,6 +2,7 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -16,7 +17,6 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -201,6 +201,10 @@ public class MainActivity extends FragmentActivity implements
 				Intent i = new Intent(this, SettingsActivity.class);
 				startActivity(i);
 				return true;
+				
+			case R.id.action_clear:
+				mDataService.getDatabase().clear();
+				return true;
 			
 			default:
 				return super.onOptionsItemSelected(item);
@@ -281,6 +285,9 @@ public class MainActivity extends FragmentActivity implements
 	public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
 		NodeAdapter.ColumnsMap cm = new NodeAdapter.ColumnsMap();
 		
+		// set to filter out inactive markers
+		HashSet<Marker> inactiveMarkers = new HashSet<Marker>(mMarkerSet.values());
+		
 		while (c.moveToNext()) {
 			Node n = new Node(this, c, cm);
 			
@@ -306,10 +313,31 @@ public class MainActivity extends FragmentActivity implements
 				
 				m.setVisible(true);
 				
+				// remove this from inactive markers
+				inactiveMarkers.remove(m);
+				
 				mMarkerSet.put(n.getId(), m);
 				mNodeSet.put(m, n);
 			} else {
-				if (m != null) m.setVisible(false);
+				mMarkerSet.remove(n.getId());
+			}
+		}
+		
+		// finally remove all inactive markers
+		for (Marker inactive_marker : inactiveMarkers) {
+			mNodeSet.remove(inactive_marker);
+			inactive_marker.remove();
+		}
+		
+		// if there are not more markers close marker window
+		if (mNodeSet.isEmpty()) {
+			mStatsFragment.setNode(null);
+
+			// show / hide marker frame
+			mMarkerFragment.setNode(null);
+			
+			if (mSelectionMarker != null) {
+				mSelectionMarker.setVisible(false);
 			}
 		}
 	}

@@ -219,10 +219,24 @@ public class Database {
 		notifyNodeChanged(n.getId());
 	}
 	
+	public void clear() {
+		mDatabase.delete(Database.TABLE_NAME_NODES, null, null);
+		
+		// send refresh intent
+		notifyDatabaseChanged();
+	}
+	
 	public void notifyNodeChanged(Long nodeId) {
 		if (mContext != null) {
 			Intent i = new Intent(DATA_UPDATED);
 			i.putExtra(EXTRA_NODE_ID, nodeId);
+			mContext.sendBroadcast(i);
+		}
+	}
+	
+	public void notifyDatabaseChanged() {
+		if (mContext != null) {
+			Intent i = new Intent(DATA_UPDATED);
 			mContext.sendBroadcast(i);
 		}
 	}
