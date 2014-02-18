@@ -65,6 +65,10 @@ public class ExplorerBeacon implements Parcelable {
 	public void setPosition(Location position) {
 		mPosition = position;
 	}
+	
+	public boolean hasPosition() {
+		return mPosition != null;
+	}
 
 	public float[] getAcceleration() {
 		return mAcceleration;
@@ -73,6 +77,10 @@ public class ExplorerBeacon implements Parcelable {
 	public void setAcceleration(float[] acceleration) {
 		mHasAcceleration = true;
 		mAcceleration = acceleration;
+	}
+	
+	public boolean hasAcceleration() {
+		return mHasAcceleration;
 	}
 
 	public float[] getSensors() {
@@ -83,6 +91,10 @@ public class ExplorerBeacon implements Parcelable {
 		mHasSensors = true;
 		mSensors = sensors;
 	}
+	
+	public boolean hasSensors() {
+		return mHasSensors;
+	}
 
 	public Location getRescueLocation() {
 		return mRescueLocation;
@@ -91,16 +103,22 @@ public class ExplorerBeacon implements Parcelable {
 	public void setRescueLocation(Location rescueLocation) {
 		mRescueLocation = rescueLocation;
 	}
+	
+	public boolean hasRescueLocation() {
+		return mRescueLocation != null;
+	}
 
 	public static void write(DataOutputStream out, ExplorerBeacon b) throws IOException {
 		int items = 0;
-		Location l = b.getPosition();
 		
 		// we plan to add a beacon
 		items++;
 		
-		// we plan to add location as an item
-		if (l != null) items++;
+		// check which data is available to write
+		if (b.hasPosition()) items++;
+		if (b.hasAcceleration()) items++;
+		if (b.hasSensors()) items++;
+		if (b.hasRescueLocation()) items++;
 		
 		// number of services: beacon + location
 		SDNV.Write(out, items);
@@ -128,12 +146,45 @@ public class ExplorerBeacon implements Parcelable {
 		/**
 		 * GPS
 		 */
-		if (l != null) {
+		if (b.hasPosition()) {
+			Location l = b.getPosition();
 			encoder.write(TLV_TYPE_GPS, 16);
 			encoder.write((float)l.getLatitude());
 			encoder.write((float)l.getLongitude());
 			encoder.write((float)l.getAltitude());
 			encoder.write(l.getBearing());
+		}
+		
+		/**
+		 * Acceleration
+		 */
+		if (b.hasAcceleration()) {
+			float[] data = b.getAcceleration();
+			encoder.write(TLV_TYPE_ACC, 12);
+			encoder.write(data[0]);
+			encoder.write(data[1]);
+			encoder.write(data[2]);
+		}
+		
+		/**
+		 * Sensors
+		 */
+		if (b.hasSensors()) {
+			float[] data = b.getSensors();
+			encoder.write(TLV_TYPE_SENSOR, 8);
+			encoder.write(data[0]);
+			encoder.write(data[1]);
+		}
+		
+		/**
+		 * Rescue Location
+		 */
+		if (b.hasRescueLocation()) {
+			Location l = b.getRescueLocation();
+			encoder.write(TLV_TYPE_RESCUE, 12);
+			encoder.write((float)l.getLatitude());
+			encoder.write((float)l.getLongitude());
+			encoder.write((float)l.getAltitude());
 		}
 	}
 	
@@ -149,18 +200,16 @@ public class ExplorerBeacon implements Parcelable {
 		for (int i = 0; i < items; i++) {
 			switch (decoder.next()) {
 				case TLV_TYPE_BEACON:
-					// open TLV data
+				{
 					decoder.open();
-					
 					ret.mType = (Integer)decoder.read();
 					ret.mName = (String)decoder.read();
 					break;
+				}
 					
 				case TLV_TYPE_GPS:
 				{
-					// open TLV data
 					decoder.open();
-					
 					Location l = new Location("beacon");
 					l.setLatitude((Float)decoder.read());
 					l.setLongitude((Float)decoder.read());
@@ -170,19 +219,39 @@ public class ExplorerBeacon implements Parcelable {
 					break;
 				}
 					
-//				case TLV_TYPE_ACC:
-//					break;
-//					
-//				case TLV_TYPE_SENSOR:
-//					break;
-//					
-//				case TLV_TYPE_RESCUE:
-//					break;
+				case TLV_TYPE_ACC:
+				{
+					decoder.open();
+					float[] acc_data = { (Float) decoder.read(), (Float) decoder.read(), (Float) decoder.read() };
+					ret.setAcceleration(acc_data);
+					break;
+				}
+					
+				case TLV_TYPE_SENSOR:
+				{
+					decoder.open();
+					float[] s_data = { (Float) decoder.read(), (Float) decoder.read() };
+					ret.setSensors(s_data);
+					break;
+				}
+					
+				case TLV_TYPE_RESCUE:
+				{
+					decoder.open();
+					Location l = new Location("beacon");
+					l.setLatitude((Float)decoder.read());
+					l.setLongitude((Float)decoder.read());
+					l.setAltitude((Float)decoder.read());
+					ret.setPosition(l);
+					break;
+				}
 					
 				default:
+				{
 					// skip the current TLV
 					decoder.skip();
 					break;
+				}
 			}
 		}
 		
