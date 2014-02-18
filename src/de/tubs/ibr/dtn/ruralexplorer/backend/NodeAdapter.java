@@ -26,12 +26,12 @@ public class NodeAdapter extends CursorAdapter {
 			BaseColumns._ID,
 			Node.ENDPOINT,
 			Node.TYPE,
-			NodeLocation.LAT,
-			NodeLocation.LNG,
-			NodeLocation.ALT,
-			NodeLocation.BEARING,
-			NodeLocation.SPEED,
-			NodeLocation.ACCURACY
+			RuralLocation.LAT,
+			RuralLocation.LNG,
+			RuralLocation.ALT,
+			RuralLocation.BEARING,
+			RuralLocation.SPEED,
+			RuralLocation.ACCURACY
 	};
 
 	// The indexes of the default columns which must be consistent
@@ -127,37 +127,37 @@ public class NodeAdapter extends CursorAdapter {
 			}
 
 			try {
-				mColumnLocationLat = cursor.getColumnIndexOrThrow(NodeLocation.LAT);
+				mColumnLocationLat = cursor.getColumnIndexOrThrow(RuralLocation.LAT);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationLng = cursor.getColumnIndexOrThrow(NodeLocation.LNG);
+				mColumnLocationLng = cursor.getColumnIndexOrThrow(RuralLocation.LNG);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationAlt = cursor.getColumnIndexOrThrow(NodeLocation.ALT);
+				mColumnLocationAlt = cursor.getColumnIndexOrThrow(RuralLocation.ALT);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationBearing = cursor.getColumnIndexOrThrow(NodeLocation.BEARING);
+				mColumnLocationBearing = cursor.getColumnIndexOrThrow(RuralLocation.BEARING);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationSpeed = cursor.getColumnIndexOrThrow(NodeLocation.SPEED);
+				mColumnLocationSpeed = cursor.getColumnIndexOrThrow(RuralLocation.SPEED);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationAccuracy = cursor.getColumnIndexOrThrow(NodeLocation.ACCURACY);
+				mColumnLocationAccuracy = cursor.getColumnIndexOrThrow(RuralLocation.ACCURACY);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}

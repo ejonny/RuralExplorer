@@ -123,7 +123,7 @@ public class DataService extends Service {
 			}
 			
 			// update location
-			n.setLocation(new NodeLocation(b.getPosition()));
+			n.setLocation(new RuralLocation(b.getPosition()));
 			
 			// write changed to the database
 			mDatabase.update(n);

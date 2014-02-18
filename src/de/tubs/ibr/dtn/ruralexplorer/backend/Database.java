@@ -31,12 +31,12 @@ public class Database {
 				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				Node.ENDPOINT + " TEXT NOT NULL, " +
 				Node.TYPE + " TEXT NOT NULL, " +
-				NodeLocation.LAT + " DOUBLE, " +
-				NodeLocation.LNG + " DOUBLE, " +
-				NodeLocation.ALT + " DOUBLE, " +
-				NodeLocation.BEARING + " FLOAT, " +
-				NodeLocation.SPEED + " FLOAT, " +
-				NodeLocation.ACCURACY + " FLOAT" +
+				RuralLocation.LAT + " DOUBLE, " +
+				RuralLocation.LNG + " DOUBLE, " +
+				RuralLocation.ALT + " DOUBLE, " +
+				RuralLocation.BEARING + " FLOAT, " +
+				RuralLocation.SPEED + " FLOAT, " +
+				RuralLocation.ACCURACY + " FLOAT" +
 			");";
 	
 	private class DBOpenHelper extends SQLiteOpenHelper {
@@ -81,19 +81,19 @@ public class Database {
 			l.setLongitude(10.524711);
 			
 			Node n = new Node( Node.Type.INGA, new SingletonEndpoint("dtn://test1") );
-			NodeLocation l1 = new NodeLocation(l);
+			RuralLocation l1 = new RuralLocation(l);
 			l1.setLatitude(l.getLatitude() + 0.005);
 			n.setLocation(l1);
 			update(n);
 			
 			n = new Node( Node.Type.PI, new SingletonEndpoint("dtn://test2") );
-			NodeLocation l2 = new NodeLocation(l);
+			RuralLocation l2 = new RuralLocation(l);
 			l2.setLatitude(l.getLatitude() - 0.005);
 			n.setLocation(l2);
 			update(n);
 			
 			n = new Node( Node.Type.ANDROID, new SingletonEndpoint("dtn://test3") );
-			NodeLocation l3 = new NodeLocation(l);
+			RuralLocation l3 = new RuralLocation(l);
 			l3.setLongitude(l.getLongitude() - 0.005);
 			n.setLocation(l3);
 			update(n);
@@ -147,43 +147,43 @@ public class Database {
 		return null;
 	}
 	
-	private void updateLocation(Long nodeId, NodeLocation l) {
+	private void updateLocation(Long nodeId, RuralLocation l) {
 		ContentValues values = new ContentValues();
 		
 		if (l.hasLatitude()) {
-			values.put(NodeLocation.LAT, l.getLatitude());
+			values.put(RuralLocation.LAT, l.getLatitude());
 		} else {
-			values.putNull(NodeLocation.LAT);
+			values.putNull(RuralLocation.LAT);
 		}
 		
 		if (l.hasLongitude()) {
-			values.put(NodeLocation.LNG, l.getLongitude());
+			values.put(RuralLocation.LNG, l.getLongitude());
 		} else {
-			values.putNull(NodeLocation.LNG);
+			values.putNull(RuralLocation.LNG);
 		}
 		
 		if (l.hasAltitude()) {
-			values.put(NodeLocation.ALT, l.getAltitude());
+			values.put(RuralLocation.ALT, l.getAltitude());
 		} else {
-			values.putNull(NodeLocation.ALT);
+			values.putNull(RuralLocation.ALT);
 		}
 		
 		if (l.hasBearing()) {
-			values.put(NodeLocation.BEARING, l.getBearing());
+			values.put(RuralLocation.BEARING, l.getBearing());
 		} else {
-			values.putNull(NodeLocation.BEARING);
+			values.putNull(RuralLocation.BEARING);
 		}
 		
 		if (l.hasSpeed()) {
-			values.put(NodeLocation.SPEED, l.getSpeed());
+			values.put(RuralLocation.SPEED, l.getSpeed());
 		} else {
-			values.putNull(NodeLocation.SPEED);
+			values.putNull(RuralLocation.SPEED);
 		}
 		
 		if (l.hasAccurarcy()) {
-			values.put(NodeLocation.ACCURACY, l.getAccurarcy());
+			values.put(RuralLocation.ACCURACY, l.getAccurarcy());
 		} else {
-			values.putNull(NodeLocation.ACCURACY);
+			values.putNull(RuralLocation.ACCURACY);
 		}
 
 		try {

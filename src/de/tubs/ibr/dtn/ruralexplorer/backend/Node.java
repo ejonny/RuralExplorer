@@ -34,12 +34,12 @@ public class Node implements Serializable, Comparable<Node> {
 	private Long mId = null;
 	private final SingletonEndpoint mEndpoint;
 	private final Type mType;
-	private NodeLocation mLocation = null;
+	private RuralLocation mLocation = null;
 	
 	public Node(Node.Type t, SingletonEndpoint endpoint) {
 		mType = t;
 		mEndpoint = endpoint;
-		mLocation = new NodeLocation();
+		mLocation = new RuralLocation();
 	}
 	
 	public Node(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
@@ -47,7 +47,7 @@ public class Node implements Serializable, Comparable<Node> {
 		this.mId = cursor.getLong(cmap.mColumnId);
 		this.mEndpoint = new SingletonEndpoint( cursor.getString(cmap.mColumnEndpoint) );
 		this.mType = Type.valueOf( cursor.getString(cmap.mColumnType) );
-		this.mLocation = new NodeLocation(context, cursor, cmap);
+		this.mLocation = new RuralLocation(context, cursor, cmap);
 	}
 
 	public Long getId() {
@@ -62,11 +62,11 @@ public class Node implements Serializable, Comparable<Node> {
 		return mType;
 	}
 	
-	public void setLocation(NodeLocation l) {
+	public void setLocation(RuralLocation l) {
 		mLocation = l;
 	}
 	
-	public NodeLocation getLocation() {
+	public RuralLocation getLocation() {
 		return mLocation;
 	}
 	

@@ -33,7 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
 import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
-import de.tubs.ibr.dtn.ruralexplorer.backend.NodeLocation;
+import de.tubs.ibr.dtn.ruralexplorer.backend.RuralLocation;
 
 public class MainActivity extends FragmentActivity implements
 		MarkerFragment.OnWindowChangedListener,
@@ -291,7 +291,7 @@ public class MainActivity extends FragmentActivity implements
 		while (c.moveToNext()) {
 			Node n = new Node(this, c, cm);
 			
-			NodeLocation l = n.getLocation();
+			RuralLocation l = n.getLocation();
 			Marker m = mMarkerSet.get(n.getId());
 			
 			if (l.hasLatitude() && l.hasLongitude()) {
