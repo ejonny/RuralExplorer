@@ -30,6 +30,7 @@ public class NodeAdapter extends CursorAdapter {
 			BaseColumns._ID,
 			Node.ENDPOINT,
 			Node.TYPE,
+			Node.NAME,
 			LocationData.LAT,
 			LocationData.LNG,
 			LocationData.ALT,
@@ -48,17 +49,18 @@ public class NodeAdapter extends CursorAdapter {
 	static final int COLUMN_NODE_ID = 0;
 	static final int COLUMN_NODE_ENDPOINT = 1;
 	static final int COLUMN_NODE_TYPE = 2;
-	static final int COLUMN_NODE_LOCATION_LAT = 3;
-	static final int COLUMN_NODE_LOCATION_LNG = 4;
-	static final int COLUMN_NODE_LOCATION_ALT = 5;
-	static final int COLUMN_NODE_LOCATION_BEARING = 6;
-	static final int COLUMN_NODE_LOCATION_SPEED = 7;
-	static final int COLUMN_NODE_LOCATION_ACCURACY = 8;
-	static final int COLUMN_NODE_SENSOR_PRESSURE = 9;
-	static final int COLUMN_NODE_SENSOR_TEMPERATURE = 10;
-	static final int COLUMN_NODE_ACCELERATION_X = 11;
-	static final int COLUMN_NODE_ACCELERATION_Y = 12;
-	static final int COLUMN_NODE_ACCELERATION_Z = 13;
+	static final int COLUMN_NODE_NAME = 3;
+	static final int COLUMN_NODE_LOCATION_LAT = 4;
+	static final int COLUMN_NODE_LOCATION_LNG = 5;
+	static final int COLUMN_NODE_LOCATION_ALT = 6;
+	static final int COLUMN_NODE_LOCATION_BEARING = 7;
+	static final int COLUMN_NODE_LOCATION_SPEED = 8;
+	static final int COLUMN_NODE_LOCATION_ACCURACY = 9;
+	static final int COLUMN_NODE_SENSOR_PRESSURE = 10;
+	static final int COLUMN_NODE_SENSOR_TEMPERATURE = 11;
+	static final int COLUMN_NODE_ACCELERATION_X = 12;
+	static final int COLUMN_NODE_ACCELERATION_Y = 13;
+	static final int COLUMN_NODE_ACCELERATION_Z = 14;
 
 	private static final int CACHE_SIZE = 50;
 
@@ -100,6 +102,7 @@ public class NodeAdapter extends CursorAdapter {
 		public int mColumnId;
 		public int mColumnEndpoint;
 		public int mColumnType;
+		public int mColumnName;
 		public int mColumnLocationLat;
 		public int mColumnLocationLng;
 		public int mColumnLocationAlt;
@@ -116,6 +119,7 @@ public class NodeAdapter extends CursorAdapter {
 			mColumnId = COLUMN_NODE_ID;
 			mColumnEndpoint = COLUMN_NODE_ENDPOINT;
 			mColumnType = COLUMN_NODE_TYPE;
+			mColumnName = COLUMN_NODE_NAME;
 			mColumnLocationLat = COLUMN_NODE_LOCATION_LAT;
 			mColumnLocationLng = COLUMN_NODE_LOCATION_LNG;
 			mColumnLocationAlt = COLUMN_NODE_LOCATION_ALT;
@@ -146,6 +150,12 @@ public class NodeAdapter extends CursorAdapter {
 
 			try {
 				mColumnType = cursor.getColumnIndexOrThrow(Node.TYPE);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnName = cursor.getColumnIndexOrThrow(Node.NAME);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}

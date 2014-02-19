@@ -38,6 +38,7 @@ public class Database {
 				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				Node.ENDPOINT + " TEXT NOT NULL, " +
 				Node.TYPE + " TEXT NOT NULL, " +
+				Node.NAME + " TEXT, " +
 				LocationData.LAT + " DOUBLE, " +
 				LocationData.LNG + " DOUBLE, " +
 				LocationData.ALT + " DOUBLE, " +
@@ -66,7 +67,7 @@ public class Database {
 	private class DBOpenHelper extends SQLiteOpenHelper {
 		
 		private static final String DATABASE_NAME = "rural_explorer";
-		private static final int DATABASE_VERSION = 4;
+		private static final int DATABASE_VERSION = 5;
 		
 		public DBOpenHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -251,6 +252,12 @@ public class Database {
 		}
 		
 		ContentValues values = new ContentValues();
+		
+		if (n.hasName()) {
+			values.put(Node.NAME, n.getName());
+		} else {
+			values.putNull(Node.NAME);
+		}
 
 		// add location
 		add(values, n.getLocation());

@@ -24,6 +24,7 @@ public class Node implements Serializable, Comparable<Node> {
 	public static final String ID = BaseColumns._ID;
 	public static final String ENDPOINT = "endpoint";
 	public static final String TYPE = "type";
+	public static final String NAME = "name";
 
 	public enum Type {
 		GENERIC,
@@ -35,6 +36,7 @@ public class Node implements Serializable, Comparable<Node> {
 	private Long mId = null;
 	private final SingletonEndpoint mEndpoint;
 	private final Type mType;
+	private String mName = null;
 	private LocationData mLocation = null;
 	private SensorData mSensor = null;
 	private AccelerationData mAcceleration = null;
@@ -52,6 +54,7 @@ public class Node implements Serializable, Comparable<Node> {
 		this.mId = cursor.getLong(cmap.mColumnId);
 		this.mEndpoint = new SingletonEndpoint( cursor.getString(cmap.mColumnEndpoint) );
 		this.mType = Type.valueOf( cursor.getString(cmap.mColumnType) );
+		this.mName = cursor.getString(cmap.mColumnName);
 		this.mLocation = new LocationData(context, cursor, cmap);
 		this.mSensor = new SensorData(context, cursor, cmap);
 		this.mAcceleration = new AccelerationData(context, cursor, cmap);
@@ -67,6 +70,18 @@ public class Node implements Serializable, Comparable<Node> {
 	
 	public Type getType() {
 		return mType;
+	}
+	
+	public boolean hasName() {
+		return mName != null;
+	}
+	
+	public String getName() {
+		return mName;
+	}
+	
+	public void setName(String name) {
+		mName = name;
 	}
 	
 	public void setLocation(LocationData l) {
