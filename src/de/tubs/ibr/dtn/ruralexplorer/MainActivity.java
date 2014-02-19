@@ -32,8 +32,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
-import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class MainActivity extends FragmentActivity implements
 		MarkerFragment.OnWindowChangedListener,
@@ -46,7 +46,8 @@ public class MainActivity extends FragmentActivity implements
 	private static final int MARKER_LOADER_ID = 1;
 	
 	private HashMap<Long, Marker> mMarkerSet = new HashMap<Long, Marker>();
-	private HashMap<Marker, Node> mNodeSet = new HashMap<Marker, Node>();
+	private HashSet<Node> mNodeSet = new HashSet<Node>();
+	private HashMap<Marker, Node> mNodeMap = new HashMap<Marker, Node>();
 
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
@@ -128,7 +129,7 @@ public class MainActivity extends FragmentActivity implements
 			mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 			
 			// show / hide marker frame
-			Node n = mNodeSet.get(marker);
+			Node n = mNodeMap.get(marker);
 			
 			if (n == null) {
 				mMarkerFragment.bind(null);
@@ -190,7 +191,7 @@ public class MainActivity extends FragmentActivity implements
 		switch (item.getItemId()) {
 			case R.id.action_show_marker:
 				if (!mNodeSet.isEmpty()) {
-					mMarkerFragment.bind(mNodeSet.values().iterator().next());
+					mMarkerFragment.bind(mNodeSet.iterator().next());
 				}
 				return true;
 				
@@ -282,11 +283,17 @@ public class MainActivity extends FragmentActivity implements
 	public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
 		NodeAdapter.ColumnsMap cm = new NodeAdapter.ColumnsMap();
 		
+		// clear all nodes in the node-set
+		mNodeSet.clear();
+		
 		// set to filter out inactive markers
 		HashSet<Marker> inactiveMarkers = new HashSet<Marker>(mMarkerSet.values());
 		
 		while (c.moveToNext()) {
 			Node n = new Node(this, c, cm);
+			
+			// add node to node set
+			mNodeSet.add(n);
 			
 			// update node views
 			if (n.equals( mMarkerFragment.getNode() )) {
@@ -328,7 +335,7 @@ public class MainActivity extends FragmentActivity implements
 				inactiveMarkers.remove(m);
 				
 				mMarkerSet.put(n.getId(), m);
-				mNodeSet.put(m, n);
+				mNodeMap.put(m, n);
 			} else {
 				mMarkerSet.remove(n.getId());
 			}
