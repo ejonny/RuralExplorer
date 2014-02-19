@@ -1,6 +1,8 @@
 package de.tubs.ibr.dtn.ruralexplorer.backend;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -130,6 +132,15 @@ public class Database {
 		l3.setLongitude(l.getLongitude() - 0.005);
 		n.setLocation(l3);
 		update(n);
+		
+		// add dummy tag
+		GeoTag t = new GeoTag( new SingletonEndpoint("dtn://test1") );
+		LocationData l4 = new LocationData(l);
+		l4.setLatitude(l.getLatitude() + 0.005);
+		l4.setLongitude(l.getLongitude() - 0.005);
+		t.setLocation(l4);
+		t.setSentTime(new Date());
+		create(t);
 	}
 	
 	public SQLiteDatabase raw() {
