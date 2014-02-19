@@ -141,14 +141,6 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		super.onDetach();
 		mListener = null;
 	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		
-		// refresh view
-		mMarkerPagerAdapter.notifyDataSetChanged();
-	}
 
 	public Node getNode() {
 		return mNode;
