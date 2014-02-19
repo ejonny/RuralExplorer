@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -103,5 +104,19 @@ public class GeoTag implements Serializable, Comparable<GeoTag> {
 	public int compareTo(GeoTag another) {
 		if (mId == null) return -1;
 		return mId.compareTo(another.mId);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof GeoTag) {
+			if (mId == null) return false;
+			return mId.equals(((GeoTag)o).mId);
+		}
+		return super.equals(o);
+	}
+
+	@Override
+	public int hashCode() {
+		return mId.hashCode();
 	}
 }

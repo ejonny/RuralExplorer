@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +31,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
+import de.tubs.ibr.dtn.ruralexplorer.backend.GeoTagAdapter;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
+import de.tubs.ibr.dtn.ruralexplorer.data.GeoTag;
 import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
@@ -50,6 +51,7 @@ public class MainActivity extends FragmentActivity implements
 	private HashMap<Long, Marker> mMarkerSet = new HashMap<Long, Marker>();
 	private HashSet<Node> mNodeSet = new HashSet<Node>();
 	private HashMap<Marker, Node> mNodeMap = new HashMap<Marker, Node>();
+	private HashSet<GeoTag> mGeoTagSet = new HashSet<GeoTag>();
 
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
@@ -70,11 +72,13 @@ public class MainActivity extends FragmentActivity implements
 			mDataService = ((DataService.LocalBinder)service).getService();
 			
 			getSupportLoaderManager().initLoader(MARKER_LOADER_ID,  null, MainActivity.this);
+			getSupportLoaderManager().initLoader(GEOTAG_LOADER_ID,  null, MainActivity.this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			getSupportLoaderManager().destroyLoader(MARKER_LOADER_ID);
+			getSupportLoaderManager().destroyLoader(GEOTAG_LOADER_ID);
 			mDataService = null;
 		}
 	};
@@ -162,6 +166,7 @@ public class MainActivity extends FragmentActivity implements
 			unbindService(mDataHandler);
 			
 			getSupportLoaderManager().destroyLoader(MARKER_LOADER_ID);
+			getSupportLoaderManager().destroyLoader(GEOTAG_LOADER_ID);
 			
 			mBound = false;
 		}
@@ -313,7 +318,30 @@ public class MainActivity extends FragmentActivity implements
 	}
 	
 	private void updateGeoTags(Cursor c) {
-		Log.d(TAG, "update geo tags");
+		GeoTagAdapter.ColumnsMap tagmap = new GeoTagAdapter.ColumnsMap();
+		
+		while (c.moveToNext()) {
+			GeoTag t = new GeoTag(this, c, tagmap);
+			
+			if (!mGeoTagSet.contains(t)) {
+				mGeoTagSet.add(t);
+
+				LocationData l = t.getLocation();
+				
+				if (l.hasLatitude() && l.hasLongitude()) {
+					LatLng position = new LatLng(l.getLatitude(), l.getLongitude());
+				
+					// create a new marker
+					Marker m = mMap.addMarker(
+							new MarkerOptions()
+									.position(position)
+									.icon( BitmapDescriptorFactory.fromResource(R.drawable.ic_marker) )
+									.anchor(0.5f, 0.5f)
+									.flat(true)
+						);
+				}
+			}
+		}
 	}
 	
 	private void updateMarkers(Cursor c) {
