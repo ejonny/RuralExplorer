@@ -8,9 +8,11 @@ import java.io.IOException;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import de.tubs.ibr.dtn.api.Block;
 import de.tubs.ibr.dtn.api.Bundle;
@@ -25,6 +27,7 @@ import de.tubs.ibr.dtn.api.SessionConnection;
 import de.tubs.ibr.dtn.api.SessionDestroyedException;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.api.TransferMode;
+import de.tubs.ibr.dtn.ruralexplorer.R;
 import de.tubs.ibr.dtn.ruralexplorer.data.ExplorerBeacon;
 
 public class CommService extends IntentService {
@@ -104,6 +107,10 @@ public class CommService extends IntentService {
 		{
 			// create a new beacon
 			ExplorerBeacon b = new ExplorerBeacon();
+			
+			// set display name
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			b.setName(prefs.getString("pref_nickname", getString(R.string.pref_default_nickname)));
 			
 			// set location
 			b.setPosition((Location)intent.getParcelableExtra(DataService.EXTRA_LOCATION));
