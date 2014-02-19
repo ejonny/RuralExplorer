@@ -107,11 +107,11 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public void onBackPressed() {
 		if (mStatsVisible) {
-			mStatsFragment.setNode(null);
+			mStatsFragment.bind(null);
 		}
 		else if (mInfoVisible) {
 			// show / hide marker frame
-			mMarkerFragment.setNode(null);
+			mMarkerFragment.bind(null);
 			
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);
@@ -131,10 +131,10 @@ public class MainActivity extends FragmentActivity implements
 			Node n = mNodeSet.get(marker);
 			
 			if (n == null) {
-				mMarkerFragment.setNode(null);
+				mMarkerFragment.bind(null);
 				return true;
 			}
-			mMarkerFragment.setNode(n);
+			mMarkerFragment.bind(n);
 			
 			// set selection marker
 			if (mSelectionMarker == null) {
@@ -292,6 +292,15 @@ public class MainActivity extends FragmentActivity implements
 		while (c.moveToNext()) {
 			Node n = new Node(this, c, cm);
 			
+			// update node views
+			if (n.equals( mMarkerFragment.getNode() )) {
+				mMarkerFragment.bind(n);
+			}
+			if (n.equals( mStatsFragment.getNode() )) {
+				mStatsFragment.bind(n);
+			}
+			
+			// update marker location
 			LocationData l = n.getLocation();
 			Marker m = mMarkerSet.get(n.getId());
 			
@@ -332,10 +341,10 @@ public class MainActivity extends FragmentActivity implements
 		
 		// if there are not more markers close marker window
 		if (mNodeSet.isEmpty()) {
-			mStatsFragment.setNode(null);
+			mStatsFragment.bind(null);
 
 			// show / hide marker frame
-			mMarkerFragment.setNode(null);
+			mMarkerFragment.bind(null);
 			
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);

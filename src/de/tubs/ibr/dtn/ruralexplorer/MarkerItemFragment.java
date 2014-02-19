@@ -39,7 +39,7 @@ public class MarkerItemFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				StatsFragment f = (StatsFragment)getFragmentManager().findFragmentById(R.id.stats_fragment);
-				f.setNode(mNode);
+				f.bind(mNode);
 			}
 		});
 		

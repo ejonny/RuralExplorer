@@ -141,8 +141,12 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		super.onDetach();
 		mListener = null;
 	}
+	
+	public Node getNode() {
+		return mNode;
+	}
 
-	public void setNode(Node n) {
+	public void bind(Node n) {
 		mNode = n;
 		
 		if (n == null) {
@@ -214,20 +218,6 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		public int getCount() {
 			return mAdapter.getCount();
 		}
-		
-//		@Override
-//		public void finishUpdate(ViewGroup container) {
-//			super.finishUpdate(container);
-//			
-//			try {
-//				int pos = getPosition(mNode);
-//				if (mViewPager.getCurrentItem() != pos) {
-//					mViewPager.setCurrentItem(pos);
-//				}
-//			} catch (NodeNotFoundException ex) {
-//				// TODO: close
-//			}
-//		}
 		
 		public int getPosition(Node n) throws NodeNotFoundException {
 			if (mDataService == null)
