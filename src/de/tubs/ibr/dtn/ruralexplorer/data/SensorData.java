@@ -15,8 +15,8 @@ public class SensorData {
 	}
 	
 	public SensorData(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap) {
-		mPressure = cursor.getFloat(cmap.mColumnSensorPressure);
-		mTemperature = cursor.getFloat(cmap.mColumnSensorTemperature);
+		mPressure = cursor.isNull(cmap.mColumnSensorPressure) ? null : cursor.getFloat(cmap.mColumnSensorPressure);
+		mTemperature = cursor.isNull(cmap.mColumnSensorTemperature) ? null : cursor.getFloat(cmap.mColumnSensorTemperature);
 	}
 
 	public Float getPressure() {

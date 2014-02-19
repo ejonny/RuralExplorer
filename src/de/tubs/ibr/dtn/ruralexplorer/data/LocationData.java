@@ -23,14 +23,13 @@ public class LocationData {
 	public LocationData() {
 	}
 	
-	public LocationData(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
-	{
-		mLatitude = cursor.getDouble(cmap.mColumnLocationLat);
-		mLongitude = cursor.getDouble(cmap.mColumnLocationLng);
-		mAltitude = cursor.getDouble(cmap.mColumnLocationAlt);
-		mBearing = cursor.getFloat(cmap.mColumnLocationBearing);
-		mSpeed = cursor.getFloat(cmap.mColumnLocationSpeed);
-		mAccurarcy = cursor.getFloat(cmap.mColumnLocationAccuracy);
+	public LocationData(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap) {
+		mLatitude = cursor.isNull(cmap.mColumnLocationLat) ? null : cursor.getDouble(cmap.mColumnLocationLat);
+		mLongitude = cursor.isNull(cmap.mColumnLocationLng) ? null : cursor.getDouble(cmap.mColumnLocationLng);
+		mAltitude = cursor.isNull(cmap.mColumnLocationAlt) ? null : cursor.getDouble(cmap.mColumnLocationAlt);
+		mBearing = cursor.isNull(cmap.mColumnLocationBearing) ? null : cursor.getFloat(cmap.mColumnLocationBearing);
+		mSpeed = cursor.isNull(cmap.mColumnLocationSpeed) ? null : cursor.getFloat(cmap.mColumnLocationSpeed);
+		mAccurarcy = cursor.isNull(cmap.mColumnLocationAccuracy) ? null : cursor.getFloat(cmap.mColumnLocationAccuracy);
 	}
 	
 	public LocationData(Location l) {
