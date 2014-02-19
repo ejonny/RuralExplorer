@@ -7,7 +7,8 @@
     <dimen name="marker_title_size">18sp</dimen>
     <dimen name="marker_description_size">14sp</dimen>
     
-    <dimen name="data_padding">16dp</dimen>
+    <dimen name="stats_padding">8dp</dimen>
+    <dimen name="data_padding">8dp</dimen>
     <dimen name="data_item_padding">8dp</dimen>
     <dimen name="data_title_size">14sp</dimen>
     <dimen name="data_value_size">16sp</dimen>

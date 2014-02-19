@@ -16,10 +16,13 @@
     <string name="name_anonymous">Anonymous</string>
     <string name="label_pressure">Pressure</string>
     <string name="label_temperature">Temperature</string>
+    <string name="label_location">Location</string>
     <string name="data_pressure_dummy">123</string>
     <string name="data_temperature_dummy">42°C</string>
+    <string name="data_location_dummy">52.12345, 10.12345</string>
     <string name="data_na">N/A</string>
     <string name="data_unit_degree_celsius">%1$.2f°C</string>
     <string name="data_unit_pressure">%1$.3f Pa</string>
+    <string name="data_unit_latlng">%1$.5f, %2$.5f</string>
 
 </resources>

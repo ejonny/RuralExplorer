@@ -18,8 +18,10 @@ public class StatsFragment extends Fragment {
 	
 	private Node mNode = null;
 	private RelativeLayout mLayout = null;
+	
 	private MarkerItemFragment mMarkerFragment = null;
 	private SensorFragment mSensorFragment = null;
+	private LocationFragment mLocationFragment = null;
 	
 	private OnWindowChangedListener mListener = null;
 	
@@ -47,6 +49,7 @@ public class StatsFragment extends Fragment {
 		mLayout = (RelativeLayout)v.findViewById(R.id.stats_fragment_layout);
 		mMarkerFragment = (MarkerItemFragment)getFragmentManager().findFragmentById(R.id.marker_item_fragment);
 		mSensorFragment = (SensorFragment)getFragmentManager().findFragmentById(R.id.sensor_fragment);
+		mLocationFragment = (LocationFragment)getFragmentManager().findFragmentById(R.id.location_fragment);
 		
 		v.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -89,5 +92,6 @@ public class StatsFragment extends Fragment {
 		mListener.onStatsWindowChanged(n != null);
 		mMarkerFragment.bind(n);
 		mSensorFragment.bind(n);
+		mLocationFragment.bind(n);
 	}
 }
