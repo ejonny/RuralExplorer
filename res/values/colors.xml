@@ -18,6 +18,7 @@
     <color name="dark_green">#233400</color>
     <color name="dark_yellow">#9c5300</color>
     
+    <color name="dark_drop_shadow">#A0000000</color>
     <color name="drop_shadow">#60808080</color>
     <color name="white_overlay">#ddffffff</color>
 </resources>
