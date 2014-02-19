@@ -100,31 +100,31 @@ public class Database {
 		this.mContext = context;
 		mHelper = new DBOpenHelper(context);
 		mDatabase = mHelper.getWritableDatabase();
+	}
+	
+	public void addDummies() {
+		// create fake entries
+		Location l = new Location("fake");
+		l.setLatitude(52.273535);
+		l.setLongitude(10.524711);
 		
-		if (getCount() == 0) {
-			// create fake entries
-			Location l = new Location("fake");
-			l.setLatitude(52.273535);
-			l.setLongitude(10.524711);
-			
-			Node n = new Node( Node.Type.INGA, new SingletonEndpoint("dtn://test1") );
-			LocationData l1 = new LocationData(l);
-			l1.setLatitude(l.getLatitude() + 0.005);
-			n.setLocation(l1);
-			update(n);
-			
-			n = new Node( Node.Type.PI, new SingletonEndpoint("dtn://test2") );
-			LocationData l2 = new LocationData(l);
-			l2.setLatitude(l.getLatitude() - 0.005);
-			n.setLocation(l2);
-			update(n);
-			
-			n = new Node( Node.Type.ANDROID, new SingletonEndpoint("dtn://test3") );
-			LocationData l3 = new LocationData(l);
-			l3.setLongitude(l.getLongitude() - 0.005);
-			n.setLocation(l3);
-			update(n);
-		}
+		Node n = new Node( Node.Type.INGA, new SingletonEndpoint("dtn://test1") );
+		LocationData l1 = new LocationData(l);
+		l1.setLatitude(l.getLatitude() + 0.005);
+		n.setLocation(l1);
+		update(n);
+		
+		n = new Node( Node.Type.PI, new SingletonEndpoint("dtn://test2") );
+		LocationData l2 = new LocationData(l);
+		l2.setLatitude(l.getLatitude() - 0.005);
+		n.setLocation(l2);
+		update(n);
+		
+		n = new Node( Node.Type.ANDROID, new SingletonEndpoint("dtn://test3") );
+		LocationData l3 = new LocationData(l);
+		l3.setLongitude(l.getLongitude() - 0.005);
+		n.setLocation(l3);
+		update(n);
 	}
 	
 	public SQLiteDatabase raw() {

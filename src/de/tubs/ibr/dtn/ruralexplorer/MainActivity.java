@@ -200,6 +200,10 @@ public class MainActivity extends FragmentActivity implements
 				startActivity(i);
 				return true;
 				
+			case R.id.action_add_dummies:
+				mDataService.getDatabase().addDummies();
+				return true;
+				
 			case R.id.action_clear:
 				mDataService.getDatabase().clear();
 				return true;
