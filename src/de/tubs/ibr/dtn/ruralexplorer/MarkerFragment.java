@@ -142,6 +142,14 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		mListener = null;
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		// refresh view
+		mMarkerPagerAdapter.notifyDataSetChanged();
+	}
+
 	public Node getNode() {
 		return mNode;
 	}
@@ -183,7 +191,6 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 
 			@Override
 			public void onInvalidated() {
-				notifyDataSetChanged();
 				super.onInvalidated();
 			}
 		};
