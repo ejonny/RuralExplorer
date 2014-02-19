@@ -17,6 +17,7 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ public class MainActivity extends FragmentActivity implements
 	private static final String TAG = "MainActivity";
 	
 	private static final int MARKER_LOADER_ID = 1;
+	private static final int GEOTAG_LOADER_ID = 2;
 	
 	private HashMap<Long, Marker> mMarkerSet = new HashMap<Long, Marker>();
 	private HashSet<Node> mNodeSet = new HashSet<Node>();
@@ -278,13 +280,43 @@ public class MainActivity extends FragmentActivity implements
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		// Now create and return a CursorLoader that will take care of
-		// creating a Cursor for the data being displayed.
-		return new MarkerLoader(this, mDataService);
+		if (id == MARKER_LOADER_ID) {
+			// Now create and return a CursorLoader that will take care of
+			// creating a Cursor for the data being displayed.
+			return new MarkerLoader(this, mDataService);
+		}
+		else if (id == GEOTAG_LOADER_ID) {
+			// Now create and return a CursorLoader that will take care of
+			// creating a Cursor for the data being displayed.
+			return new GeoTagLoader(this, mDataService);
+		}
+		return null;
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+		if (loader instanceof MarkerLoader) {
+			updateMarkers(c);
+		}
+		else if (loader instanceof GeoTagLoader) {
+			updateGeoTags(c);
+		}
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> data) {
+		for (Marker m : mMarkerSet.values()) {
+			m.remove();
+		}
+		mMarkerSet.clear();
+		mNodeSet.clear();
+	}
+	
+	private void updateGeoTags(Cursor c) {
+		Log.d(TAG, "update geo tags");
+	}
+	
+	private void updateMarkers(Cursor c) {
 		NodeAdapter.ColumnsMap cm = new NodeAdapter.ColumnsMap();
 		
 		// clear all nodes in the node-set
@@ -362,14 +394,5 @@ public class MainActivity extends FragmentActivity implements
 				mSelectionMarker.setVisible(false);
 			}
 		}
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> data) {
-		for (Marker m : mMarkerSet.values()) {
-			m.remove();
-		}
-		mMarkerSet.clear();
-		mNodeSet.clear();
 	}
 }

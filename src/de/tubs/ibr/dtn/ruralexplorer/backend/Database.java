@@ -1,5 +1,7 @@
 package de.tubs.ibr.dtn.ruralexplorer.backend;
 
+import java.text.SimpleDateFormat;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +14,9 @@ import android.provider.BaseColumns;
 import android.util.Log;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.data.AccelerationData;
-import de.tubs.ibr.dtn.ruralexplorer.data.Marker;
-import de.tubs.ibr.dtn.ruralexplorer.data.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.GeoTag;
 import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 import de.tubs.ibr.dtn.ruralexplorer.data.SensorData;
 
 public class Database {
@@ -23,6 +25,7 @@ public class Database {
 	// indicates updated data to other components
 	public static final String DATA_UPDATED = "de.tubs.ibr.dtn.ruralexplorer.DATA_UPDATED";
 	public static final String EXTRA_NODE_ID = "de.tubs.ibr.dtn.ruralexplorer.NODE_ID";
+	public static final String EXTRA_TAG_ID = "de.tubs.ibr.dtn.ruralexplorer.TAG_ID";
 	public static final String EXTRA_NODE = "de.tubs.ibr.dtn.ruralexplorer.NODE";
 	
 	private DBOpenHelper mHelper = null;
@@ -30,7 +33,7 @@ public class Database {
 	private Context mContext = null;
 	
 	public static final String TABLE_NAME_NODES = "nodes";
-	public static final String TABLE_NAME_MARKER = "marker";
+	public static final String TABLE_NAME_GEOTAG = "geotag";
 	public static final String TABLE_NAME_DATA = "history";
 	
 	private static final String DATABASE_CREATE_NODES =
@@ -52,10 +55,12 @@ public class Database {
 				AccelerationData.ACCELERATION_Z + " FLOAT" +
 			");";
 	
-	private static final String DATABASE_CREATE_MARKER =
-			"CREATE TABLE " + TABLE_NAME_MARKER + " (" +
+	private static final String DATABASE_CREATE_GEOTAGS =
+			"CREATE TABLE " + TABLE_NAME_GEOTAG + " (" +
 				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-				Marker.NODE_ID + " INTEGER NOT NULL, " +
+				GeoTag.SENT_TIME + " TEXT NOT NULL, " +
+				GeoTag.RECV_TIME + " TEXT NOT NULL, " +
+				GeoTag.ENDPOINT + " TEXT NOT NULL, " +
 				LocationData.LAT + " DOUBLE, " +
 				LocationData.LNG + " DOUBLE, " +
 				LocationData.ALT + " DOUBLE, " +
@@ -67,7 +72,7 @@ public class Database {
 	private class DBOpenHelper extends SQLiteOpenHelper {
 		
 		private static final String DATABASE_NAME = "rural_explorer";
-		private static final int DATABASE_VERSION = 5;
+		private static final int DATABASE_VERSION = 9;
 		
 		public DBOpenHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -76,7 +81,7 @@ public class Database {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(DATABASE_CREATE_NODES);
-			db.execSQL(DATABASE_CREATE_MARKER);
+			db.execSQL(DATABASE_CREATE_GEOTAGS);
 		}
 
 		@Override
@@ -85,7 +90,7 @@ public class Database {
 					"Upgrading database from version " + oldVersion + " to "
 							+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_NODES);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_MARKER);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_GEOTAG);
 			onCreate(db);
 		}
 	};
@@ -152,7 +157,7 @@ public class Database {
 		return ret;
 	}
 	
-	private synchronized Node createNode(Node n) {
+	private synchronized Node create(Node n) {
 		ContentValues values = new ContentValues();
 		
 		try {
@@ -248,7 +253,7 @@ public class Database {
 	public void update(Node n) {
 		if (n.getId() == null) {
 			// create a new node
-			createNode(n);
+			create(n);
 		}
 		
 		ContentValues values = new ContentValues();
@@ -280,11 +285,50 @@ public class Database {
 		notifyNodeChanged(n.getId());
 	}
 	
+	@SuppressLint("SimpleDateFormat")
+	public void create(GeoTag tag) {
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		try {
+			ContentValues values = new ContentValues();
+			
+			// set dates
+			values.put(GeoTag.SENT_TIME, dateFormat.format(tag.getSentTime()));
+			values.put(GeoTag.RECV_TIME, dateFormat.format(tag.getReceivedTime()));
+			
+			// set endpoint
+			values.put(GeoTag.ENDPOINT, tag.getEndpoint().toString());
+			
+			// add location
+			add(values, tag.getLocation());
+			
+			// store the tag in the database
+			long tagId = mDatabase.insert(TABLE_NAME_GEOTAG, null, values);
+			
+			// assign new node id
+			tag.setId(tagId);
+			
+			// notify data listeners
+			notifyGeoTagChanged(tagId);
+		} catch (Exception e) {
+			// could not insert data
+			Log.e(TAG, "Tag insertion failed.", e);
+		}
+	}
+	
 	public void clear() {
 		mDatabase.delete(Database.TABLE_NAME_NODES, null, null);
 		
 		// send refresh intent
 		notifyDatabaseChanged();
+	}
+	
+	public void notifyGeoTagChanged(Long tagId) {
+		if (mContext != null) {
+			Intent i = new Intent(DATA_UPDATED);
+			i.putExtra(EXTRA_TAG_ID, tagId);
+			mContext.sendBroadcast(i);
+		}
 	}
 	
 	public void notifyNodeChanged(Long nodeId) {

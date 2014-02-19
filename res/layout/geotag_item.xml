@@ -9,16 +9,16 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:id="@+id/marker_icon"
+        android:id="@+id/tag_icon"
         android:src="@drawable/ic_marker" />
 
 	<TextView
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:textSize="@dimen/marker_title_size"
-	    android:id="@+id/marker_title"
+	    android:id="@+id/tag_title"
 	    android:textColor="@color/blue"
-	    android:layout_toRightOf="@id/marker_icon"
+	    android:layout_toRightOf="@id/tag_icon"
 	    android:padding="@dimen/marker_padding" />
 
 </RelativeLayout>

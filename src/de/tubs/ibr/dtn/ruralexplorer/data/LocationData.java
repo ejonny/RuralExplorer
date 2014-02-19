@@ -3,6 +3,7 @@ package de.tubs.ibr.dtn.ruralexplorer.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
+import de.tubs.ibr.dtn.ruralexplorer.backend.GeoTagAdapter;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 
 public class LocationData {
@@ -24,6 +25,15 @@ public class LocationData {
 	}
 	
 	public LocationData(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap) {
+		mLatitude = cursor.isNull(cmap.mColumnLocationLat) ? null : cursor.getDouble(cmap.mColumnLocationLat);
+		mLongitude = cursor.isNull(cmap.mColumnLocationLng) ? null : cursor.getDouble(cmap.mColumnLocationLng);
+		mAltitude = cursor.isNull(cmap.mColumnLocationAlt) ? null : cursor.getDouble(cmap.mColumnLocationAlt);
+		mBearing = cursor.isNull(cmap.mColumnLocationBearing) ? null : cursor.getFloat(cmap.mColumnLocationBearing);
+		mSpeed = cursor.isNull(cmap.mColumnLocationSpeed) ? null : cursor.getFloat(cmap.mColumnLocationSpeed);
+		mAccurarcy = cursor.isNull(cmap.mColumnLocationAccuracy) ? null : cursor.getFloat(cmap.mColumnLocationAccuracy);
+	}
+	
+	public LocationData(Context context, Cursor cursor, GeoTagAdapter.ColumnsMap cmap) {
 		mLatitude = cursor.isNull(cmap.mColumnLocationLat) ? null : cursor.getDouble(cmap.mColumnLocationLat);
 		mLongitude = cursor.isNull(cmap.mColumnLocationLng) ? null : cursor.getDouble(cmap.mColumnLocationLng);
 		mAltitude = cursor.isNull(cmap.mColumnLocationAlt) ? null : cursor.getDouble(cmap.mColumnLocationAlt);

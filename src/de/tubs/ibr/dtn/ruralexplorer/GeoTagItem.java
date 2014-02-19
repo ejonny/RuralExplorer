@@ -4,24 +4,24 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
-import de.tubs.ibr.dtn.ruralexplorer.data.Marker;
+import de.tubs.ibr.dtn.ruralexplorer.data.GeoTag;
 
-public class MarkerItem extends RelativeLayout {
+public class GeoTagItem extends RelativeLayout {
 	@SuppressWarnings("unused")
-	private static final String TAG = "MarkerItem";
+	private static final String TAG = "GeoTagItem";
 	
-	private Marker mMarker = null;
+	private GeoTag mGeoTag = null;
 	
-    public MarkerItem(Context context) {
+    public GeoTagItem(Context context) {
         super(context);
     }
 
-    public MarkerItem(Context context, AttributeSet attrs) {
+    public GeoTagItem(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
     
-    public Long getMarkerId() {
-    	return mMarker.getId();
+    public Long getGeoTagId() {
+    	return mGeoTag.getId();
     }
     
     @Override
@@ -29,8 +29,8 @@ public class MarkerItem extends RelativeLayout {
         super.onFinishInflate();
     }
 	
-	public void bind(Marker m, int position) {
-		mMarker = m;
+	public void bind(GeoTag m, int position) {
+		mGeoTag = m;
 		onDataChanged();
 	}
 	
