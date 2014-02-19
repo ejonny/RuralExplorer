@@ -26,7 +26,7 @@
     <string name="data_acceleration_dummy">0.0, 0.0, 0.0</string>
     <string name="data_na">N/A</string>
     <string name="data_unit_degree_celsius">%1$.2f°C</string>
-    <string name="data_unit_pressure">%1$.3f Pa</string>
+    <string name="data_unit_pressure">%1$.3f hPa</string>
     <string name="data_unit_latlng">%1$.5f, %2$.5f</string>
     <string name="data_unit_acceleration">%1$.5f, %2$.5f, %3$.5f</string>
 
