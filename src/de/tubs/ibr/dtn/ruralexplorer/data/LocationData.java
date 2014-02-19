@@ -33,12 +33,21 @@ public class LocationData {
 	}
 	
 	public LocationData(Location l) {
-		mLatitude = l.getLatitude();
-		mLongitude = l.getLongitude();
-		mAltitude = l.getAltitude();
-		mBearing = l.getBearing();
-		mSpeed = l.getSpeed();
-		mAccurarcy = l.getAccuracy();
+		if (l == null) {
+			mLatitude = null;
+			mLongitude = null;
+			mAltitude = null;
+			mBearing = null;
+			mSpeed = null;
+			mAccurarcy = null;
+		} else {
+			mLatitude = l.getLatitude();
+			mLongitude = l.getLongitude();
+			mAltitude = l.getAltitude();
+			mBearing = l.getBearing();
+			mSpeed = l.getSpeed();
+			mAccurarcy = l.getAccuracy();
+		}
 	}
 	
 	public Double getLatitude() {
