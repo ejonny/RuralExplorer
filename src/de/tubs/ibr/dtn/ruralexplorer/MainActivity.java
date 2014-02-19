@@ -72,6 +72,9 @@ public class MainActivity extends FragmentActivity implements
 	private DataService mDataService = null;
 	private boolean mBound = false;
 	
+	// If this tag is set, move to the tag instead of the own position
+	private GeoTag mInitialGeoTag = null;
+	
 	private ServiceConnection mDataHandler = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
@@ -119,6 +122,11 @@ public class MainActivity extends FragmentActivity implements
 		// get rescue fragment
 		mRescueFragment = (RescueFragment) getSupportFragmentManager().findFragmentById(R.id.rescue_fragment);
 		mRescueFragment.getView().setVisibility(View.GONE);
+		
+		// read geotag from intent if present
+		if (getIntent().hasExtra(DataService.EXTRA_GEOTAG)) {
+			mInitialGeoTag = (GeoTag)getIntent().getSerializableExtra(DataService.EXTRA_GEOTAG);
+		}
 	}
 	
 	@Override
@@ -218,6 +226,24 @@ public class MainActivity extends FragmentActivity implements
 			bindService(new Intent(this, DataService.class), mDataHandler, Context.BIND_AUTO_CREATE);
 			mBound = true;
 		}
+		
+		if (!mLocationInitialized && mInitialGeoTag != null) {
+			centerTo(mInitialGeoTag.getLocation());
+			mLocationInitialized = true;
+			mInitialGeoTag = null;
+		}
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		
+		// read geotag from intent if present
+		if (intent.hasExtra(DataService.EXTRA_GEOTAG)) {
+			
+			GeoTag tag = (GeoTag)intent.getSerializableExtra(DataService.EXTRA_GEOTAG);
+			centerTo(tag.getLocation());
+		}
 	}
 
 	@Override
@@ -251,6 +277,18 @@ public class MainActivity extends FragmentActivity implements
 			
 			default:
 				return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	private void centerTo(LocationData data) {
+		if (!data.hasLatitude() || !data.hasLongitude()) return;
+		
+		LatLng position = new LatLng(data.getLatitude(), data.getLongitude());
+		
+		if (!mLocationInitialized) {
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 20.0f));
+		} else {
+			mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
 		}
 	}
 	

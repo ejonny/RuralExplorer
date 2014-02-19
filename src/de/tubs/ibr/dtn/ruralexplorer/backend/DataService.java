@@ -4,9 +4,15 @@ package de.tubs.ibr.dtn.ruralexplorer.backend;
 import java.util.Date;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +20,8 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -23,6 +31,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
+import de.tubs.ibr.dtn.ruralexplorer.MainActivity;
+import de.tubs.ibr.dtn.ruralexplorer.R;
 import de.tubs.ibr.dtn.ruralexplorer.data.AccelerationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.ExplorerBeacon;
 import de.tubs.ibr.dtn.ruralexplorer.data.GeoTag;
@@ -34,6 +44,8 @@ public class DataService extends Service {
 
 	private static final String TAG = "DataService";
 	
+	private static final int RESCUE_NOTIFICATION = 1;
+	
 	public static final String ACTION_BACKGROUND_ON = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND_ON";
 	public static final String ACTION_BACKGROUND_OFF = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND_OFF";
 	
@@ -42,6 +54,7 @@ public class DataService extends Service {
 	
 	// additional parameters
 	public static final String EXTRA_LOCATION = "de.tubs.ibr.dtn.ruralexplorer.DATA_LOCATION";
+	public static final String EXTRA_GEOTAG = "de.tubs.ibr.dtn.ruralexplorer.EXTRA_GEOTAG";
 	
 	private LocationRequest mLocationRequest = null;
 	
@@ -135,8 +148,8 @@ public class DataService extends Service {
 				// write tag to the database
 				mDatabase.create(tag);
 				
-				// TODO: create notification
-				Log.d(TAG, "rescue tag received from " + tag.getEndpoint().toString());
+				// create notification
+				createNotification(tag);
 			}
 			else {
 				// get node from database
@@ -217,6 +230,11 @@ public class DataService extends Service {
 		}
 		
 	};
+	
+	public Location getLocation() {
+		if (mLocationClient == null) return null;
+		return mLocationClient.getLastLocation();
+	}
 
 	@Override
 	public void onCreate() {
@@ -299,5 +317,54 @@ public class DataService extends Service {
 	
 	public Database getDatabase() {
 		return mDatabase;
+	}
+	
+	private void createNotification(GeoTag t)
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		// do not generate notifications if disabled by the user
+		if (!prefs.getBoolean("pref_notification_enabled", true))
+			return;
+
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+		// enable auto-cancel
+		builder.setAutoCancel(true);
+
+		int defaults = 0;
+
+		if (prefs.getBoolean("pref_notification_vibrate", true)) {
+			defaults |= Notification.DEFAULT_VIBRATE;
+		}
+
+		/** CREATE AN INTENT TO OPEN THE MAIN ACTIVITY **/
+		Intent resultIntent = new Intent(this, MainActivity.class);
+		resultIntent.putExtra(DataService.EXTRA_GEOTAG, t);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, resultIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+
+		builder.setContentTitle(getString(R.string.notification_rescue_title));
+		
+		LocationData loc_data = t.getLocation();
+		
+		if (loc_data.hasLatitude() && loc_data.hasLongitude()) {
+			builder.setContentText(String.format(getString(R.string.data_unit_latlng), loc_data.getLatitude(), loc_data.getLongitude()));
+		} else {
+			builder.setContentText(getString(R.string.notification_rescue_invalid));
+		}
+		
+		builder.setSmallIcon(R.drawable.ic_stat_rescue);
+		builder.setDefaults(defaults);
+		builder.setWhen(System.currentTimeMillis());
+		builder.setContentIntent(contentIntent);
+		builder.setLights(0xff0080ff, 300, 1000);
+		builder.setSound(Uri.parse(prefs.getString("pref_notification_ringtone",
+				"content://settings/system/notification_sound")));
+
+		Notification notification = builder.build();
+		
+		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		nm.notify(RESCUE_NOTIFICATION, notification);
 	}
 }

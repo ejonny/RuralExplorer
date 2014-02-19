@@ -29,4 +29,6 @@
     <string name="rescue_title">Target Distance</string>
     <string name="data_unit_meters">%1$.1f m</string>
 
+    <string name="notification_rescue_title">Rescue Request received</string>
+    <string name="notification_rescue_invalid">Invalid</string>
 </resources>

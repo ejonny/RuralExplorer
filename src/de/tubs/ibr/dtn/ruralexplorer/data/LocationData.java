@@ -1,12 +1,19 @@
 package de.tubs.ibr.dtn.ruralexplorer.data;
 
+import java.io.Serializable;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
 import de.tubs.ibr.dtn.ruralexplorer.backend.GeoTagAdapter;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 
-public class LocationData {
+public class LocationData implements Serializable {
+	/**
+	 * serial ID
+	 */
+	private static final long serialVersionUID = 6654875016219006354L;
+	
 	public static final String LAT = "latitude";
 	public static final String LNG = "longitude";
 	public static final String ALT = "altitude";

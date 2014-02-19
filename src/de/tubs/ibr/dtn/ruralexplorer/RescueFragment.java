@@ -61,7 +61,10 @@ public class RescueFragment extends Fragment {
 			Location l = new Location("stored");
 			l.setLatitude(loc_data.getLatitude());
 			l.setLongitude(loc_data.getLongitude());
-			l.setAltitude(loc_data.getAltitude());
+			
+			if (loc_data.hasAltitude()) {
+				l.setAltitude(loc_data.getAltitude());
+			}
 			
 			Float distance = l.distanceTo(mLocation);
 			mValueText.setText(String.format(getString(R.string.data_unit_meters), distance));
