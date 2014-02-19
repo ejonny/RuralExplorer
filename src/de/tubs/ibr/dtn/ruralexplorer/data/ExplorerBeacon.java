@@ -153,6 +153,7 @@ public class ExplorerBeacon implements Parcelable {
 			encoder.write((float)l.getLongitude());
 			encoder.write((float)l.getAltitude());
 			encoder.write(l.getBearing());
+			encoder.write(l.getSpeed());
 		}
 		
 		/**
@@ -215,6 +216,7 @@ public class ExplorerBeacon implements Parcelable {
 					l.setLongitude((Float)decoder.read());
 					l.setAltitude((Float)decoder.read());
 					l.setBearing((Float)decoder.read());
+					l.setSpeed((Float)decoder.read());
 					ret.setPosition(l);
 					break;
 				}
