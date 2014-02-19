@@ -14,5 +14,12 @@
     <string name="button_info">Info</string>
     <string name="info_device_icon">Device</string>
     <string name="name_anonymous">Anonymous</string>
+    <string name="label_pressure">Pressure</string>
+    <string name="label_temperature">Temperature</string>
+    <string name="data_pressure_dummy">123</string>
+    <string name="data_temperature_dummy">42°C</string>
+    <string name="data_na">N/A</string>
+    <string name="data_unit_degree_celsius">%1$.2f°C</string>
+    <string name="data_unit_pressure">%1$.3f Pa</string>
 
 </resources>

@@ -14,11 +14,19 @@
           android:layout_below="@id/marker_item_fragment"
           android:layout_alignParentTop="true" />
 	
-	<FrameLayout
+	<ScrollView
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:background="@drawable/top_dropshadow_gray"
 	    android:layout_below="@+id/marker_item_fragment"
-	    android:id="@+id/info_drop_shadow" />
+	    android:id="@+id/info_drop_shadow">
+	    
+		<fragment
+	          android:id="@+id/sensor_fragment"
+	          android:layout_width="match_parent"
+	          android:layout_height="wrap_content"
+	          android:name="de.tubs.ibr.dtn.ruralexplorer.SensorFragment" />
+	    
+	</ScrollView>
     
 </RelativeLayout>
