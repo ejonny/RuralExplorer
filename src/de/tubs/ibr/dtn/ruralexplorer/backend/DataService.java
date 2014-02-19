@@ -133,7 +133,11 @@ public class DataService extends Service {
 			n.setName(b.getName());
 			
 			// update sensor data
-			n.setSensor(new SensorData(b.getSensors()));
+			if (b.hasSensors()) {
+				n.setSensor(new SensorData(b.getSensors()));
+			} else {
+				n.setSensor(new SensorData());
+			}
 			
 			// update acceleration data
 			if (b.hasAcceleration()) {
