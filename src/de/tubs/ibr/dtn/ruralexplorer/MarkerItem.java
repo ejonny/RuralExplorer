@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Marker;
+import de.tubs.ibr.dtn.ruralexplorer.data.Marker;
 
 public class MarkerItem extends RelativeLayout {
 	@SuppressWarnings("unused")

@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import de.tubs.ibr.dtn.ruralexplorer.MarkerItem;
 import de.tubs.ibr.dtn.ruralexplorer.R;
+import de.tubs.ibr.dtn.ruralexplorer.data.Marker;
+import de.tubs.ibr.dtn.ruralexplorer.data.RuralLocation;
 
 public class MarkerAdapter extends CursorAdapter {
 	

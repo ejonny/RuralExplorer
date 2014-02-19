@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class MarkerItemFragment extends Fragment {
 

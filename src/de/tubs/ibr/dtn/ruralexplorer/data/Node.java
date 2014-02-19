@@ -1,4 +1,4 @@
-package de.tubs.ibr.dtn.ruralexplorer.backend;
+package de.tubs.ibr.dtn.ruralexplorer.data;
 
 import java.io.Serializable;
 
@@ -11,6 +11,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.R;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter.ColumnsMap;
 
 public class Node implements Serializable, Comparable<Node> {
 	/**

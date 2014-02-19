@@ -1,9 +1,9 @@
-package de.tubs.ibr.dtn.ruralexplorer.backend;
+package de.tubs.ibr.dtn.ruralexplorer.data;
 
 import java.io.Serializable;
 
-import de.tubs.ibr.dtn.api.SingletonEndpoint;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node.Type;
+import de.tubs.ibr.dtn.ruralexplorer.backend.MarkerAdapter;
+import de.tubs.ibr.dtn.ruralexplorer.backend.MarkerAdapter.ColumnsMap;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.BaseColumns;

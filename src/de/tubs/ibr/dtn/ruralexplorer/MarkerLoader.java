@@ -10,8 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.AsyncTaskLoader;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
 import de.tubs.ibr.dtn.ruralexplorer.backend.Database;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class MarkerLoader extends AsyncTaskLoader<Cursor> {
 

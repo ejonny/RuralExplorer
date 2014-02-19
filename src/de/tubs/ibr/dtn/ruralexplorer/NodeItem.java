@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class NodeItem extends RelativeLayout {
 	@SuppressWarnings("unused")

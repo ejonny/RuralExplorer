@@ -22,6 +22,8 @@ import com.google.android.gms.location.LocationRequest;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.data.ExplorerBeacon;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.RuralLocation;
 
 public class DataService extends Service {
 

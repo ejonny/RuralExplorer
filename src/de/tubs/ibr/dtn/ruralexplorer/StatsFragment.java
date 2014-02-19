@@ -20,7 +20,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class StatsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	

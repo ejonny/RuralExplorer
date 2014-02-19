@@ -22,9 +22,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class MarkerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -198,8 +198,6 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 				if (!c.moveToPosition(position)) throw new NodeNotFoundException();
 				
 				Node n = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
-				
-				//Node n = (Node)mAdapter.getItem(position);
 				return MarkerItemFragment.newInstance(n);
 			} catch (NodeNotFoundException ex) {
 				return null;
@@ -215,6 +213,20 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		public int getCount() {
 			return mAdapter.getCount();
 		}
+		
+//		@Override
+//		public void finishUpdate(ViewGroup container) {
+//			super.finishUpdate(container);
+//			
+//			try {
+//				int pos = getPosition(mNode);
+//				if (mViewPager.getCurrentItem() != pos) {
+//					mViewPager.setCurrentItem(pos);
+//				}
+//			} catch (NodeNotFoundException ex) {
+//				// TODO: close
+//			}
+//		}
 		
 		public int getPosition(Node n) throws NodeNotFoundException {
 			if (mDataService == null)

@@ -11,6 +11,9 @@ import android.location.Location;
 import android.provider.BaseColumns;
 import android.util.Log;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
+import de.tubs.ibr.dtn.ruralexplorer.data.Marker;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.RuralLocation;
 
 public class Database {
 	private static final String TAG = "Database";

@@ -31,9 +31,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
-import de.tubs.ibr.dtn.ruralexplorer.backend.Node;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
-import de.tubs.ibr.dtn.ruralexplorer.backend.RuralLocation;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.RuralLocation;
 
 public class MainActivity extends FragmentActivity implements
 		MarkerFragment.OnWindowChangedListener,
