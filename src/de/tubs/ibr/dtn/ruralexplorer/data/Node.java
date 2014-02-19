@@ -71,7 +71,10 @@ public class Node implements Serializable, Comparable<Node> {
 	}
 	
 	public boolean hasName() {
-		return mName != null;
+		if (mName != null) {
+			return mName.length() > 0;
+		}
+		return false;
 	}
 	
 	public String getName() {

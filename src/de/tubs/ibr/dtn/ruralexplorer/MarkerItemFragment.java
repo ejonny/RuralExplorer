@@ -13,6 +13,7 @@ public class MarkerItemFragment extends Fragment {
 
 	private Node mNode = null;
 	private TextView mInfoTitle = null;
+	private TextView mInfoDescription = null;
 	private ImageView mInfoIcon = null;
 	
 	public static MarkerItemFragment newInstance(Node n) {
@@ -31,6 +32,7 @@ public class MarkerItemFragment extends Fragment {
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_marker_item, container, false);
 		mInfoTitle = (TextView)v.findViewById(R.id.marker_title);
+		mInfoDescription = (TextView)v.findViewById(R.id.marker_description);
 		mInfoIcon = (ImageView)v.findViewById(R.id.marker_icon);
 		
 		v.setOnClickListener(new View.OnClickListener() {
@@ -57,8 +59,16 @@ public class MarkerItemFragment extends Fragment {
 	public void bind(Node n) {
 		mNode = n;
 		
-		if (mInfoTitle == null) return;
-		mInfoTitle.setText(n.getEndpoint().toString());
+		if ((mInfoTitle == null) || (n == null)) return;
+		
+		if (n.hasName()) {
+			mInfoTitle.setText(n.getName());
+		} else {
+			mInfoTitle.setText(getResources().getString(R.string.name_anonymous));
+		}
+		
 		mInfoIcon.setImageResource(Node.getResource(n.getType()));
+		
+		mInfoDescription.setText(n.getEndpoint().toString());
 	}
 }

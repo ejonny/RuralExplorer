@@ -17,10 +17,21 @@
 	    android:layout_height="wrap_content"
 	    android:textSize="@dimen/marker_title_size"
 	    android:id="@+id/marker_title"
-	    android:textColor="@color/blue"
+	    android:textColor="@android:color/primary_text_light"
 	    android:layout_toRightOf="@id/marker_icon"
 	    android:layout_alignParentTop="true"
-	    android:padding="@dimen/marker_padding"
+	    android:paddingTop="@dimen/marker_padding"
+	    android:paddingLeft="@dimen/marker_padding"
 	    android:textStyle="bold" />
+	
+	<TextView
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:textSize="@dimen/marker_description_size"
+	    android:id="@+id/marker_description"
+	    android:textColor="@android:color/secondary_text_light"
+	    android:layout_toRightOf="@id/marker_icon"
+	    android:layout_below="@id/marker_title"
+	    android:paddingLeft="@dimen/marker_padding" />
 
 </RelativeLayout>

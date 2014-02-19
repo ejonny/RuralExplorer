@@ -33,6 +33,7 @@ public class StatsFragment extends Fragment implements LoaderManager.LoaderCallb
 	
 	private Node mNode = null;
 	private TextView mInfoTitle = null;
+	private TextView mInfoDescription = null;
 	private ImageView mInfoIcon = null;
 	
 	private OnWindowChangedListener mListener = null;
@@ -76,6 +77,7 @@ public class StatsFragment extends Fragment implements LoaderManager.LoaderCallb
 		View v = inflater.inflate(R.layout.fragment_stats, container, false);
 		mLayout = (RelativeLayout)v.findViewById(R.id.stats_fragment_layout);
 		mInfoTitle = (TextView)v.findViewById(R.id.stats_title);
+		mInfoDescription = (TextView)v.findViewById(R.id.stats_description);
 		mInfoIcon = (ImageView)v.findViewById(R.id.stats_icon);
 		
 		v.setOnTouchListener(new View.OnTouchListener() {
@@ -124,8 +126,16 @@ public class StatsFragment extends Fragment implements LoaderManager.LoaderCallb
 		mNode = n;
 		
 		if ((mInfoTitle == null) || (n == null)) return;
-		mInfoTitle.setText(n.getEndpoint().toString());
+		
+		if (n.hasName()) {
+			mInfoTitle.setText(n.getName());
+		} else {
+			mInfoTitle.setText(getResources().getString(R.string.name_anonymous));
+		}
+		
 		mInfoIcon.setImageResource(Node.getResource(n.getType()));
+		
+		mInfoDescription.setText(n.getEndpoint().toString());
 	}
 
 	@Override
