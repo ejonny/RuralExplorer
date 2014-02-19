@@ -85,6 +85,8 @@ public class StatsFragment extends Fragment {
 	}
 	
 	public void bind(Node n) {
+		mNode = n;
+		
 		if (n == null) {
 			mLayout.setVisibility(View.INVISIBLE);
 		} else {
