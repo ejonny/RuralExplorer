@@ -4,7 +4,7 @@
         android:angle="270"
         android:centerX="0.01"
         android:startColor="@color/dark_drop_shadow"
-        android:centerColor="@android:color/darker_gray"
-        android:endColor="@android:color/darker_gray"
+        android:centerColor="@color/drop_shadow_gray"
+        android:endColor="@color/drop_shadow_gray"
         android:type="linear" />
 </shape>
