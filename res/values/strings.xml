@@ -6,13 +6,7 @@
     <string name="action_clear">Clear all</string>
     <string name="action_add_dummies">Add dummies</string>
     <string name="action_center_location">Center to Location</string>
-    
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_node_info">NodeInfoActivity</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-    
+        
     <string name="action_show_marker">Show markers</string>
     
     <string name="button_info">Info</string>
