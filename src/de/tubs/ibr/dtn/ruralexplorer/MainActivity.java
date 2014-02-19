@@ -71,7 +71,7 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			getLoaderManager().destroyLoader(MARKER_LOADER_ID);
+			getSupportLoaderManager().destroyLoader(MARKER_LOADER_ID);
 			mDataService = null;
 		}
 	};
@@ -153,27 +153,17 @@ public class MainActivity extends FragmentActivity implements
 	};
 
 	@Override
-	protected void onStart() {
-		super.onStart();
-	}
-
-	@Override
-	protected void onStop() {
+	protected void onDestroy() {
 		if (mBound) {
 			unregisterReceiver(mLocationReceiver);
 			unbindService(mDataHandler);
 			
-			getLoaderManager().destroyLoader(MARKER_LOADER_ID);
+			getSupportLoaderManager().destroyLoader(MARKER_LOADER_ID);
 			
 			mBound = false;
 		}
-
-		super.onStop();
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
+		
+		super.onDestroy();
 	}
 
 	@Override
