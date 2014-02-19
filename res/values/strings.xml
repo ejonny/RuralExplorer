@@ -11,6 +11,8 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
     
+    <string name="action_show_marker">Show markers</string>
+    
     <string name="button_info">Info</string>
     <string name="info_device_icon">Device</string>
     <string name="name_anonymous">Anonymous</string>

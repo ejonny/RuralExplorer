@@ -188,6 +188,12 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case R.id.action_show_marker:
+				if (!mNodeSet.isEmpty()) {
+					mMarkerFragment.bind(mNodeSet.values().iterator().next());
+				}
+				return true;
+				
 			case R.id.action_settings:
 				Intent i = new Intent(this, SettingsActivity.class);
 				startActivity(i);
