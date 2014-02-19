@@ -14,6 +14,10 @@ public class AccelerationData {
 	public AccelerationData() {
 	}
 	
+	public AccelerationData(float[] data) {
+		mData = data;
+	}
+	
 	public AccelerationData(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap) {
 		mData[0] = cursor.getFloat(cmap.mColumnAccelerationX);
 		mData[1] = cursor.getFloat(cmap.mColumnAccelerationY);

@@ -37,6 +37,12 @@
 		          android:layout_width="match_parent"
 		          android:layout_height="wrap_content"
 		          android:name="de.tubs.ibr.dtn.ruralexplorer.SensorFragment" />
+			
+			<fragment
+		          android:id="@+id/acceleration_fragment"
+		          android:layout_width="match_parent"
+		          android:layout_height="wrap_content"
+		          android:name="de.tubs.ibr.dtn.ruralexplorer.AccelerationFragment" />
 	        
 	    </LinearLayout>
 	</ScrollView>
