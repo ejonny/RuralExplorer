@@ -52,6 +52,7 @@ public class MainActivity extends FragmentActivity implements
 	private HashSet<Node> mNodeSet = new HashSet<Node>();
 	private HashMap<Marker, Node> mNodeMap = new HashMap<Marker, Node>();
 	private HashSet<GeoTag> mGeoTagSet = new HashSet<GeoTag>();
+	private HashMap<Marker, GeoTag> mGeoTagMap = new HashMap<Marker, GeoTag>();
 
 	private Boolean mLocationInitialized = false;
 	private FrameLayout mLayoutDropShadow = null;
@@ -309,12 +310,21 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> data) {
-		for (Marker m : mMarkerSet.values()) {
-			m.remove();
+	public void onLoaderReset(Loader<Cursor> loader) {
+		if (loader instanceof MarkerLoader) {
+			for (Marker m : mMarkerSet.values()) {
+				m.remove();
+			}
+			mMarkerSet.clear();
+			mNodeSet.clear();
 		}
-		mMarkerSet.clear();
-		mNodeSet.clear();
+		else if (loader instanceof GeoTagLoader) {
+			for (Marker m : mGeoTagMap.keySet()) {
+				m.remove();
+			}
+			mGeoTagSet.clear();
+			mGeoTagMap.clear();
+		}
 	}
 	
 	private void updateGeoTags(Cursor c) {
@@ -339,6 +349,9 @@ public class MainActivity extends FragmentActivity implements
 									.anchor(0.5f, 0.5f)
 									.flat(true)
 						);
+					
+					// add marker to tag set
+					mGeoTagMap.put(m, t);
 				}
 			}
 		}
