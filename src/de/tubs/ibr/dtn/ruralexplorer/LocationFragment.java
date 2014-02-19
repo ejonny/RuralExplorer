@@ -30,15 +30,6 @@ public class LocationFragment extends Fragment {
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_location_data, container, false);
 		mLocationText = (TextView)v.findViewById(R.id.text_location);
-		
-		v.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				StatsFragment f = (StatsFragment)getFragmentManager().findFragmentById(R.id.stats_fragment);
-				f.bind(mNode);
-			}
-		});
-		
 		return v;
 	}
 

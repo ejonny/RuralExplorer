@@ -32,15 +32,6 @@ public class SensorFragment extends Fragment {
 		View v = inflater.inflate(R.layout.fragment_sensor_data, container, false);
 		mTemperature = (TextView)v.findViewById(R.id.text_temperature);
 		mPressure = (TextView)v.findViewById(R.id.text_pressure);
-		
-		v.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				StatsFragment f = (StatsFragment)getFragmentManager().findFragmentById(R.id.stats_fragment);
-				f.bind(mNode);
-			}
-		});
-		
 		return v;
 	}
 
