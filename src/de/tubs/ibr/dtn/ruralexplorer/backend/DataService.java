@@ -22,8 +22,9 @@ import com.google.android.gms.location.LocationRequest;
 
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.data.ExplorerBeacon;
-import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
+import de.tubs.ibr.dtn.ruralexplorer.data.SensorData;
 
 public class DataService extends Service {
 
@@ -126,6 +127,12 @@ public class DataService extends Service {
 			
 			// update location
 			n.setLocation(new LocationData(b.getPosition()));
+			
+			// update name
+			n.setName(b.getName());
+			
+			// update sensor data
+			n.setSensor(new SensorData(b.getSensors()));
 			
 			// write changed to the database
 			mDatabase.update(n);
