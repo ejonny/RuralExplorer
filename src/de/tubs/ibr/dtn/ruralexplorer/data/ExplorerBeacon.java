@@ -238,11 +238,11 @@ public class ExplorerBeacon implements Parcelable {
 				case TLV_TYPE_RESCUE:
 				{
 					decoder.open();
-					Location l = new Location("beacon");
+					Location l = new Location("rescue");
 					l.setLatitude((Float)decoder.read());
 					l.setLongitude((Float)decoder.read());
 					l.setAltitude((Float)decoder.read());
-					ret.setPosition(l);
+					ret.setRescueLocation(l);
 					break;
 				}
 					

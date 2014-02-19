@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -49,6 +50,7 @@ public class CommService extends IntentService {
 	public static final String EXTRA_BUNDLEID = "de.tubs.ibr.dtn.ruralexplorer.BUNDLEID";
 	public static final String EXTRA_ENDPOINT = "de.tubs.ibr.dtn.ruralexplorer.ENDPOINT";
 	public static final String EXTRA_BEACON = "de.tubs.ibr.dtn.ruralexplorer.BEACON";
+	public static final String EXTRA_TIME = "de.tubs.ibr.dtn.ruralexplorer.TIME";
 	
 	// process a status report
 	public static final String REPORT_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.REPORT_DELIVERED";
@@ -212,10 +214,6 @@ public class CommService extends IntentService {
 
 			// free the bundle header
 			mBundle = null;
-			
-			// process the data
-			// TODO: forward data to DataService
-			// Database.getInstance().process(CommService.this, mBundle);
 		}
 
 		@Override
@@ -258,6 +256,7 @@ public class CommService extends IntentService {
 					i.setAction(BEACON_RECEIVED);
 					i.putExtra(EXTRA_BEACON, (Parcelable)beacon);
 					i.putExtra(EXTRA_ENDPOINT, (Parcelable)mBundle.getSource());
+					i.putExtra(EXTRA_TIME, (Serializable)mBundle.getTimestamp().getDate());
 					startService(i);
 				} catch (IOException e) {
 					// error

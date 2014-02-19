@@ -33,9 +33,9 @@ public class GeoTag implements Serializable, Comparable<GeoTag> {
 	private SingletonEndpoint mEndpoint = null;
 	private LocationData mLocation = null;
 	
-	public GeoTag() {
+	public GeoTag(SingletonEndpoint endpoint) {
 		mId = null;
-		mEndpoint = null;
+		mEndpoint = endpoint;
 		mLocation = null;
 		mSentTime = null;
 		mReceivedTime = new Date();

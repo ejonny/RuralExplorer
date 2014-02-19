@@ -1,6 +1,8 @@
 
 package de.tubs.ibr.dtn.ruralexplorer.backend;
 
+import java.util.Date;
+
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
@@ -23,6 +25,7 @@ import com.google.android.gms.location.LocationRequest;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.data.AccelerationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.ExplorerBeacon;
+import de.tubs.ibr.dtn.ruralexplorer.data.GeoTag;
 import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 import de.tubs.ibr.dtn.ruralexplorer.data.SensorData;
@@ -119,35 +122,53 @@ public class DataService extends Service {
 			// debug
 			Log.d(TAG, "new beacon received from " + source.toString());
 			
-			// get node from database
-			Node n = mDatabase.getNode(source);
-			
-			if (n == null) {
-				n = new Node(type, source);
+			if (b.hasRescueLocation()) {
+				// generate a rescue tag
+				GeoTag tag = new GeoTag(source);
+				
+				// set sent time
+				tag.setSentTime( (Date)intent.getSerializableExtra(CommService.EXTRA_TIME) );
+				
+				// set location
+				tag.setLocation(new LocationData(b.getPosition()));
+				
+				// write tag to the database
+				mDatabase.create(tag);
+				
+				// TODO: create notification
+				Log.d(TAG, "rescue tag received from " + tag.getEndpoint().toString());
 			}
-			
-			// update location
-			n.setLocation(new LocationData(b.getPosition()));
-			
-			// update name
-			n.setName(b.getName());
-			
-			// update sensor data
-			if (b.hasSensors()) {
-				n.setSensor(new SensorData(b.getSensors()));
-			} else {
-				n.setSensor(new SensorData());
+			else {
+				// get node from database
+				Node n = mDatabase.getNode(source);
+				
+				if (n == null) {
+					n = new Node(type, source);
+				}
+				
+				// update location
+				n.setLocation(new LocationData(b.getPosition()));
+				
+				// update name
+				n.setName(b.getName());
+				
+				// update sensor data
+				if (b.hasSensors()) {
+					n.setSensor(new SensorData(b.getSensors()));
+				} else {
+					n.setSensor(new SensorData());
+				}
+				
+				// update acceleration data
+				if (b.hasAcceleration()) {
+					n.setAcceleration(new AccelerationData(b.getAcceleration()));
+				} else {
+					n.setAcceleration(new AccelerationData());
+				}
+				
+				// write changed to the database
+				mDatabase.update(n);
 			}
-			
-			// update acceleration data
-			if (b.hasAcceleration()) {
-				n.setAcceleration(new AccelerationData(b.getAcceleration()));
-			} else {
-				n.setAcceleration(new AccelerationData());
-			}
-			
-			// write changed to the database
-			mDatabase.update(n);
 		}
 		
 		// stop the service if not persistent
