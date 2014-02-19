@@ -313,6 +313,11 @@ public class MainActivity extends FragmentActivity implements
 				
 				m.setVisible(true);
 				
+				// set bearing
+				if (l.hasBearing()) {
+					m.setRotation(l.getBearing());
+				}
+				
 				// remove this from inactive markers
 				inactiveMarkers.remove(m);
 				
