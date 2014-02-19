@@ -40,6 +40,7 @@ public class MainActivity extends FragmentActivity implements
 		StatsFragment.OnWindowChangedListener,
 		LoaderManager.LoaderCallbacks<Cursor> {
 	
+	@SuppressWarnings("unused")
 	private static final String TAG = "MainActivity";
 	
 	private static final int MARKER_LOADER_ID = 1;

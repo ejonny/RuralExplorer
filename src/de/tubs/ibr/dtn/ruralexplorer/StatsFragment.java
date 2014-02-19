@@ -24,6 +24,7 @@ import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class StatsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	
+	@SuppressWarnings("unused")
 	private static final String TAG = "StatsFragment";
 	
 	private static final int STATS_LOADER_ID = 1;

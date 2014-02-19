@@ -28,6 +28,7 @@ import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class MarkerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+	@SuppressWarnings("unused")
 	private static final String TAG = "MarkerFragment";
 	
 	private static final int MARKER_LOADER_ID = 1;

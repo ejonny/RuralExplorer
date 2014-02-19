@@ -19,8 +19,6 @@ public class Node implements Serializable, Comparable<Node> {
 	 */
 	private static final long serialVersionUID = -3021339683598377878L;
 	
-	private static final String TAG = "Node";
-
 	public static final String ID = BaseColumns._ID;
 	public static final String ENDPOINT = "endpoint";
 	public static final String TYPE = "type";

@@ -1,10 +1,9 @@
 package de.tubs.ibr.dtn.ruralexplorer.data;
 
-import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
-import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter.ColumnsMap;
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
+import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 
 public class LocationData {
 	public static final String LAT = "latitude";
