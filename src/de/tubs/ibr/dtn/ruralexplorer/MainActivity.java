@@ -3,6 +3,7 @@ package de.tubs.ibr.dtn.ruralexplorer;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -51,6 +52,7 @@ public class MainActivity extends FragmentActivity implements
 	private HashMap<Long, Marker> mMarkerSet = new HashMap<Long, Marker>();
 	private HashSet<Node> mNodeSet = new HashSet<Node>();
 	private HashMap<Marker, Node> mNodeMap = new HashMap<Marker, Node>();
+	
 	private HashSet<GeoTag> mGeoTagSet = new HashSet<GeoTag>();
 	private HashMap<Marker, GeoTag> mGeoTagMap = new HashMap<Marker, GeoTag>();
 
@@ -60,8 +62,11 @@ public class MainActivity extends FragmentActivity implements
 	private Boolean mStatsVisible = false;
 	private Marker mSelectionMarker = null;
 	
+	private Marker mActiveGeoTag = null;
+	
 	private StatsFragment mStatsFragment = null;
 	private MarkerFragment mMarkerFragment = null;
+	private RescueFragment mRescueFragment = null;
 	private GoogleMap mMap = null;
 
 	private DataService mDataService = null;
@@ -106,10 +111,14 @@ public class MainActivity extends FragmentActivity implements
 		mMap.setOnMarkerClickListener(mMarkerListener);
 		
 		// get marker fragment
-		mMarkerFragment = ((MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_fragment));
+		mMarkerFragment = (MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_fragment);
 		
 		// get stats fragment
-		mStatsFragment = ((StatsFragment) getSupportFragmentManager().findFragmentById(R.id.stats_fragment));
+		mStatsFragment = (StatsFragment) getSupportFragmentManager().findFragmentById(R.id.stats_fragment);
+		
+		// get rescue fragment
+		mRescueFragment = (RescueFragment) getSupportFragmentManager().findFragmentById(R.id.rescue_fragment);
+		mRescueFragment.getView().setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -124,7 +133,15 @@ public class MainActivity extends FragmentActivity implements
 			if (mSelectionMarker != null) {
 				mSelectionMarker.setVisible(false);
 			}
-		} else {
+		}
+		else if (mActiveGeoTag != null) {
+			// hide rescue
+			mRescueFragment.bind(null);
+			mRescueFragment.getView().setVisibility(View.GONE);
+			mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
+			mActiveGeoTag = null;
+		}
+		else {
 			super.onBackPressed();
 		}
 	}
@@ -132,29 +149,45 @@ public class MainActivity extends FragmentActivity implements
 	private GoogleMap.OnMarkerClickListener mMarkerListener = new GoogleMap.OnMarkerClickListener() {
 		@Override
 		public boolean onMarkerClick(Marker marker) {
-			// move to the marker
-			mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-			
-			// show / hide marker frame
-			Node n = mNodeMap.get(marker);
-			
-			if (n == null) {
-				mMarkerFragment.bind(null);
-				return true;
+			// check if the marker is a tag
+			if (mGeoTagMap.containsKey(marker)) {
+				// store selected geotag
+				mActiveGeoTag = marker;
+				
+				// bind to geotag
+				mRescueFragment.bind(mGeoTagMap.get(marker));
+				
+				// show geotag distance
+				mRescueFragment.getView().setVisibility(View.VISIBLE);
+				
+				// set icon to active
+				mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_active));
 			}
-			mMarkerFragment.bind(n);
-			
-			// set selection marker
-			if (mSelectionMarker == null) {
-				mSelectionMarker = mMap.addMarker(new MarkerOptions()
-					.position(marker.getPosition())
-					.icon(BitmapDescriptorFactory.defaultMarker())
-				);
+			else {
+				// move to the marker
+				mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+				
+				// show / hide marker frame
+				Node n = mNodeMap.get(marker);
+				
+				if (n == null) {
+					mMarkerFragment.bind(null);
+					return true;
+				}
+				mMarkerFragment.bind(n);
+				
+				// set selection marker
+				if (mSelectionMarker == null) {
+					mSelectionMarker = mMap.addMarker(new MarkerOptions()
+						.position(marker.getPosition())
+						.icon(BitmapDescriptorFactory.defaultMarker())
+					);
+				}
+				
+				// set position of selection marker
+				mSelectionMarker.setPosition(marker.getPosition());
+				mSelectionMarker.setVisible(true);
 			}
-			
-			// set position of selection marker
-			mSelectionMarker.setPosition(marker.getPosition());
-			mSelectionMarker.setVisible(true);
 			
 			return true;
 		}
@@ -252,11 +285,16 @@ public class MainActivity extends FragmentActivity implements
 	private BroadcastReceiver mLocationReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (!mLocationInitialized && DataService.LOCATION_UPDATED.equals(intent.getAction())) {
+			if (DataService.LOCATION_UPDATED.equals(intent.getAction())) {
 				Location l = intent.getParcelableExtra(DataService.EXTRA_LOCATION);
+				
 				if ( l != null ) {
-					centerTo(l);
-					mLocationInitialized = true;
+					mRescueFragment.setPosition(l);
+					
+					if (!mLocationInitialized) {
+						centerTo(l);
+						mLocationInitialized = true;
+					}
 				}
 			}
 		}
@@ -330,8 +368,14 @@ public class MainActivity extends FragmentActivity implements
 	private void updateGeoTags(Cursor c) {
 		GeoTagAdapter.ColumnsMap tagmap = new GeoTagAdapter.ColumnsMap();
 		
+		// set to filter out inactive tags
+		HashSet<GeoTag> inactiveTags = new HashSet<GeoTag>(mGeoTagSet);
+		
 		while (c.moveToNext()) {
 			GeoTag t = new GeoTag(this, c, tagmap);
+			
+			// remove from inactive tags
+			inactiveTags.remove(t);
 			
 			if (!mGeoTagSet.contains(t)) {
 				mGeoTagSet.add(t);
@@ -353,6 +397,27 @@ public class MainActivity extends FragmentActivity implements
 					// add marker to tag set
 					mGeoTagMap.put(m, t);
 				}
+			}
+		}
+		
+		// remove all inactive tags
+		for (GeoTag t : inactiveTags) {
+			for (Entry<Marker, GeoTag> e : mGeoTagMap.entrySet()) {
+				if (e.getValue().equals(t)) {
+					Marker m = e.getKey();
+					m.remove();
+					mGeoTagMap.remove(m);
+					mGeoTagSet.remove(t);
+					break;
+				}
+			}
+		}
+		
+		if (mGeoTagSet.isEmpty()) {
+			if (mActiveGeoTag != null) {
+				mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
+				mActiveGeoTag = null;
+				mRescueFragment.getView().setVisibility(View.GONE);
 			}
 		}
 	}

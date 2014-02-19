@@ -8,6 +8,15 @@
           android:layout_height="match_parent"
           android:name="com.google.android.gms.maps.MapFragment" />
 	
+	<fragment
+          android:id="@+id/rescue_fragment"
+          android:layout_width="@dimen/rescue_width"
+          android:layout_marginTop="@dimen/rescue_margin"
+          android:layout_height="@dimen/rescue_height"
+          android:name="de.tubs.ibr.dtn.ruralexplorer.RescueFragment"
+          android:layout_alignParentTop="true"
+          android:layout_alignParentLeft="true" />
+	
 	<FrameLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"

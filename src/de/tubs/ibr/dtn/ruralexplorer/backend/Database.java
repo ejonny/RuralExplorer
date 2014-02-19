@@ -318,6 +318,7 @@ public class Database {
 	
 	public void clear() {
 		mDatabase.delete(Database.TABLE_NAME_NODES, null, null);
+		mDatabase.delete(Database.TABLE_NAME_GEOTAG, null, null);
 		
 		// send refresh intent
 		notifyDatabaseChanged();
