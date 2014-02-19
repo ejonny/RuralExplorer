@@ -8,8 +8,5 @@
     <header
         android:fragment="de.tubs.ibr.dtn.ruralexplorer.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
-    <header
-        android:fragment="de.tubs.ibr.dtn.ruralexplorer.SettingsActivity$DataSyncPreferenceFragment"
-        android:title="@string/pref_header_data_sync" />
 
 </preference-headers>
