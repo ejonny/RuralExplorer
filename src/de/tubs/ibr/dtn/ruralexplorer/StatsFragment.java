@@ -16,9 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
@@ -31,10 +29,7 @@ public class StatsFragment extends Fragment implements LoaderManager.LoaderCallb
 	
 	private RelativeLayout mLayout = null;
 	
-	private Node mNode = null;
-	private TextView mInfoTitle = null;
-	private TextView mInfoDescription = null;
-	private ImageView mInfoIcon = null;
+	private MarkerItemFragment mMarkerFragment = null;
 	
 	private OnWindowChangedListener mListener = null;
 	private DataService mDataService = null;
@@ -76,9 +71,7 @@ public class StatsFragment extends Fragment implements LoaderManager.LoaderCallb
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_stats, container, false);
 		mLayout = (RelativeLayout)v.findViewById(R.id.stats_fragment_layout);
-		mInfoTitle = (TextView)v.findViewById(R.id.stats_title);
-		mInfoDescription = (TextView)v.findViewById(R.id.stats_description);
-		mInfoIcon = (ImageView)v.findViewById(R.id.stats_icon);
+		mMarkerFragment = (MarkerItemFragment)getFragmentManager().findFragmentById(R.id.marker_item_fragment);
 		
 		v.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -123,19 +116,7 @@ public class StatsFragment extends Fragment implements LoaderManager.LoaderCallb
 		}
 		
 		mListener.onStatsWindowChanged(n != null);
-		mNode = n;
-		
-		if ((mInfoTitle == null) || (n == null)) return;
-		
-		if (n.hasName()) {
-			mInfoTitle.setText(n.getName());
-		} else {
-			mInfoTitle.setText(getResources().getString(R.string.name_anonymous));
-		}
-		
-		mInfoIcon.setImageResource(Node.getResource(n.getType()));
-		
-		mInfoDescription.setText(n.getEndpoint().toString());
+		mMarkerFragment.bind(n);
 	}
 
 	@Override

@@ -3,38 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
-    android:padding="@dimen/stats_padding"
+    android:padding="@dimen/marker_padding"
     android:background="@android:color/white"
     android:id="@+id/stats_fragment_layout">
     
-    <ImageView
-        android:contentDescription="@string/info_device_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="?android:attr/listPreferredItemHeightLarge"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/stats_icon"
-        android:src="@drawable/ic_node" />
-
-	<TextView
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:textSize="@dimen/stats_title_size"
-	    android:id="@+id/stats_title"
-	    android:textColor="@android:color/primary_text_light"
-	    android:layout_toRightOf="@id/stats_icon"
-	    android:layout_alignParentTop="true"
-	    android:paddingTop="@dimen/stats_padding"
-	    android:paddingLeft="@dimen/stats_padding"
-	    android:textStyle="bold" />
-	
-	<TextView
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:textSize="@dimen/stats_description_size"
-	    android:id="@+id/stats_description"
-	    android:textColor="@android:color/secondary_text_light"
-	    android:layout_toRightOf="@id/stats_icon"
-	    android:layout_below="@id/stats_title"
-	    android:paddingLeft="@dimen/stats_padding" />
+	<fragment
+          android:id="@+id/marker_item_fragment"
+          android:layout_width="match_parent"
+          android:layout_height="?android:attr/listPreferredItemHeightLarge"
+          android:name="de.tubs.ibr.dtn.ruralexplorer.MarkerItemFragment"
+          android:layout_below="@id/marker_item_fragment"
+          android:layout_alignParentTop="true" />
     
 </RelativeLayout>
