@@ -11,9 +11,11 @@ import android.location.Location;
 import android.provider.BaseColumns;
 import android.util.Log;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
+import de.tubs.ibr.dtn.ruralexplorer.data.AccelerationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.Marker;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
-import de.tubs.ibr.dtn.ruralexplorer.data.RuralLocation;
+import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
+import de.tubs.ibr.dtn.ruralexplorer.data.SensorData;
 
 public class Database {
 	private static final String TAG = "Database";
@@ -29,36 +31,42 @@ public class Database {
 	
 	public static final String TABLE_NAME_NODES = "nodes";
 	public static final String TABLE_NAME_MARKER = "marker";
+	public static final String TABLE_NAME_DATA = "history";
 	
 	private static final String DATABASE_CREATE_NODES =
 			"CREATE TABLE " + TABLE_NAME_NODES + " (" +
 				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				Node.ENDPOINT + " TEXT NOT NULL, " +
 				Node.TYPE + " TEXT NOT NULL, " +
-				RuralLocation.LAT + " DOUBLE, " +
-				RuralLocation.LNG + " DOUBLE, " +
-				RuralLocation.ALT + " DOUBLE, " +
-				RuralLocation.BEARING + " FLOAT, " +
-				RuralLocation.SPEED + " FLOAT, " +
-				RuralLocation.ACCURACY + " FLOAT" +
+				LocationData.LAT + " DOUBLE, " +
+				LocationData.LNG + " DOUBLE, " +
+				LocationData.ALT + " DOUBLE, " +
+				LocationData.BEARING + " FLOAT, " +
+				LocationData.SPEED + " FLOAT, " +
+				LocationData.ACCURACY + " FLOAT, " +
+				SensorData.PRESSURE + " FLOAT, " +
+				SensorData.TEMPERATURE + " FLOAT, " +
+				AccelerationData.ACCELERATION_X + " FLOAT, " +
+				AccelerationData.ACCELERATION_Y + " FLOAT, " +
+				AccelerationData.ACCELERATION_Z + " FLOAT" +
 			");";
 	
 	private static final String DATABASE_CREATE_MARKER =
 			"CREATE TABLE " + TABLE_NAME_MARKER + " (" +
 				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				Marker.NODE_ID + " INTEGER NOT NULL, " +
-				RuralLocation.LAT + " DOUBLE, " +
-				RuralLocation.LNG + " DOUBLE, " +
-				RuralLocation.ALT + " DOUBLE, " +
-				RuralLocation.BEARING + " FLOAT, " +
-				RuralLocation.SPEED + " FLOAT, " +
-				RuralLocation.ACCURACY + " FLOAT" +
+				LocationData.LAT + " DOUBLE, " +
+				LocationData.LNG + " DOUBLE, " +
+				LocationData.ALT + " DOUBLE, " +
+				LocationData.BEARING + " FLOAT, " +
+				LocationData.SPEED + " FLOAT, " +
+				LocationData.ACCURACY + " FLOAT" +
 			");";
 	
 	private class DBOpenHelper extends SQLiteOpenHelper {
 		
 		private static final String DATABASE_NAME = "rural_explorer";
-		private static final int DATABASE_VERSION = 3;
+		private static final int DATABASE_VERSION = 4;
 		
 		public DBOpenHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -99,19 +107,19 @@ public class Database {
 			l.setLongitude(10.524711);
 			
 			Node n = new Node( Node.Type.INGA, new SingletonEndpoint("dtn://test1") );
-			RuralLocation l1 = new RuralLocation(l);
+			LocationData l1 = new LocationData(l);
 			l1.setLatitude(l.getLatitude() + 0.005);
 			n.setLocation(l1);
 			update(n);
 			
 			n = new Node( Node.Type.PI, new SingletonEndpoint("dtn://test2") );
-			RuralLocation l2 = new RuralLocation(l);
+			LocationData l2 = new LocationData(l);
 			l2.setLatitude(l.getLatitude() - 0.005);
 			n.setLocation(l2);
 			update(n);
 			
 			n = new Node( Node.Type.ANDROID, new SingletonEndpoint("dtn://test3") );
-			RuralLocation l3 = new RuralLocation(l);
+			LocationData l3 = new LocationData(l);
 			l3.setLongitude(l.getLongitude() - 0.005);
 			n.setLocation(l3);
 			update(n);
@@ -165,52 +173,64 @@ public class Database {
 		return null;
 	}
 	
-	private void updateLocation(Long nodeId, RuralLocation l) {
-		ContentValues values = new ContentValues();
-		
+	private void add(ContentValues values, LocationData l) {
 		if (l.hasLatitude()) {
-			values.put(RuralLocation.LAT, l.getLatitude());
+			values.put(LocationData.LAT, l.getLatitude());
 		} else {
-			values.putNull(RuralLocation.LAT);
+			values.putNull(LocationData.LAT);
 		}
 		
 		if (l.hasLongitude()) {
-			values.put(RuralLocation.LNG, l.getLongitude());
+			values.put(LocationData.LNG, l.getLongitude());
 		} else {
-			values.putNull(RuralLocation.LNG);
+			values.putNull(LocationData.LNG);
 		}
 		
 		if (l.hasAltitude()) {
-			values.put(RuralLocation.ALT, l.getAltitude());
+			values.put(LocationData.ALT, l.getAltitude());
 		} else {
-			values.putNull(RuralLocation.ALT);
+			values.putNull(LocationData.ALT);
 		}
 		
 		if (l.hasBearing()) {
-			values.put(RuralLocation.BEARING, l.getBearing());
+			values.put(LocationData.BEARING, l.getBearing());
 		} else {
-			values.putNull(RuralLocation.BEARING);
+			values.putNull(LocationData.BEARING);
 		}
 		
 		if (l.hasSpeed()) {
-			values.put(RuralLocation.SPEED, l.getSpeed());
+			values.put(LocationData.SPEED, l.getSpeed());
 		} else {
-			values.putNull(RuralLocation.SPEED);
+			values.putNull(LocationData.SPEED);
 		}
 		
 		if (l.hasAccurarcy()) {
-			values.put(RuralLocation.ACCURACY, l.getAccurarcy());
+			values.put(LocationData.ACCURACY, l.getAccurarcy());
 		} else {
-			values.putNull(RuralLocation.ACCURACY);
+			values.putNull(LocationData.ACCURACY);
 		}
-
-		try {
-			// update buddy data
-			mDatabase.update(TABLE_NAME_NODES, values, Node.ID + " = ?", new String[] { nodeId.toString() });
-		} catch (Exception e) {
-			// could not update location
-			Log.e(TAG, "Location update failed.", e);
+	}
+	
+	private void add(ContentValues values, SensorData data) {
+		if (data.hasPressure()) {
+			values.put(SensorData.TEMPERATURE, data.getPressure());
+		} else {
+			values.putNull(SensorData.TEMPERATURE);
 		}
+		
+		if (data.hasTemperature()) {
+			values.put(SensorData.PRESSURE, data.getTemperature());
+		} else {
+			values.putNull(SensorData.PRESSURE);
+		}
+	}
+	
+	private void add(ContentValues values, AccelerationData data) {
+		float[] axis = data.getData();
+		
+		values.put(AccelerationData.ACCELERATION_X, axis[0]);
+		values.put(AccelerationData.ACCELERATION_Y, axis[1]);
+		values.put(AccelerationData.ACCELERATION_Z, axis[2]);
 	}
 	
 	public Node getNode(SingletonEndpoint endpoint) {
@@ -229,9 +249,25 @@ public class Database {
 			// create a new node
 			createNode(n);
 		}
+		
+		ContentValues values = new ContentValues();
 
-		// store location
-		updateLocation(n.getId(), n.getLocation());
+		// add location
+		add(values, n.getLocation());
+		
+		// add sensor data
+		add(values, n.getSensor());
+		
+		// add acceleration data
+		add(values, n.getAcceleration());
+		
+		try {
+			// update data
+			mDatabase.update(TABLE_NAME_NODES, values, Node.ID + " = ?", new String[] { n.getId().toString() });
+		} catch (Exception e) {
+			// could not update data
+			Log.e(TAG, "Location update failed.", e);
+		}
 
 		// send refresh intent
 		notifyNodeChanged(n.getId());

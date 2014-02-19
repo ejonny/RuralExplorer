@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
 
-public class RuralLocation {
+public class LocationData {
 	public static final String LAT = "latitude";
 	public static final String LNG = "longitude";
 	public static final String ALT = "altitude";
@@ -21,10 +21,10 @@ public class RuralLocation {
 	private Float mSpeed = null;
 	private Float mAccurarcy = null;
 	
-	public RuralLocation() {
+	public LocationData() {
 	}
 	
-	public RuralLocation(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
+	public LocationData(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
 	{
 		mLatitude = cursor.getDouble(cmap.mColumnLocationLat);
 		mLongitude = cursor.getDouble(cmap.mColumnLocationLng);
@@ -34,7 +34,7 @@ public class RuralLocation {
 		mAccurarcy = cursor.getFloat(cmap.mColumnLocationAccuracy);
 	}
 	
-	public RuralLocation(Location l) {
+	public LocationData(Location l) {
 		mLatitude = l.getLatitude();
 		mLongitude = l.getLongitude();
 		mAltitude = l.getAltitude();

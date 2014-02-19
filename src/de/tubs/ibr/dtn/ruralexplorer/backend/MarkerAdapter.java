@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import de.tubs.ibr.dtn.ruralexplorer.MarkerItem;
 import de.tubs.ibr.dtn.ruralexplorer.R;
 import de.tubs.ibr.dtn.ruralexplorer.data.Marker;
-import de.tubs.ibr.dtn.ruralexplorer.data.RuralLocation;
+import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
 
 public class MarkerAdapter extends CursorAdapter {
 	
@@ -26,12 +26,12 @@ public class MarkerAdapter extends CursorAdapter {
 	public static final String[] PROJECTION = new String[] {
 			BaseColumns._ID,
 			Marker.NODE_ID,
-			RuralLocation.LAT,
-			RuralLocation.LNG,
-			RuralLocation.ALT,
-			RuralLocation.BEARING,
-			RuralLocation.SPEED,
-			RuralLocation.ACCURACY
+			LocationData.LAT,
+			LocationData.LNG,
+			LocationData.ALT,
+			LocationData.BEARING,
+			LocationData.SPEED,
+			LocationData.ACCURACY
 	};
 
 	// The indexes of the default columns which must be consistent
@@ -118,37 +118,37 @@ public class MarkerAdapter extends CursorAdapter {
 			}
 
 			try {
-				mColumnLocationLat = cursor.getColumnIndexOrThrow(RuralLocation.LAT);
+				mColumnLocationLat = cursor.getColumnIndexOrThrow(LocationData.LAT);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationLng = cursor.getColumnIndexOrThrow(RuralLocation.LNG);
+				mColumnLocationLng = cursor.getColumnIndexOrThrow(LocationData.LNG);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationAlt = cursor.getColumnIndexOrThrow(RuralLocation.ALT);
+				mColumnLocationAlt = cursor.getColumnIndexOrThrow(LocationData.ALT);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationBearing = cursor.getColumnIndexOrThrow(RuralLocation.BEARING);
+				mColumnLocationBearing = cursor.getColumnIndexOrThrow(LocationData.BEARING);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationSpeed = cursor.getColumnIndexOrThrow(RuralLocation.SPEED);
+				mColumnLocationSpeed = cursor.getColumnIndexOrThrow(LocationData.SPEED);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationAccuracy = cursor.getColumnIndexOrThrow(RuralLocation.ACCURACY);
+				mColumnLocationAccuracy = cursor.getColumnIndexOrThrow(LocationData.ACCURACY);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}

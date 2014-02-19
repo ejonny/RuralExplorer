@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import de.tubs.ibr.dtn.ruralexplorer.NodeItem;
 import de.tubs.ibr.dtn.ruralexplorer.R;
+import de.tubs.ibr.dtn.ruralexplorer.data.AccelerationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
-import de.tubs.ibr.dtn.ruralexplorer.data.RuralLocation;
+import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
+import de.tubs.ibr.dtn.ruralexplorer.data.SensorData;
 
 public class NodeAdapter extends CursorAdapter {
 
@@ -28,12 +30,17 @@ public class NodeAdapter extends CursorAdapter {
 			BaseColumns._ID,
 			Node.ENDPOINT,
 			Node.TYPE,
-			RuralLocation.LAT,
-			RuralLocation.LNG,
-			RuralLocation.ALT,
-			RuralLocation.BEARING,
-			RuralLocation.SPEED,
-			RuralLocation.ACCURACY
+			LocationData.LAT,
+			LocationData.LNG,
+			LocationData.ALT,
+			LocationData.BEARING,
+			LocationData.SPEED,
+			LocationData.ACCURACY,
+			SensorData.PRESSURE,
+			SensorData.TEMPERATURE,
+			AccelerationData.ACCELERATION_X,
+			AccelerationData.ACCELERATION_Y,
+			AccelerationData.ACCELERATION_Z
 	};
 
 	// The indexes of the default columns which must be consistent
@@ -47,6 +54,11 @@ public class NodeAdapter extends CursorAdapter {
 	static final int COLUMN_NODE_LOCATION_BEARING = 6;
 	static final int COLUMN_NODE_LOCATION_SPEED = 7;
 	static final int COLUMN_NODE_LOCATION_ACCURACY = 8;
+	static final int COLUMN_NODE_SENSOR_PRESSURE = 9;
+	static final int COLUMN_NODE_SENSOR_TEMPERATURE = 10;
+	static final int COLUMN_NODE_ACCELERATION_X = 11;
+	static final int COLUMN_NODE_ACCELERATION_Y = 12;
+	static final int COLUMN_NODE_ACCELERATION_Z = 13;
 
 	private static final int CACHE_SIZE = 50;
 
@@ -94,6 +106,11 @@ public class NodeAdapter extends CursorAdapter {
 		public int mColumnLocationSpeed;
 		public int mColumnLocationBearing;
 		public int mColumnLocationAccuracy;
+		public int mColumnSensorPressure;
+		public int mColumnSensorTemperature;
+		public int mColumnAccelerationX;
+		public int mColumnAccelerationY;
+		public int mColumnAccelerationZ;
 
 		public ColumnsMap() {
 			mColumnId = COLUMN_NODE_ID;
@@ -105,6 +122,11 @@ public class NodeAdapter extends CursorAdapter {
 			mColumnLocationSpeed = COLUMN_NODE_LOCATION_SPEED;
 			mColumnLocationBearing = COLUMN_NODE_LOCATION_BEARING;
 			mColumnLocationAccuracy = COLUMN_NODE_LOCATION_ACCURACY;
+			mColumnSensorPressure = COLUMN_NODE_SENSOR_PRESSURE;
+			mColumnSensorTemperature = COLUMN_NODE_SENSOR_TEMPERATURE;
+			mColumnAccelerationX = COLUMN_NODE_ACCELERATION_X;
+			mColumnAccelerationY = COLUMN_NODE_ACCELERATION_Y;
+			mColumnAccelerationZ = COLUMN_NODE_ACCELERATION_Z;
 		}
 
 		public ColumnsMap(Cursor cursor) {
@@ -129,37 +151,67 @@ public class NodeAdapter extends CursorAdapter {
 			}
 
 			try {
-				mColumnLocationLat = cursor.getColumnIndexOrThrow(RuralLocation.LAT);
+				mColumnLocationLat = cursor.getColumnIndexOrThrow(LocationData.LAT);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationLng = cursor.getColumnIndexOrThrow(RuralLocation.LNG);
+				mColumnLocationLng = cursor.getColumnIndexOrThrow(LocationData.LNG);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationAlt = cursor.getColumnIndexOrThrow(RuralLocation.ALT);
+				mColumnLocationAlt = cursor.getColumnIndexOrThrow(LocationData.ALT);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationBearing = cursor.getColumnIndexOrThrow(RuralLocation.BEARING);
+				mColumnLocationBearing = cursor.getColumnIndexOrThrow(LocationData.BEARING);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationSpeed = cursor.getColumnIndexOrThrow(RuralLocation.SPEED);
+				mColumnLocationSpeed = cursor.getColumnIndexOrThrow(LocationData.SPEED);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
 			
 			try {
-				mColumnLocationAccuracy = cursor.getColumnIndexOrThrow(RuralLocation.ACCURACY);
+				mColumnLocationAccuracy = cursor.getColumnIndexOrThrow(LocationData.ACCURACY);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnSensorPressure = cursor.getColumnIndexOrThrow(SensorData.PRESSURE);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnSensorTemperature = cursor.getColumnIndexOrThrow(SensorData.TEMPERATURE);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnAccelerationX = cursor.getColumnIndexOrThrow(AccelerationData.ACCELERATION_X);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+			
+			try {
+				mColumnAccelerationY = cursor.getColumnIndexOrThrow(AccelerationData.ACCELERATION_Y);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
+
+			try {
+				mColumnAccelerationZ = cursor.getColumnIndexOrThrow(AccelerationData.ACCELERATION_Z);
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}

@@ -2,11 +2,10 @@ package de.tubs.ibr.dtn.ruralexplorer.data;
 
 import java.io.Serializable;
 
-import de.tubs.ibr.dtn.ruralexplorer.backend.MarkerAdapter;
-import de.tubs.ibr.dtn.ruralexplorer.backend.MarkerAdapter.ColumnsMap;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.BaseColumns;
+import de.tubs.ibr.dtn.ruralexplorer.backend.MarkerAdapter;
 
 public class Marker implements Serializable, Comparable<Marker> {
 	
@@ -38,6 +37,14 @@ public class Marker implements Serializable, Comparable<Marker> {
 
 	public void setId(Long id) {
 		mId = id;
+	}
+	
+	public Long getNodeId() {
+		return mNodeId;
+	}
+
+	public void setNodeId(Long id) {
+		mNodeId = id;
 	}
 	
 	@Override

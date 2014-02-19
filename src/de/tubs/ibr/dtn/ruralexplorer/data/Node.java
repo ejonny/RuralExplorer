@@ -12,7 +12,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.R;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
-import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter.ColumnsMap;
 
 public class Node implements Serializable, Comparable<Node> {
 	/**
@@ -36,12 +35,16 @@ public class Node implements Serializable, Comparable<Node> {
 	private Long mId = null;
 	private final SingletonEndpoint mEndpoint;
 	private final Type mType;
-	private RuralLocation mLocation = null;
+	private LocationData mLocation = null;
+	private SensorData mSensor = null;
+	private AccelerationData mAcceleration = null;
 	
 	public Node(Node.Type t, SingletonEndpoint endpoint) {
 		mType = t;
 		mEndpoint = endpoint;
-		mLocation = new RuralLocation();
+		mLocation = new LocationData();
+		mSensor = new SensorData();
+		mAcceleration = new AccelerationData();
 	}
 	
 	public Node(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
@@ -49,7 +52,9 @@ public class Node implements Serializable, Comparable<Node> {
 		this.mId = cursor.getLong(cmap.mColumnId);
 		this.mEndpoint = new SingletonEndpoint( cursor.getString(cmap.mColumnEndpoint) );
 		this.mType = Type.valueOf( cursor.getString(cmap.mColumnType) );
-		this.mLocation = new RuralLocation(context, cursor, cmap);
+		this.mLocation = new LocationData(context, cursor, cmap);
+		this.mSensor = new SensorData(context, cursor, cmap);
+		this.mAcceleration = new AccelerationData(context, cursor, cmap);
 	}
 
 	public Long getId() {
@@ -64,14 +69,30 @@ public class Node implements Serializable, Comparable<Node> {
 		return mType;
 	}
 	
-	public void setLocation(RuralLocation l) {
+	public void setLocation(LocationData l) {
 		mLocation = l;
 	}
 	
-	public RuralLocation getLocation() {
+	public LocationData getLocation() {
 		return mLocation;
 	}
 	
+	public SensorData getSensor() {
+		return mSensor;
+	}
+
+	public void setSensor(SensorData sensor) {
+		mSensor = sensor;
+	}
+
+	public AccelerationData getAcceleration() {
+		return mAcceleration;
+	}
+
+	public void setAcceleration(AccelerationData acceleration) {
+		mAcceleration = acceleration;
+	}
+
 	public SingletonEndpoint getEndpoint() {
 		if (mEndpoint == null) return new SingletonEndpoint("dtn:none");
 		return mEndpoint;
