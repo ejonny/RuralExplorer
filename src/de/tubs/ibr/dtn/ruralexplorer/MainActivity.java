@@ -164,8 +164,10 @@ public class MainActivity extends FragmentActivity implements
 			// hide rescue indicator
 			mRescueFragment.getView().setVisibility(View.GONE);
 			
-			// set previous marker icon to inactive
-			mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
+			if (mActiveGeoTag != null) {
+				// set previous marker icon to inactive
+				mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
+			}
 		} else {
 			// show rescue indicator
 			mRescueFragment.getView().setVisibility(View.VISIBLE);
