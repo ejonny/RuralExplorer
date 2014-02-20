@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
@@ -85,11 +87,30 @@ public class StatsFragment extends Fragment {
 	}
 	
 	public void bind(Node n) {
+		boolean animate = true;
+		
+		if ((mNode != null) && mNode.equals(n)) {
+			animate = false;
+		}
+		else if ((n != null) && n.equals(mNode)) {
+			animate = false;
+		}
+		
 		mNode = n;
 		
 		if (n == null) {
+			if (animate) {
+				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_bottom);
+				mLayout.startAnimation(a);
+			}
+			
 			mLayout.setVisibility(View.INVISIBLE);
 		} else {
+			if (animate) {
+				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_bottom);
+				mLayout.startAnimation(a);
+			}
+			
 			mLayout.setVisibility(View.VISIBLE);
 		}
 		
