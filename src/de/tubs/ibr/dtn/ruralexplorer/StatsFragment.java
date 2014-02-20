@@ -87,14 +87,7 @@ public class StatsFragment extends Fragment {
 	}
 	
 	public void bind(Node n) {
-		boolean animate = true;
-		
-		if ((mNode != null) && mNode.equals(n)) {
-			animate = false;
-		}
-		else if ((n != null) && n.equals(mNode)) {
-			animate = false;
-		}
+		boolean animate = ((mNode != null) && !mNode.equals(n)) || ((n != null) && !n.equals(mNode));
 		
 		mNode = n;
 		
