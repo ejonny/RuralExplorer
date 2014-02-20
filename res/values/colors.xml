@@ -21,6 +21,6 @@
     <color name="dark_drop_shadow">#A0303030</color>
     <color name="drop_shadow">#60808080</color>
     <color name="white_overlay">#ddffffff</color>
-    <color name="drop_shadow_gray">#ffcccccc</color>
+    <color name="background_gray">#ffcccccc</color>
     <color name="dark_overlay">#80000000</color>
 </resources>

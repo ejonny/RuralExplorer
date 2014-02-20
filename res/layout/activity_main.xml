@@ -17,20 +17,27 @@
           android:layout_alignParentTop="true"
           android:layout_alignParentLeft="true" />
 	
-	<FrameLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:background="@drawable/bottom_dropshadow"
-	    android:layout_above="@+id/marker_fragment"
-	    android:visibility="invisible"
-	    android:id="@+id/info_drop_shadow" />
-
-	<fragment
-          android:id="@+id/marker_fragment"
-          android:layout_width="match_parent"
-          android:layout_height="?android:attr/listPreferredItemHeightLarge"
-          android:name="de.tubs.ibr.dtn.ruralexplorer.MarkerFragment"
-          android:layout_alignParentBottom="true" />
+	<RelativeLayout
+	    android:id="@+id/marker_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true">
+        
+		<FrameLayout
+		    android:id="@+id/marker_drop_shadow"
+		    android:layout_width="match_parent"
+		    android:layout_height="24dp"
+		    android:background="@drawable/bottom_dropshadow"
+		    android:layout_alignParentTop="true" />
+	
+		<fragment
+	          android:id="@+id/marker_fragment"
+	          android:layout_width="match_parent"
+	          android:layout_height="?android:attr/listPreferredItemHeightLarge"
+	          android:name="de.tubs.ibr.dtn.ruralexplorer.MarkerFragment"
+	          android:layout_below="@id/marker_drop_shadow" />
+	</RelativeLayout>
 	
 	<fragment
           android:id="@+id/stats_fragment"

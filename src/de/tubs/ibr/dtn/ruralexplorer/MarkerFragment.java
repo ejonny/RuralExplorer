@@ -20,7 +20,11 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
@@ -33,7 +37,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	
 	private static final int MARKER_LOADER_ID = 1;
 
-	private FrameLayout mLayout = null;
+//	private RelativeLayout mLayout = null;
 
 	private Node mNode = null;
 	private NodeAdapter mNodeAdapter = null;
@@ -44,7 +48,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	private DataService mDataService = null;
 	
 	public interface OnWindowChangedListener {
-		public void onMarkerWindowChanged(boolean visible, int height, int width);
+		public void onMarkerWindowChanged(boolean visible);
 		public void onMarkerNodeSelected(Node n);
 	}
 
@@ -91,7 +95,6 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_marker, container, false);
-		mLayout = (FrameLayout) v.findViewById(R.id.node_fragment_layout);
 
 		mViewPager = (ViewPager) v.findViewById(R.id.info_pager);
 		mViewPager.setAdapter(mMarkerPagerAdapter);
@@ -147,14 +150,15 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	}
 
 	public void bind(Node n) {
+		// stop if nothing has changed
+		boolean animate = ((n != null) && (mNode == null)) || ((n == null) && (mNode != null));
+		
 		mNode = n;
 		
 		if (n == null) {
-			mLayout.setVisibility(View.INVISIBLE);
-			mListener.onMarkerWindowChanged(false, 0, 0);
+			if (animate) mListener.onMarkerWindowChanged(false);
 		} else {
-			mLayout.setVisibility(View.VISIBLE);
-			mListener.onMarkerWindowChanged(true, mLayout.getHeight(), mLayout.getWidth());
+			if (animate) mListener.onMarkerWindowChanged(true);
 			
 			try {
 				// set pager to position

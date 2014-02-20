@@ -21,7 +21,10 @@ import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -57,7 +60,6 @@ public class MainActivity extends FragmentActivity implements
 	private HashMap<Marker, GeoTag> mGeoTagMap = new HashMap<Marker, GeoTag>();
 
 	private Boolean mLocationInitialized = false;
-	private FrameLayout mLayoutDropShadow = null;
 	private Boolean mInfoVisible = false;
 	private Boolean mStatsVisible = false;
 	private Marker mSelectionMarker = null;
@@ -68,6 +70,8 @@ public class MainActivity extends FragmentActivity implements
 	private MarkerFragment mMarkerFragment = null;
 	private RescueFragment mRescueFragment = null;
 	private GoogleMap mMap = null;
+	
+	private RelativeLayout mMarkerLayout = null;
 
 	private DataService mDataService = null;
 	private boolean mBound = false;
@@ -97,9 +101,6 @@ public class MainActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		// get info window drop shadow
-		mLayoutDropShadow = (FrameLayout)findViewById(R.id.info_drop_shadow);
-		
 		// get google map fragment
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 
@@ -112,6 +113,9 @@ public class MainActivity extends FragmentActivity implements
 		
 		// set listener for clicks on marker
 		mMap.setOnMarkerClickListener(mMarkerListener);
+		
+		// Marker layout
+		mMarkerLayout = (RelativeLayout) findViewById(R.id.marker_layout);
 		
 		// get marker fragment
 		mMarkerFragment = (MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_fragment);
@@ -318,14 +322,22 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onMarkerWindowChanged(boolean visible, int height, int width) {
+	public void onMarkerWindowChanged(boolean visible) {
+		FrameLayout layout = (FrameLayout)mMarkerLayout.findViewById(R.id.node_fragment_layout);
+		
 		if (visible) {
-			mMap.setPadding(0, 0, 0, height);
-			mLayoutDropShadow.setVisibility(View.VISIBLE);
+			final Animation a = AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom);
+			mMarkerLayout.startAnimation(a);
+			mMarkerLayout.setVisibility(View.VISIBLE);
+			
+			mMap.setPadding(0, 0, 0, layout.getHeight());
 			mInfoVisible = true;
 		} else {
+			final Animation a = AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom);
+			mMarkerLayout.startAnimation(a);
+			mMarkerLayout.setVisibility(View.INVISIBLE);
+			
 			mMap.setPadding(0, 0, 0, 0);
-			mLayoutDropShadow.setVisibility(View.GONE);
 			mInfoVisible = false;
 		}
 	}
