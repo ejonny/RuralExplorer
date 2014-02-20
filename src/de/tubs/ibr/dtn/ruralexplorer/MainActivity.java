@@ -547,6 +547,11 @@ public class MainActivity extends FragmentActivity implements
 				} else {
 					// update marker
 					m.setPosition(position);
+					
+					if (n.equals(mMarkerFragment.getNode()) && mSelectionMarker != null) {
+						// set position of selection marker
+						mSelectionMarker.setPosition(position);
+					}
 				}
 				
 				m.setVisible(true);
