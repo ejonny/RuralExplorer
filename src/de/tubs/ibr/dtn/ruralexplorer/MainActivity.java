@@ -60,8 +60,6 @@ public class MainActivity extends FragmentActivity implements
 	private HashMap<Marker, GeoTag> mGeoTagMap = new HashMap<Marker, GeoTag>();
 
 	private Boolean mLocationInitialized = false;
-	private Boolean mInfoVisible = false;
-	private Boolean mStatsVisible = false;
 	private Marker mSelectionMarker = null;
 	
 	private Marker mActiveGeoTag = null;
@@ -135,10 +133,10 @@ public class MainActivity extends FragmentActivity implements
 	
 	@Override
 	public void onBackPressed() {
-		if (mStatsVisible) {
+		if (mStatsFragment.getNode() != null) {
 			mStatsFragment.bind(null);
 		}
-		else if (mInfoVisible) {
+		else if (mMarkerFragment.getNode() != null) {
 			// show / hide marker frame
 			mMarkerFragment.bind(null);
 			
@@ -343,20 +341,17 @@ public class MainActivity extends FragmentActivity implements
 			mMarkerLayout.setVisibility(View.VISIBLE);
 			
 			mMap.setPadding(0, 0, 0, layout.getHeight());
-			mInfoVisible = true;
 		} else {
 			final Animation a = AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom);
 			mMarkerLayout.startAnimation(a);
 			mMarkerLayout.setVisibility(View.INVISIBLE);
 			
 			mMap.setPadding(0, 0, 0, 0);
-			mInfoVisible = false;
 		}
 	}
 	
 	@Override
 	public void onStatsWindowChanged(boolean visible) {
-		mStatsVisible = visible;
 	}
 	
 	private BroadcastReceiver mLocationReceiver = new BroadcastReceiver() {
