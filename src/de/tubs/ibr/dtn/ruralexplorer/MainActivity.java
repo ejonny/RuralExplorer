@@ -106,7 +106,7 @@ public class MainActivity extends FragmentActivity implements
 
 		// Other supported types include: MAP_TYPE_NORMAL,
 		// MAP_TYPE_TERRAIN, MAP_TYPE_HYBRID and MAP_TYPE_NONE
-		mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+		mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 		
 		// enable own location
 		mMap.setMyLocationEnabled(true);
