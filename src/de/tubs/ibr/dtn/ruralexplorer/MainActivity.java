@@ -441,6 +441,7 @@ public class MainActivity extends FragmentActivity implements
 			for (Marker m : mGeoTagMap.keySet()) {
 				m.remove();
 			}
+			mActiveGeoTag = null;
 			mGeoTagSet.clear();
 			mGeoTagMap.clear();
 		}
@@ -489,6 +490,10 @@ public class MainActivity extends FragmentActivity implements
 					m.remove();
 					mGeoTagMap.remove(m);
 					mGeoTagSet.remove(t);
+					
+					if (m.equals(mActiveGeoTag)) {
+						mActiveGeoTag = null;
+					}
 					break;
 				}
 			}
