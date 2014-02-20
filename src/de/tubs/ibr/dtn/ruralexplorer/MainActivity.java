@@ -144,14 +144,37 @@ public class MainActivity extends FragmentActivity implements
 		}
 		else if (mActiveGeoTag != null) {
 			// hide rescue
-			mRescueFragment.bind(null);
-			mRescueFragment.getView().setVisibility(View.GONE);
-			mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
-			mActiveGeoTag = null;
+			setRescue(null, null);
 		}
 		else {
 			super.onBackPressed();
 		}
+	}
+	
+	public void setRescue(GeoTag tag, Marker marker) {
+		// clear previous tag
+		if (mActiveGeoTag != null) {
+			mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
+		}
+		
+		// bind to tag
+		mRescueFragment.bind(tag);
+		
+		if (tag == null) {
+			// hide rescue indicator
+			mRescueFragment.getView().setVisibility(View.GONE);
+			
+			// set previous marker icon to inactive
+			mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
+		} else {
+			// show rescue indicator
+			mRescueFragment.getView().setVisibility(View.VISIBLE);
+			
+			// set marker icon to active
+			marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_active));
+		}
+		
+		mActiveGeoTag = marker;
 	}
 
 	private GoogleMap.OnMarkerClickListener mMarkerListener = new GoogleMap.OnMarkerClickListener() {
@@ -159,17 +182,8 @@ public class MainActivity extends FragmentActivity implements
 		public boolean onMarkerClick(Marker marker) {
 			// check if the marker is a tag
 			if (mGeoTagMap.containsKey(marker)) {
-				// store selected geotag
-				mActiveGeoTag = marker;
-				
-				// bind to geotag
-				mRescueFragment.bind(mGeoTagMap.get(marker));
-				
-				// show geotag distance
-				mRescueFragment.getView().setVisibility(View.VISIBLE);
-				
-				// set icon to active
-				mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_active));
+				// select rescue tag
+				setRescue(mGeoTagMap.get(marker), marker);
 			}
 			else {
 				// move to the marker
@@ -240,7 +254,6 @@ public class MainActivity extends FragmentActivity implements
 		
 		// read geotag from intent if present
 		if (intent.hasExtra(DataService.EXTRA_GEOTAG)) {
-			
 			GeoTag tag = (GeoTag)intent.getSerializableExtra(DataService.EXTRA_GEOTAG);
 			centerTo(tag.getLocation());
 		}
@@ -452,11 +465,7 @@ public class MainActivity extends FragmentActivity implements
 		}
 		
 		if (mGeoTagSet.isEmpty()) {
-			if (mActiveGeoTag != null) {
-				mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
-				mActiveGeoTag = null;
-				mRescueFragment.getView().setVisibility(View.GONE);
-			}
+			setRescue(null, null);
 		}
 	}
 	
