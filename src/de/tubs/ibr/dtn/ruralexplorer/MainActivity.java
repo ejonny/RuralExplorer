@@ -156,20 +156,18 @@ public class MainActivity extends FragmentActivity implements
 	}
 	
 	public void setRescue(GeoTag tag, Marker marker) {
-		boolean animate = true;
+		boolean animate = ((marker != null) && (mActiveGeoTag == null)) || ((marker == null) && (mActiveGeoTag != null));
 		
 		// clear previous tag
 		if (mActiveGeoTag != null) {
 			mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
-			animate = false;
 		}
 		
-		// bind to tag
-		mRescueFragment.bind(tag);
-		
 		if (tag == null) {
-			final Animation a = AnimationUtils.makeOutAnimation(this, false);
-			mRescueFragment.getView().startAnimation(a);
+			if (animate) {
+				final Animation a = AnimationUtils.makeOutAnimation(this, false);
+				mRescueFragment.getView().startAnimation(a);
+			}
 			
 			// hide rescue indicator
 			mRescueFragment.getView().setVisibility(View.GONE);
@@ -179,6 +177,9 @@ public class MainActivity extends FragmentActivity implements
 				mActiveGeoTag.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
 			}
 		} else {
+			// bind to tag
+			mRescueFragment.bind(tag);
+			
 			if (animate) {
 				final Animation a = AnimationUtils.makeInAnimation(this, true);
 				mRescueFragment.getView().startAnimation(a);
