@@ -355,7 +355,12 @@ public class MainActivity extends FragmentActivity implements
 	public void onMarkerNodeSelected(Node n) {
 		Marker marker = mMarkerSet.get(n.getId());
 		
-		if (marker == null) return;
+		if (marker == null) {
+			if (mSelectionMarker != null) {
+				mSelectionMarker.setVisible(false);
+			}
+			return;
+		}
 
 		// move to the marker
 		mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
