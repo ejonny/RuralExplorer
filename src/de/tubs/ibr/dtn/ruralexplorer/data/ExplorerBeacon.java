@@ -148,7 +148,7 @@ public class ExplorerBeacon implements Parcelable {
 		 */
 		if (b.hasPosition()) {
 			Location l = b.getPosition();
-			encoder.write(TLV_TYPE_GPS, 16);
+			encoder.write(TLV_TYPE_GPS, 20);
 			encoder.write((float)l.getLatitude());
 			encoder.write((float)l.getLongitude());
 			encoder.write((float)l.getAltitude());
