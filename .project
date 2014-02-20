@@ -3,8 +3,6 @@
 	<name>RuralExplorer</name>
 	<comment></comment>
 	<projects>
-		<project>google-play-services_lib</project>
-		<project>IBR-DTN API for Android</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
