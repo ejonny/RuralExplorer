@@ -102,15 +102,17 @@ public class MainActivity extends FragmentActivity implements
 		// get google map fragment
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 
-		// Other supported types include: MAP_TYPE_NORMAL,
-		// MAP_TYPE_TERRAIN, MAP_TYPE_HYBRID and MAP_TYPE_NONE
-		mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-		
-		// enable own location
-		mMap.setMyLocationEnabled(true);
-		
-		// set listener for clicks on marker
-		mMap.setOnMarkerClickListener(mMarkerListener);
+		if (mMap != null) {
+			// Other supported types include: MAP_TYPE_NORMAL,
+			// MAP_TYPE_TERRAIN, MAP_TYPE_HYBRID and MAP_TYPE_NONE
+			mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+			
+			// enable own location
+			mMap.setMyLocationEnabled(true);
+			
+			// set listener for clicks on marker
+			mMap.setOnMarkerClickListener(mMarkerListener);
+		}
 		
 		// Marker layout
 		mMarkerLayout = (RelativeLayout) findViewById(R.id.marker_layout);
