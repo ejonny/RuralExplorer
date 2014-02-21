@@ -128,7 +128,7 @@ public class CommService extends IntentService {
 				out.close();
 				
 				// send beacon
-				mClient.getSession().send(RURAL_GROUP_DTN_EID, 20, array.toByteArray());
+				mClient.getSession().send(RURAL_GROUP_DTN_EID, 180, array.toByteArray());
 			} catch (SessionDestroyedException e) {
 				Log.e(TAG, "Beacon send failed", e);
 			} catch (InterruptedException e) {
