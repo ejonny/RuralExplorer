@@ -159,6 +159,13 @@ public class DataService extends Service {
 					n = new Node(type, source);
 				}
 				
+				// set last update time
+				if ( intent.hasExtra(CommService.EXTRA_TIME) ) {
+					n.setLastUpdate( (Date)intent.getSerializableExtra(CommService.EXTRA_TIME) );
+				} else {
+					n.setLastUpdate(new Date());
+				}
+				
 				// update location
 				n.setLocation(new LocationData(b.getPosition()));
 				

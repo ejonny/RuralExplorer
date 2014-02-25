@@ -44,6 +44,7 @@ public class Database {
 				Node.ENDPOINT + " TEXT NOT NULL, " +
 				Node.TYPE + " TEXT NOT NULL, " +
 				Node.NAME + " TEXT, " +
+				Node.LAST_UPDATE + " TEXT, " +
 				LocationData.LAT + " DOUBLE, " +
 				LocationData.LNG + " DOUBLE, " +
 				LocationData.ALT + " DOUBLE, " +
@@ -74,7 +75,7 @@ public class Database {
 	private class DBOpenHelper extends SQLiteOpenHelper {
 		
 		private static final String DATABASE_NAME = "rural_explorer";
-		private static final int DATABASE_VERSION = 9;
+		private static final int DATABASE_VERSION = 10;
 		
 		public DBOpenHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -116,18 +117,21 @@ public class Database {
 		l.setLongitude(10.524711);
 		
 		Node n = new Node( Node.Type.INGA, new SingletonEndpoint("dtn://test1") );
+		n.setLastUpdate(new Date());
 		LocationData l1 = new LocationData(l);
 		l1.setLatitude(l.getLatitude() + 0.005);
 		n.setLocation(l1);
 		update(n);
 		
 		n = new Node( Node.Type.PI, new SingletonEndpoint("dtn://test2") );
+		n.setLastUpdate(new Date());
 		LocationData l2 = new LocationData(l);
 		l2.setLatitude(l.getLatitude() - 0.005);
 		n.setLocation(l2);
 		update(n);
 		
 		n = new Node( Node.Type.ANDROID, new SingletonEndpoint("dtn://test3") );
+		n.setLastUpdate(new Date());
 		LocationData l3 = new LocationData(l);
 		l3.setLongitude(l.getLongitude() - 0.005);
 		n.setLocation(l3);
@@ -261,11 +265,14 @@ public class Database {
 		return null;
 	}
 	
+	@SuppressLint("SimpleDateFormat")
 	public void update(Node n) {
 		if (n.getId() == null) {
 			// create a new node
 			create(n);
 		}
+		
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		ContentValues values = new ContentValues();
 		
@@ -273,6 +280,10 @@ public class Database {
 			values.put(Node.NAME, n.getName());
 		} else {
 			values.putNull(Node.NAME);
+		}
+		
+		if (n.getLastUpdate() != null) {
+			values.put(Node.LAST_UPDATE, dateFormat.format(n.getLastUpdate()));
 		}
 
 		// add location

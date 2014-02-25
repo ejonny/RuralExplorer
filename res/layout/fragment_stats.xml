@@ -27,6 +27,12 @@
 		    android:padding="@dimen/stats_padding">
 		    
 			<fragment
+		          android:id="@+id/lastupdate_fragment"
+		          android:layout_width="match_parent"
+		          android:layout_height="wrap_content"
+		          android:name="de.tubs.ibr.dtn.ruralexplorer.LastUpdateFragment" />
+		    
+			<fragment
 		          android:id="@+id/location_fragment"
 		          android:layout_width="match_parent"
 		          android:layout_height="wrap_content"

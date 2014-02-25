@@ -16,15 +16,18 @@
     <string name="label_temperature">Temperature</string>
     <string name="label_location">Location</string>
     <string name="label_acceleration">Acceleration</string>
+    <string name="label_lastupdate">Last Update</string>
     <string name="data_pressure_dummy">123</string>
     <string name="data_temperature_dummy">42°C</string>
     <string name="data_location_dummy">52.12345, 10.12345</string>
     <string name="data_acceleration_dummy">0.0, 0.0, 0.0</string>
+    <string name="data_lastupdate_dummy">2014-01-01 10:12:11</string>
     <string name="data_na">N/A</string>
     <string name="data_unit_degree_celsius">%1$.2f°C</string>
     <string name="data_unit_pressure">%1$.3f hPa</string>
     <string name="data_unit_latlng">%1$.5f, %2$.5f</string>
     <string name="data_unit_acceleration">%1$.5f, %2$.5f, %3$.5f</string>
+    <string name="data_unit_date">%1$s</string>
     
     <string name="rescue_title">Target Distance</string>
     <string name="data_unit_meters">%1$.1f m</string>

@@ -1,14 +1,17 @@
 package de.tubs.ibr.dtn.ruralexplorer.data;
 
 import java.io.Serializable;
-
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.BaseColumns;
-
+import android.util.Log;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.R;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
@@ -19,10 +22,13 @@ public class Node implements Serializable, Comparable<Node> {
 	 */
 	private static final long serialVersionUID = -3021339683598377878L;
 	
+	private static final String TAG = "Node";
+	
 	public static final String ID = BaseColumns._ID;
 	public static final String ENDPOINT = "endpoint";
 	public static final String TYPE = "type";
 	public static final String NAME = "name";
+	public static final String LAST_UPDATE = "lastupdate";
 
 	public enum Type {
 		GENERIC,
@@ -35,6 +41,7 @@ public class Node implements Serializable, Comparable<Node> {
 	private final SingletonEndpoint mEndpoint;
 	private final Type mType;
 	private String mName = null;
+	private Date mLastUpdate = null;
 	private LocationData mLocation = null;
 	private SensorData mSensor = null;
 	private AccelerationData mAcceleration = null;
@@ -42,17 +49,32 @@ public class Node implements Serializable, Comparable<Node> {
 	public Node(Node.Type t, SingletonEndpoint endpoint) {
 		mType = t;
 		mEndpoint = endpoint;
+		mLastUpdate = null;
 		mLocation = new LocationData();
 		mSensor = new SensorData();
 		mAcceleration = new AccelerationData();
 	}
 	
+	@SuppressLint("SimpleDateFormat")
 	public Node(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
 	{
+		final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		this.mId = cursor.getLong(cmap.mColumnId);
 		this.mEndpoint = new SingletonEndpoint( cursor.getString(cmap.mColumnEndpoint) );
 		this.mType = Type.valueOf( cursor.getString(cmap.mColumnType) );
 		this.mName = cursor.getString(cmap.mColumnName);
+		
+		try {
+			if (cursor.isNull(cmap.mColumnLastUpdate)) {
+				mLastUpdate = null;
+			} else {
+				mLastUpdate = formatter.parse(cursor.getString(cmap.mColumnLastUpdate));
+			}
+		} catch (ParseException e) {
+			Log.e(TAG, "failed to convert date");
+		}
+		
 		this.mLocation = new LocationData(context, cursor, cmap);
 		this.mSensor = new SensorData(context, cursor, cmap);
 		this.mAcceleration = new AccelerationData(context, cursor, cmap);
@@ -112,6 +134,14 @@ public class Node implements Serializable, Comparable<Node> {
 	public SingletonEndpoint getEndpoint() {
 		if (mEndpoint == null) return new SingletonEndpoint("dtn:none");
 		return mEndpoint;
+	}
+
+	public Date getLastUpdate() {
+		return mLastUpdate;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		mLastUpdate = lastUpdate;
 	}
 
 	@Override

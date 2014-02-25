@@ -31,6 +31,7 @@ public class NodeAdapter extends CursorAdapter {
 			Node.ENDPOINT,
 			Node.TYPE,
 			Node.NAME,
+			Node.LAST_UPDATE,
 			LocationData.LAT,
 			LocationData.LNG,
 			LocationData.ALT,
@@ -50,17 +51,18 @@ public class NodeAdapter extends CursorAdapter {
 	static final int COLUMN_NODE_ENDPOINT = 1;
 	static final int COLUMN_NODE_TYPE = 2;
 	static final int COLUMN_NODE_NAME = 3;
-	static final int COLUMN_NODE_LOCATION_LAT = 4;
-	static final int COLUMN_NODE_LOCATION_LNG = 5;
-	static final int COLUMN_NODE_LOCATION_ALT = 6;
-	static final int COLUMN_NODE_LOCATION_BEARING = 7;
-	static final int COLUMN_NODE_LOCATION_SPEED = 8;
-	static final int COLUMN_NODE_LOCATION_ACCURACY = 9;
-	static final int COLUMN_NODE_SENSOR_PRESSURE = 10;
-	static final int COLUMN_NODE_SENSOR_TEMPERATURE = 11;
-	static final int COLUMN_NODE_ACCELERATION_X = 12;
-	static final int COLUMN_NODE_ACCELERATION_Y = 13;
-	static final int COLUMN_NODE_ACCELERATION_Z = 14;
+	static final int COLUMN_NODE_LAST_UPDATE = 4;
+	static final int COLUMN_NODE_LOCATION_LAT = 5;
+	static final int COLUMN_NODE_LOCATION_LNG = 6;
+	static final int COLUMN_NODE_LOCATION_ALT = 7;
+	static final int COLUMN_NODE_LOCATION_BEARING = 8;
+	static final int COLUMN_NODE_LOCATION_SPEED = 9;
+	static final int COLUMN_NODE_LOCATION_ACCURACY = 10;
+	static final int COLUMN_NODE_SENSOR_PRESSURE = 11;
+	static final int COLUMN_NODE_SENSOR_TEMPERATURE = 12;
+	static final int COLUMN_NODE_ACCELERATION_X = 13;
+	static final int COLUMN_NODE_ACCELERATION_Y = 14;
+	static final int COLUMN_NODE_ACCELERATION_Z = 15;
 
 	private static final int CACHE_SIZE = 50;
 
@@ -103,6 +105,7 @@ public class NodeAdapter extends CursorAdapter {
 		public int mColumnEndpoint;
 		public int mColumnType;
 		public int mColumnName;
+		public int mColumnLastUpdate;
 		public int mColumnLocationLat;
 		public int mColumnLocationLng;
 		public int mColumnLocationAlt;
@@ -120,6 +123,7 @@ public class NodeAdapter extends CursorAdapter {
 			mColumnEndpoint = COLUMN_NODE_ENDPOINT;
 			mColumnType = COLUMN_NODE_TYPE;
 			mColumnName = COLUMN_NODE_NAME;
+			mColumnLastUpdate = COLUMN_NODE_LAST_UPDATE;
 			mColumnLocationLat = COLUMN_NODE_LOCATION_LAT;
 			mColumnLocationLng = COLUMN_NODE_LOCATION_LNG;
 			mColumnLocationAlt = COLUMN_NODE_LOCATION_ALT;

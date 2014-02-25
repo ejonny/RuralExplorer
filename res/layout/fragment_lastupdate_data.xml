@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/data_padding">
+    
+    <TextView
+        android:id="@+id/label_lastupdate"
+        android:textSize="@dimen/data_title_size"
+        android:textColor="@android:color/secondary_text_light"
+        android:text="@string/label_lastupdate"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content" />
+    
+    <TextView
+        android:id="@+id/text_lastupdate"
+        android:textSize="@dimen/data_value_size"
+        android:textColor="@android:color/primary_text_light"
+        android:text="@string/data_lastupdate_dummy"
+        android:layout_below="@id/label_lastupdate"
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content" />
+    
+</RelativeLayout>
