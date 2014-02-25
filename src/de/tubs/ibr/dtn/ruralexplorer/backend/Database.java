@@ -61,7 +61,7 @@ public class Database {
 	private static final String DATABASE_CREATE_GEOTAGS =
 			"CREATE TABLE " + TABLE_NAME_GEOTAG + " (" +
 				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-				GeoTag.SENT_TIME + " TEXT NOT NULL, " +
+				GeoTag.SENT_TIME + " TEXT, " +
 				GeoTag.RECV_TIME + " TEXT NOT NULL, " +
 				GeoTag.ENDPOINT + " TEXT NOT NULL, " +
 				LocationData.LAT + " DOUBLE, " +
@@ -75,7 +75,7 @@ public class Database {
 	private class DBOpenHelper extends SQLiteOpenHelper {
 		
 		private static final String DATABASE_NAME = "rural_explorer";
-		private static final int DATABASE_VERSION = 10;
+		private static final int DATABASE_VERSION = 11;
 		
 		public DBOpenHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -314,8 +314,12 @@ public class Database {
 		try {
 			ContentValues values = new ContentValues();
 			
-			// set dates
-			values.put(GeoTag.SENT_TIME, dateFormat.format(tag.getSentTime()));
+			// set sent time if known
+			if (tag.getSentTime() != null) {
+				values.put(GeoTag.SENT_TIME, dateFormat.format(tag.getSentTime()));
+			}
+			
+			// set received time
 			values.put(GeoTag.RECV_TIME, dateFormat.format(tag.getReceivedTime()));
 			
 			// set endpoint

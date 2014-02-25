@@ -256,7 +256,11 @@ public class CommService extends IntentService {
 					i.setAction(BEACON_RECEIVED);
 					i.putExtra(EXTRA_BEACON, (Parcelable)beacon);
 					i.putExtra(EXTRA_ENDPOINT, (Parcelable)mBundle.getSource());
-					i.putExtra(EXTRA_TIME, (Serializable)mBundle.getTimestamp().getDate());
+					
+					if (mBundle.getTimestamp().getValue() > 0) {
+						i.putExtra(EXTRA_TIME, (Serializable)mBundle.getTimestamp().getDate());
+					}
+					
 					startService(i);
 				} catch (IOException e) {
 					// error

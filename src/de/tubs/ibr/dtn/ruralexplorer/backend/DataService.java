@@ -140,7 +140,11 @@ public class DataService extends Service {
 				GeoTag tag = new GeoTag(source);
 				
 				// set sent time
-				tag.setSentTime( (Date)intent.getSerializableExtra(CommService.EXTRA_TIME) );
+				if ( intent.hasExtra(CommService.EXTRA_TIME) ) {
+					tag.setSentTime( (Date)intent.getSerializableExtra(CommService.EXTRA_TIME) );
+				} else {
+					tag.setSentTime(null);
+				}
 				
 				// set location
 				tag.setLocation(new LocationData(b.getPosition()));

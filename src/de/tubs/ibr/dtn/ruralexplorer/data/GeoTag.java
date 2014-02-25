@@ -50,7 +50,11 @@ public class GeoTag implements Serializable, Comparable<GeoTag> {
 		this.mId = cursor.getLong(cmap.mColumnId);
 		
 		try {
-			this.mSentTime = formatter.parse(cursor.getString(cmap.mColumnSentTime));
+			if (cursor.isNull(cmap.mColumnSentTime)) {
+				this.mSentTime = null;
+			} else {
+				this.mSentTime = formatter.parse(cursor.getString(cmap.mColumnSentTime));
+			}
 			this.mReceivedTime = formatter.parse(cursor.getString(cmap.mColumnRecvTime));
 		} catch (ParseException e) {
 			Log.e(TAG, "failed to convert date");
