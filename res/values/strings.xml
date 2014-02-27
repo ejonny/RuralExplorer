@@ -6,6 +6,7 @@
     <string name="action_clear">Clear all</string>
     <string name="action_add_dummies">Add dummies</string>
     <string name="action_center_location">Center to Location</string>
+    <string name="action_rescue">Call Rescue</string>
     <string name="background_service_title">Rural Exploration</string>
     <string name="background_service_position">Location: %1$.5f, %2$.5f</string>
     <string name="background_service_position_na">Location: N/A</string>

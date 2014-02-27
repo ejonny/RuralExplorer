@@ -114,8 +114,21 @@ public class CommService extends IntentService {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			b.setName(prefs.getString("pref_nickname", getString(R.string.pref_default_nickname)));
 			
-			// set location
-			b.setPosition((Location)intent.getParcelableExtra(DataService.EXTRA_LOCATION));
+			int lifetime = 180;
+
+			if (intent.getBooleanExtra(EXTRA_BEACON_EMERGENCY, false))
+			{
+				// set rescue location
+				b.setRescueLocation((Location)intent.getParcelableExtra(DataService.EXTRA_LOCATION));
+				
+				// set lifetime to one hour
+				lifetime = 3600;
+			}
+			else
+			{
+				// set location
+				b.setPosition((Location)intent.getParcelableExtra(DataService.EXTRA_LOCATION));
+			}
 			
 			ByteArrayOutputStream array = new ByteArrayOutputStream();
 			DataOutputStream out = new DataOutputStream(array);
@@ -128,7 +141,7 @@ public class CommService extends IntentService {
 				out.close();
 				
 				// send beacon
-				mClient.getSession().send(RURAL_GROUP_DTN_EID, 180, array.toByteArray());
+				mClient.getSession().send(RURAL_GROUP_DTN_EID, lifetime, array.toByteArray());
 			} catch (SessionDestroyedException e) {
 				Log.e(TAG, "Beacon send failed", e);
 			} catch (InterruptedException e) {

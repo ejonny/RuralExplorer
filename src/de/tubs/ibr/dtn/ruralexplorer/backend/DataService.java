@@ -45,13 +45,16 @@ public class DataService extends Service {
 	private static final String TAG = "DataService";
 	
 	private static final int FOREGROUND_ID = 1;
-	private static final int RESCUE_NOTIFICATION = 1;
+	private static final int RESCUE_NOTIFICATION = 2;
 	
 	public static final String ACTION_BACKGROUND_ON = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND_ON";
 	public static final String ACTION_BACKGROUND_OFF = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND_OFF";
 	
 	// indicates updated location to other components
 	public static final String LOCATION_UPDATED = "de.tubs.ibr.dtn.ruralexplorer.DATA_UPDATED";
+	
+	// call rescue action
+	public static final String ACTION_CALL_RESCUE = "de.tubs.ibr.dtn.ruralexplorer.RESCUE";
 	
 	// additional parameters
 	public static final String EXTRA_LOCATION = "de.tubs.ibr.dtn.ruralexplorer.DATA_LOCATION";
@@ -246,6 +249,18 @@ public class DataService extends Service {
 			mNotificationBuilder = null;
 			stopForeground(true);
 			mPersistent = false;
+		}
+		else if (ACTION_CALL_RESCUE.equals(action))
+		{
+			if (mLocationClient != null)
+			{
+				// generate beacon
+				Intent i = new Intent(DataService.this, CommService.class);
+				i.setAction(CommService.GENERATE_BEACON);
+				i.putExtra(CommService.EXTRA_BEACON_EMERGENCY, true);
+				i.putExtra(EXTRA_LOCATION, mLocationClient.getLastLocation());
+				startService(i);
+			}
 		}
 		
 		// stop the service if not persistent

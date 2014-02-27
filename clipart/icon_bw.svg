@@ -271,7 +271,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -289,21 +289,30 @@
        rx="9.1124277"
        ry="9.1124277"
        inkscape:export-filename="/home/morgenro/sources/rural-explorer.git/clipart/icon_bw.png"
-       inkscape:export-xdpi="420.49191"
-       inkscape:export-ydpi="420.49191" />
+       inkscape:export-xdpi="420.32916"
+       inkscape:export-ydpi="420.32916" />
     <path
        style="fill:#000000;fill-opacity:1;stroke:none"
        d="M 334.53125 235.15625 C 327.62539 235.09885 320.73487 236.73535 317.25 240.21875 L 269.375 281.65625 L 377.59375 374.65625 L 280.90625 374.875 L 451.8125 374.53125 C 456.00169 374.33783 457.55466 372.89058 457.96875 367.8125 L 457.96875 329.15625 L 426.625 302.90625 L 426.625 324.90625 L 426.625 326.90625 L 424.625 326.90625 L 357 326.90625 L 355 326.90625 L 355 324.90625 L 355 285.5 L 340.8125 285.5 L 334.90625 285.5 L 339.625 281.9375 L 364.625 262.90625 L 372.125 257.21875 L 351.875 240.21875 C 348.34046 236.96499 341.43711 235.21366 334.53125 235.15625 z "
-       id="path3776" />
+       id="path3776"
+       inkscape:export-filename="/home/morgenro/sources/rural-explorer.git/clipart/icon_bw.png"
+       inkscape:export-xdpi="420.32916"
+       inkscape:export-ydpi="420.32916" />
     <path
        style="fill:#000000;fill-opacity:1;stroke:none"
        d="M 390.8125,247.9375 367.03125,266.0625 346.75,281.5 l 10.25,0 2,0 0,2 0,39.40625 16.875,0 0,-28.25 16.125,0 0,28.25 30.625,0 0,-39.40625 0,-2 2,0 10.28125,0 -20.28125,-15.4375 -23.8125,-18.125 z"
        id="rect2996"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/morgenro/sources/rural-explorer.git/clipart/icon_bw.png"
+       inkscape:export-xdpi="420.32916"
+       inkscape:export-ydpi="420.32916" />
     <path
        style="fill:#000000;fill-opacity:1;stroke:none"
        d="m 268.13264,285.1221 -0.21099,79.8207 c 0.21103,7.94469 8.1182,10.0807 11.30391,10.09817 l 93.29497,-0.18086 -104.38789,-89.73801 z"
        id="path3774"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/morgenro/sources/rural-explorer.git/clipart/icon_bw.png"
+       inkscape:export-xdpi="420.32916"
+       inkscape:export-ydpi="420.32916" />
   </g>
 </svg>

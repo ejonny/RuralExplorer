@@ -313,6 +313,14 @@ public class MainActivity extends FragmentActivity implements
 				}
 				return true;
 				
+			case R.id.action_rescue:
+			{
+				Intent i = new Intent(this, DataService.class);
+				i.setAction(DataService.ACTION_CALL_RESCUE);
+				startService(i);
+				return true;
+			}
+				
 			case R.id.action_settings:
 				Intent i = new Intent(this, SettingsActivity.class);
 				startActivity(i);
