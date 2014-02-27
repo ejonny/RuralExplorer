@@ -150,7 +150,7 @@ public class DataService extends Service {
 				}
 				
 				// set location
-				tag.setLocation(new LocationData(b.getPosition()));
+				tag.setLocation(new LocationData(b.getRescueLocation()));
 				
 				// write tag to the database
 				mDatabase.create(tag);
