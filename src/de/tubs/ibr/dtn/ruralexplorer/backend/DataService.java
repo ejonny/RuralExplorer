@@ -44,6 +44,7 @@ public class DataService extends Service {
 
 	private static final String TAG = "DataService";
 	
+	private static final int FOREGROUND_ID = 1;
 	private static final int RESCUE_NOTIFICATION = 1;
 	
 	public static final String ACTION_BACKGROUND_ON = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND_ON";
@@ -64,6 +65,8 @@ public class DataService extends Service {
 	private Database mDatabase = null;
 	
 	private boolean mPersistent = false;
+	
+	NotificationCompat.Builder mNotificationBuilder = null;
 	
 	private LocationClient mLocationClient = null;
 
@@ -194,6 +197,56 @@ public class DataService extends Service {
 				mDatabase.update(n);
 			}
 		}
+		else if (ACTION_BACKGROUND_ON.equals(action))
+		{
+			if (mLocationClient == null)
+			{
+				// create location request
+				mLocationRequest = LocationRequest.create();
+				mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+				mLocationRequest.setInterval(20000);
+				mLocationRequest.setFastestInterval(10000);
+				
+				// create a new location client
+				mLocationClient = new LocationClient(this, mConnectionCallbacks, mConnectionFailedListener);
+				
+				// connect to location services
+				mLocationClient.connect();
+			}
+			
+			if (!mPersistent)
+			{
+				// run foreground
+				mPersistent = true;
+				mNotificationBuilder = new NotificationCompat.Builder(this);
+				mNotificationBuilder.setContentTitle(getResources().getString(R.string.background_service_title));
+				mNotificationBuilder.setContentText(getResources().getString(R.string.background_service_position_na));
+				mNotificationBuilder.setSmallIcon(R.drawable.ic_stat_rural);
+		        mNotificationBuilder.setOngoing(true);
+		        mNotificationBuilder.setOnlyAlertOnce(true);
+		        mNotificationBuilder.setWhen(0);
+
+		        Intent notifyIntent = new Intent(this, MainActivity.class);
+		        notifyIntent.setAction("android.intent.action.MAIN");
+		        notifyIntent.addCategory("android.intent.category.LAUNCHER");
+
+		        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
+		        mNotificationBuilder.setContentIntent(contentIntent);
+		        
+				startForeground(FOREGROUND_ID, mNotificationBuilder.build());
+			}
+		}
+		else if (ACTION_BACKGROUND_OFF.equals(action))
+		{
+			if (mLocationClient != null) {
+				// disconnect from location services
+				mLocationClient.disconnect();
+			}
+			
+			mNotificationBuilder = null;
+			stopForeground(true);
+			mPersistent = false;
+		}
 		
 		// stop the service if not persistent
 		if (!mPersistent && (startId != -1)) stopSelf(startId);
@@ -238,6 +291,14 @@ public class DataService extends Service {
 			Intent locationIntent = new Intent(LOCATION_UPDATED);
 			locationIntent.putExtra(EXTRA_LOCATION, location);
 			sendBroadcast(locationIntent);
+			
+			// update notification
+			if (mNotificationBuilder != null)
+			{
+				NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+				mNotificationBuilder.setContentText(String.format(getString(R.string.background_service_position), location.getLatitude(), location.getLongitude()));
+				nm.notify(FOREGROUND_ID, mNotificationBuilder.build());
+			}
 		}
 		
 	};
@@ -264,24 +325,14 @@ public class DataService extends Service {
 
 		mDatabase = new Database();
 		mDatabase.open(this);
-		
-		// create location request
-		mLocationRequest = LocationRequest.create();
-		mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-		mLocationRequest.setInterval(20000);
-		mLocationRequest.setFastestInterval(10000);
-		
-		// create a new location client
-		mLocationClient = new LocationClient(this, mConnectionCallbacks, mConnectionFailedListener);
-		
-		// connect to location services
-		mLocationClient.connect();
 	}
 
 	@Override
 	public void onDestroy() {
-		// disconnect from location services
-		mLocationClient.disconnect();
+		if (mLocationClient != null) {
+			// disconnect from location services
+			mLocationClient.disconnect();
+		}
 		
 		// stop looper that handles incoming intents
 		mServiceLooper.quit();

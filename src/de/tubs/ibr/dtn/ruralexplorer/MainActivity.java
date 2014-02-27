@@ -278,6 +278,26 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		// start up location broadcasting
+		Intent i  = new Intent(this, DataService.class);
+		i.setAction(DataService.ACTION_BACKGROUND_ON);
+		startService(i);
+	}
+
+	@Override
+	protected void onStop() {
+		// start up location broadcasting
+		Intent i  = new Intent(this, DataService.class);
+		i.setAction(DataService.ACTION_BACKGROUND_OFF);
+		startService(i);
+		
+		super.onStop();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
