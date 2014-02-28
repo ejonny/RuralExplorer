@@ -38,4 +38,7 @@
 
     <string name="notification_rescue_title">Rescue Request received</string>
     <string name="notification_rescue_invalid">Invalid</string>
+    
+    <string name="toast_no_location">No location available</string>
+    <string name="toast_rescue_request_sent">Rescue request sent</string>
 </resources>

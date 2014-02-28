@@ -23,6 +23,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -254,12 +255,23 @@ public class DataService extends Service {
 		{
 			if (mLocationClient != null)
 			{
-				// generate beacon
-				Intent i = new Intent(DataService.this, CommService.class);
-				i.setAction(CommService.GENERATE_BEACON);
-				i.putExtra(CommService.EXTRA_BEACON_EMERGENCY, true);
-				i.putExtra(EXTRA_LOCATION, mLocationClient.getLastLocation());
-				startService(i);
+				Location l = mLocationClient.getLastLocation();
+				
+				if (l != null)
+				{
+					// generate beacon
+					Intent i = new Intent(DataService.this, CommService.class);
+					i.setAction(CommService.GENERATE_BEACON);
+					i.putExtra(CommService.EXTRA_BEACON_EMERGENCY, true);
+					i.putExtra(EXTRA_LOCATION, l);
+					startService(i);
+					
+					// show toast, rescue beacon sent
+					Toast.makeText(this, getString(R.string.toast_rescue_request_sent), Toast.LENGTH_SHORT).show();
+				} else {
+					// show toast, no location available
+					Toast.makeText(this, getString(R.string.toast_no_location), Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 		
