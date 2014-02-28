@@ -10,7 +10,7 @@
           android:id="@+id/marker_item_fragment"
           android:layout_width="match_parent"
           android:layout_height="?android:attr/listPreferredItemHeightLarge"
-          android:name="de.tubs.ibr.dtn.ruralexplorer.MarkerItemFragment"
+          android:name="de.tubs.ibr.dtn.ruralexplorer.NodeItemFragment"
           android:layout_below="@id/marker_item_fragment"
           android:layout_alignParentTop="true" />
 	

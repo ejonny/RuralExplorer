@@ -1,13 +1,13 @@
 
 package de.tubs.ibr.dtn.ruralexplorer;
 
+import java.util.LinkedList;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -20,27 +20,18 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
-import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeNotFoundException;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
-public class MarkerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class NodeInfoFragment extends Fragment implements LoaderManager.LoaderCallbacks<LinkedList<Node>> {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "MarkerFragment";
 	
-	private static final int MARKER_LOADER_ID = 1;
-
-//	private RelativeLayout mLayout = null;
+	private static final int NODE_LOADER_ID = 4;
 
 	private Node mNode = null;
-	private NodeAdapter mNodeAdapter = null;
 	private MarkerPagerAdapter mMarkerPagerAdapter = null;
 	private ViewPager mViewPager = null;
 
@@ -52,15 +43,15 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		public void onMarkerNodeSelected(Node n);
 	}
 
-	public static MarkerFragment newInstance() {
-		MarkerFragment fragment = new MarkerFragment();
+	public static NodeInfoFragment newInstance() {
+		NodeInfoFragment fragment = new NodeInfoFragment();
 		Bundle args = new Bundle();
 
 		fragment.setArguments(args);
 		return fragment;
 	}
 
-	public MarkerFragment() {
+	public NodeInfoFragment() {
 		// Required empty public constructor
 	}
 
@@ -69,12 +60,12 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mDataService = ((DataService.LocalBinder) service).getService();
 			
-			getLoaderManager().initLoader(MARKER_LOADER_ID,  null, MarkerFragment.this);
+			getLoaderManager().initLoader(NODE_LOADER_ID,  null, NodeInfoFragment.this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			getLoaderManager().destroyLoader(MARKER_LOADER_ID);
+			getLoaderManager().destroyLoader(NODE_LOADER_ID);
 			mDataService = null;
 		}
 	};
@@ -83,25 +74,22 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Create an empty adapter we will use to display the loaded data.
-		mNodeAdapter = new NodeAdapter(getActivity(), null, new NodeAdapter.ColumnsMap());
-		
 		// create a marker pager adapter
-		mMarkerPagerAdapter = new MarkerPagerAdapter(getFragmentManager(), mNodeAdapter);
+		mMarkerPagerAdapter = new MarkerPagerAdapter(getFragmentManager());
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View v = inflater.inflate(R.layout.fragment_marker, container, false);
+		View v = inflater.inflate(R.layout.fragment_node_info, container, false);
 
 		mViewPager = (ViewPager) v.findViewById(R.id.info_pager);
 		mViewPager.setAdapter(mMarkerPagerAdapter);
 		mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				MarkerItemFragment f = (MarkerItemFragment)mMarkerPagerAdapter.getItem(position);
+				NodeItemFragment f = (NodeItemFragment)mMarkerPagerAdapter.getItem(position);
 				if (f != null) {
 					mNode = f.getNode();
 					mListener.onMarkerNodeSelected(f.getNode());
@@ -139,7 +127,7 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	public void onDetach() {
 		mDataService = null;
 		getActivity().unbindService(mServiceConnection);
-		getLoaderManager().destroyLoader(MARKER_LOADER_ID);
+		getLoaderManager().destroyLoader(NODE_LOADER_ID);
 
 		super.onDetach();
 		mListener = null;
@@ -170,46 +158,21 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 	}
 
 	private class MarkerPagerAdapter extends FragmentStatePagerAdapter {
-		private NodeAdapter mAdapter = null;
+		private LinkedList<Node> mData = null;
 
-		public MarkerPagerAdapter(FragmentManager fm, NodeAdapter adapter) {
+		public MarkerPagerAdapter(FragmentManager fm) {
 			super(fm);
-			mAdapter = adapter;
-			mAdapter.registerDataSetObserver(mObserver);
 		}
-
-		private DataSetObserver mObserver = new DataSetObserver() {
-			@Override
-			public void onChanged() {
-				notifyDataSetChanged();
-				super.onChanged();
-			}
-
-			@Override
-			public void onInvalidated() {
-				super.onInvalidated();
-			}
-		};
 
 		@Override
 		public Fragment getItem(int position) {
-			try {
-				if (mDataService == null)
-					throw new NodeNotFoundException();
+			if (mDataService == null) return null;
 
-				Cursor c = mAdapter.getCursor();
+			if (mData == null) return null;
 
-				if (c == null)
-					throw new NodeNotFoundException();
-
-				// move to right position
-				if (!c.moveToPosition(position)) throw new NodeNotFoundException();
-				
-				Node n = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
-				return MarkerItemFragment.newInstance(n);
-			} catch (NodeNotFoundException ex) {
-				return null;
-			}
+			if (mData.size() < position+1) return null;
+			
+			return NodeItemFragment.newInstance( mData.get(position) );
 		}
 		
 		@Override
@@ -219,54 +182,45 @@ public class MarkerFragment extends Fragment implements LoaderManager.LoaderCall
 
 		@Override
 		public int getCount() {
-			return mAdapter.getCount();
+			if (mData == null) return 0;
+			return mData.size();
 		}
 		
 		public int getPosition(Node n) throws NodeNotFoundException {
+			if (n == null)
+				throw new NodeNotFoundException();
+			
 			if (mDataService == null)
 				throw new NodeNotFoundException();
 			
-			Cursor c = mAdapter.getCursor();
-
-			if (c == null)
+			if (mData == null)
 				throw new NodeNotFoundException();
-
-			// move to initial position
-			c.moveToPosition(-1);
 			
-			int ret = 0;
-			
-			while (c.moveToNext()) {
-				Node node = new Node(getActivity(), c, new NodeAdapter.ColumnsMap());
-				if (node.equals(n)) {
-					return ret;
-				}
-				ret++;
+			for (Node node : mData) {
+				n.equals(node);
 			}
 			
 			throw new NodeNotFoundException();
 		}
+		
+		public void swapData(LinkedList<Node> data) {
+			mData = data;
+			notifyDataSetChanged();
+		}
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		// Now create and return a CursorLoader that will take care of
-		// creating a Cursor for the data being displayed.
-		return new MarkerLoader(getActivity(), mDataService);
+	public Loader<LinkedList<Node>> onCreateLoader(int id, Bundle args) {
+		return new NodeLoader(getActivity(), mDataService);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		// Swap the new cursor in. (The framework will take care of closing the
-		// old cursor once we return.)
-		mNodeAdapter.swapCursor(data);
+	public void onLoadFinished(Loader<LinkedList<Node>> loader, LinkedList<Node> data) {
+		mMarkerPagerAdapter.swapData(data);
 	}
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> data) {
-		// This is called when the last Cursor provided to onLoadFinished()
-		// above is about to be closed. We need to make sure we are no
-		// longer using it.
-		mNodeAdapter.swapCursor(null);
+	public void onLoaderReset(Loader<LinkedList<Node>> data) {
+		mMarkerPagerAdapter.swapData(null);
 	}
 }

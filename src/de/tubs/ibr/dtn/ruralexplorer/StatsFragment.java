@@ -21,7 +21,7 @@ public class StatsFragment extends Fragment {
 	private Node mNode = null;
 	private RelativeLayout mLayout = null;
 	
-	private MarkerItemFragment mMarkerFragment = null;
+	private NodeItemFragment mMarkerFragment = null;
 	private LastUpdateFragment mLastUpdateFragment = null;
 	private SensorFragment mSensorFragment = null;
 	private LocationFragment mLocationFragment = null;
@@ -51,7 +51,7 @@ public class StatsFragment extends Fragment {
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_stats, container, false);
 		mLayout = (RelativeLayout)v.findViewById(R.id.stats_fragment_layout);
-		mMarkerFragment = (MarkerItemFragment)getFragmentManager().findFragmentById(R.id.marker_item_fragment);
+		mMarkerFragment = (NodeItemFragment)getFragmentManager().findFragmentById(R.id.marker_item_fragment);
 		mLastUpdateFragment = (LastUpdateFragment)getFragmentManager().findFragmentById(R.id.lastupdate_fragment);
 		mSensorFragment = (SensorFragment)getFragmentManager().findFragmentById(R.id.sensor_fragment);
 		mLocationFragment = (LocationFragment)getFragmentManager().findFragmentById(R.id.location_fragment);

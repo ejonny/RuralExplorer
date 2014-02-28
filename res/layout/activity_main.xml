@@ -35,7 +35,7 @@
 	          android:id="@+id/marker_fragment"
 	          android:layout_width="match_parent"
 	          android:layout_height="?android:attr/listPreferredItemHeightLarge"
-	          android:name="de.tubs.ibr.dtn.ruralexplorer.MarkerFragment"
+	          android:name="de.tubs.ibr.dtn.ruralexplorer.NodeInfoFragment"
 	          android:layout_below="@id/marker_drop_shadow" />
 	</RelativeLayout>
 	

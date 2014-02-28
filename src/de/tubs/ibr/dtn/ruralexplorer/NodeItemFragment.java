@@ -9,20 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
-public class MarkerItemFragment extends Fragment {
+public class NodeItemFragment extends Fragment {
 
 	private Node mNode = null;
 	private TextView mInfoTitle = null;
 	private TextView mInfoDescription = null;
 	private ImageView mInfoIcon = null;
 	
-	public static MarkerItemFragment newInstance(Node n) {
-		MarkerItemFragment f = new MarkerItemFragment();
+	public static NodeItemFragment newInstance(Node n) {
+		NodeItemFragment f = new NodeItemFragment();
 		f.mNode = n;
 		return f;
 	}
 	
-	public MarkerItemFragment() {
+	public NodeItemFragment() {
 		// Required empty public constructor
 	}
 	
@@ -30,7 +30,7 @@ public class MarkerItemFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View v = inflater.inflate(R.layout.fragment_marker_item, container, false);
+		View v = inflater.inflate(R.layout.fragment_node_item, container, false);
 		mInfoTitle = (TextView)v.findViewById(R.id.marker_title);
 		mInfoDescription = (TextView)v.findViewById(R.id.marker_description);
 		mInfoIcon = (ImageView)v.findViewById(R.id.marker_icon);

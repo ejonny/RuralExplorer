@@ -42,7 +42,7 @@ import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class MainActivity extends FragmentActivity implements
-		MarkerFragment.OnWindowChangedListener,
+		NodeInfoFragment.OnWindowChangedListener,
 		StatsFragment.OnWindowChangedListener,
 		LoaderManager.LoaderCallbacks<Cursor> {
 	
@@ -65,7 +65,7 @@ public class MainActivity extends FragmentActivity implements
 	private Marker mActiveGeoTag = null;
 	
 	private StatsFragment mStatsFragment = null;
-	private MarkerFragment mMarkerFragment = null;
+	private NodeInfoFragment mMarkerFragment = null;
 	private RescueFragment mRescueFragment = null;
 	private GoogleMap mMap = null;
 	
@@ -118,7 +118,7 @@ public class MainActivity extends FragmentActivity implements
 		mMarkerLayout = (RelativeLayout) findViewById(R.id.marker_layout);
 		
 		// get marker fragment
-		mMarkerFragment = (MarkerFragment) getSupportFragmentManager().findFragmentById(R.id.marker_fragment);
+		mMarkerFragment = (NodeInfoFragment) getSupportFragmentManager().findFragmentById(R.id.marker_fragment);
 		
 		// get stats fragment
 		mStatsFragment = (StatsFragment) getSupportFragmentManager().findFragmentById(R.id.stats_fragment);
