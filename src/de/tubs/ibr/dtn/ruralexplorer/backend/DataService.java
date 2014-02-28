@@ -284,6 +284,15 @@ public class DataService extends Service {
 		@Override
 		public void onConnected(Bundle arg0) {
 			Log.d(TAG, "Location services connected");
+			
+			Location l = mLocationClient.getLastLocation();
+			if (l != null) {
+				// send location update intent
+				Intent locationIntent = new Intent(LOCATION_UPDATED);
+				locationIntent.putExtra(EXTRA_LOCATION, l);
+				sendBroadcast(locationIntent);
+			}
+			
 			// request location updates
 			mLocationClient.requestLocationUpdates(mLocationRequest, locationListener);
 		}
