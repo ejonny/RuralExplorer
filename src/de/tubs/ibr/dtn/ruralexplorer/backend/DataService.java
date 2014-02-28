@@ -203,21 +203,6 @@ public class DataService extends Service {
 		}
 		else if (ACTION_BACKGROUND_ON.equals(action))
 		{
-			if (mLocationClient == null)
-			{
-				// create location request
-				mLocationRequest = LocationRequest.create();
-				mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-				mLocationRequest.setInterval(20000);
-				mLocationRequest.setFastestInterval(10000);
-				
-				// create a new location client
-				mLocationClient = new LocationClient(this, mConnectionCallbacks, mConnectionFailedListener);
-				
-				// connect to location services
-				mLocationClient.connect();
-			}
-			
 			if (!mPersistent)
 			{
 				// run foreground
@@ -238,6 +223,21 @@ public class DataService extends Service {
 		        mNotificationBuilder.setContentIntent(contentIntent);
 		        
 				startForeground(FOREGROUND_ID, mNotificationBuilder.build());
+			}
+			
+			if (mLocationClient == null)
+			{
+				// create location request
+				mLocationRequest = LocationRequest.create();
+				mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+				mLocationRequest.setInterval(60000);
+				mLocationRequest.setFastestInterval(10000);
+				
+				// create a new location client
+				mLocationClient = new LocationClient(this, mConnectionCallbacks, mConnectionFailedListener);
+				
+				// connect to location services
+				mLocationClient.connect();
 			}
 		}
 		else if (ACTION_BACKGROUND_OFF.equals(action))
