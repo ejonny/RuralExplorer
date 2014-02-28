@@ -196,8 +196,11 @@ public class NodeInfoFragment extends Fragment implements LoaderManager.LoaderCa
 			if (mData == null)
 				throw new NodeNotFoundException();
 			
+			int position = 0;
+			
 			for (Node node : mData) {
-				n.equals(node);
+				if (n.equals(node)) return position;
+				position++;
 			}
 			
 			throw new NodeNotFoundException();
