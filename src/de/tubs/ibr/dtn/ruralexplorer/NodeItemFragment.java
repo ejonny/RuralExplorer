@@ -14,6 +14,7 @@ public class NodeItemFragment extends Fragment {
 	private Node mNode = null;
 	private TextView mInfoTitle = null;
 	private TextView mInfoDescription = null;
+	private TextView mInfoDistance = null;
 	private ImageView mInfoIcon = null;
 	
 	public static NodeItemFragment newInstance(Node n) {
@@ -34,6 +35,7 @@ public class NodeItemFragment extends Fragment {
 		mInfoTitle = (TextView)v.findViewById(R.id.marker_title);
 		mInfoDescription = (TextView)v.findViewById(R.id.marker_description);
 		mInfoIcon = (ImageView)v.findViewById(R.id.marker_icon);
+		mInfoDistance = (TextView)v.findViewById(R.id.marker_distance);
 		
 		v.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -70,5 +72,12 @@ public class NodeItemFragment extends Fragment {
 		mInfoIcon.setImageResource(Node.getResource(n.getType()));
 		
 		mInfoDescription.setText(n.getEndpoint().toString());
+		
+		if (mNode.hasDistance()) {
+			mInfoDistance.setText(String.format(getString(R.string.data_unit_distance), n.getDistance(), "m"));
+			mInfoDistance.setVisibility(View.VISIBLE);
+		} else {
+			mInfoDistance.setVisibility(View.INVISIBLE);
+		}
 	}
 }
