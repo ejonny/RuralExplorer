@@ -138,4 +138,42 @@ public class LocationData implements Serializable {
 	public void setAccurarcy(Float accurarcy) {
 		mAccurarcy = accurarcy;
 	}
+	
+	public Location toLocation() {
+		Location l = new Location("database");
+		
+		if (hasLatitude()) {
+			l.setLatitude(getLatitude());
+		}
+		
+		if (hasLongitude()) {
+			l.setLongitude(getLongitude());
+		}
+		
+		if (hasAltitude()) {
+			l.setAltitude(getAltitude());
+		}
+		
+		if (hasBearing()) {
+			l.setBearing(getBearing());
+		}
+		
+		if (hasAccurarcy()) {
+			l.setAccuracy(getAccurarcy());
+		}
+		
+		if (hasSpeed()) {
+			l.setSpeed(getSpeed());
+		}
+		
+		return l;
+	}
+	
+	public float distanceTo(Location l) {
+		return l.distanceTo(toLocation());
+	}
+	
+	public float distanceTo(LocationData data) {
+		return distanceTo( data.toLocation() );
+	}
 }
