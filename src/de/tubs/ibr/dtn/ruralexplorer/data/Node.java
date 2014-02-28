@@ -45,6 +45,7 @@ public class Node implements Serializable, Comparable<Node> {
 	private LocationData mLocation = null;
 	private SensorData mSensor = null;
 	private AccelerationData mAcceleration = null;
+	private Float mDistance = null;
 	
 	public Node(Node.Type t, SingletonEndpoint endpoint) {
 		mType = t;
@@ -53,6 +54,7 @@ public class Node implements Serializable, Comparable<Node> {
 		mLocation = new LocationData();
 		mSensor = new SensorData();
 		mAcceleration = new AccelerationData();
+		mDistance = null;
 	}
 	
 	@SuppressLint("SimpleDateFormat")
@@ -142,6 +144,18 @@ public class Node implements Serializable, Comparable<Node> {
 
 	public void setLastUpdate(Date lastUpdate) {
 		mLastUpdate = lastUpdate;
+	}
+	
+	public boolean hasDistance() {
+		return mDistance != null;
+	}
+
+	public Float getDistance() {
+		return mDistance;
+	}
+
+	public void setDistance(Float distance) {
+		mDistance = distance;
 	}
 
 	@Override
