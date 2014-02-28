@@ -14,6 +14,7 @@
     <dimen name="stats_padding">8dp</dimen>
     <dimen name="data_padding">8dp</dimen>
     <dimen name="data_item_padding">8dp</dimen>
+    <dimen name="data_title_tiny">12sp</dimen>
     <dimen name="data_title_size">14sp</dimen>
     <dimen name="data_value_size">16sp</dimen>
     
