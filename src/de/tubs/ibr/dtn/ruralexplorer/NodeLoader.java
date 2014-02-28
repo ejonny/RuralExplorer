@@ -36,7 +36,8 @@ public class NodeLoader extends AsyncTaskLoader<LinkedList<Node>> {
 		LinkedList<Node> nodes = new LinkedList<Node>();
 
 		// load all markers
-		Cursor c = db.query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION, null, null, null, null, null);
+		Cursor c = db.query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION,
+				Node.LAST_UPDATE + " >= datetime('now', 'localtime', '-12 hours')", null, null, null, null);
 		
 		// create a field map
 		NodeAdapter.ColumnsMap map = new NodeAdapter.ColumnsMap(c);
