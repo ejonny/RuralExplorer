@@ -176,4 +176,12 @@ public class LocationData implements Serializable {
 	public float distanceTo(LocationData data) {
 		return distanceTo( data.toLocation() );
 	}
+	
+	public static String formatDistance(String template, float value) {
+		if (value > 1000) {
+			return String.format(template, value / 1000.0f, "km");
+		} else {
+			return String.format(template, value, "m");
+		}
+	}
 }

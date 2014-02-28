@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class NodeItemFragment extends Fragment {
@@ -74,7 +75,7 @@ public class NodeItemFragment extends Fragment {
 		mInfoDescription.setText(n.getEndpoint().toString());
 		
 		if (mNode.hasDistance()) {
-			mInfoDistance.setText(String.format(getString(R.string.data_unit_distance), n.getDistance(), "m"));
+			mInfoDistance.setText(LocationData.formatDistance(getString(R.string.data_unit_distance), n.getDistance()));
 			mInfoDistance.setVisibility(View.VISIBLE);
 		} else {
 			mInfoDistance.setVisibility(View.INVISIBLE);
