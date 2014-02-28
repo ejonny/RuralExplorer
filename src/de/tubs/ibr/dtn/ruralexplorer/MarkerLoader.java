@@ -30,7 +30,7 @@ public class MarkerLoader extends AsyncTaskLoader<Cursor> {
 
 		// load all markers
 		return db.query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION,
-				Node.LAST_UPDATE + " >= datetime('now', '-1 hours')", null, null, null, Node.ENDPOINT);
+				Node.LAST_UPDATE + " >= datetime('now', 'localtime', '-1 hours')", null, null, null, Node.ENDPOINT);
 	}
 
 	@Override
