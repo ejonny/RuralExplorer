@@ -13,6 +13,7 @@ public class LocationFragment extends Fragment {
 	
 	private Node mNode = null;
 	private TextView mLocationText = null;
+	private TextView mDistanceText = null;
 	
 	public static LocationFragment newInstance(Node n) {
 		LocationFragment f = new LocationFragment();
@@ -30,6 +31,7 @@ public class LocationFragment extends Fragment {
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_location_data, container, false);
 		mLocationText = (TextView)v.findViewById(R.id.text_location);
+		mDistanceText = (TextView)v.findViewById(R.id.text_distance);
 		return v;
 	}
 
@@ -54,6 +56,12 @@ public class LocationFragment extends Fragment {
 			mLocationText.setText(String.format(getString(R.string.data_unit_latlng), l.getLatitude(), l.getLongitude()));
 		} else {
 			mLocationText.setText(getString(R.string.data_na));
+		}
+		
+		if (mNode.hasDistance()) {
+			mDistanceText.setText(String.format(getString(R.string.data_unit_distance), n.getDistance(), "m"));
+		} else {
+			mDistanceText.setText(getString(R.string.data_na));
 		}
 	}
 }
