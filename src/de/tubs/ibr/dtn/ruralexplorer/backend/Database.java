@@ -254,12 +254,12 @@ public class Database {
 		values.put(AccelerationData.ACCELERATION_Z, axis[2]);
 	}
 	
-	public Node getNode(SingletonEndpoint endpoint) {
+	public Node getNode(SingletonEndpoint endpoint, Location l) {
 		// node data
 		Cursor c = mDatabase.query(Database.TABLE_NAME_NODES, NodeAdapter.PROJECTION, Node.ENDPOINT + " = ?", new String[] { endpoint.toString() }, null, null, Node.ENDPOINT);
 		
 		if (c.moveToNext()) {
-			return new Node(mContext, c, new NodeAdapter.ColumnsMap());
+			return new Node(mContext, c, l, new NodeAdapter.ColumnsMap(c));
 		}
 		
 		return null;

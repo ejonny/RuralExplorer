@@ -4,6 +4,7 @@ package de.tubs.ibr.dtn.ruralexplorer.backend;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.location.Location;
 import android.provider.BaseColumns;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.CursorAdapter;
@@ -14,8 +15,8 @@ import android.view.ViewGroup;
 import de.tubs.ibr.dtn.ruralexplorer.NodeItem;
 import de.tubs.ibr.dtn.ruralexplorer.R;
 import de.tubs.ibr.dtn.ruralexplorer.data.AccelerationData;
-import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
+import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 import de.tubs.ibr.dtn.ruralexplorer.data.SensorData;
 
 public class NodeAdapter extends CursorAdapter {
@@ -68,12 +69,14 @@ public class NodeAdapter extends CursorAdapter {
 
 	private final NodeCache mNodeCache;
 	private final ColumnsMap mColumnsMap;
+	private final Location mLocation;
 
-	public NodeAdapter(Context context, Cursor c, ColumnsMap cmap)
+	public NodeAdapter(Context context, Cursor c, ColumnsMap cmap, Location l)
 	{
 		super(context, c, FLAG_REGISTER_CONTENT_OBSERVER);
 		this.mContext = context;
 		this.mInflater = LayoutInflater.from(context);
+		this.mLocation = l;
 
 		mNodeCache = new NodeCache(CACHE_SIZE);
 		mColumnsMap = cmap;
@@ -163,6 +166,12 @@ public class NodeAdapter extends CursorAdapter {
 			} catch (IllegalArgumentException e) {
 				Log.w("colsMap", e.getMessage());
 			}
+			
+			try {
+				mColumnLastUpdate = cursor.getColumnIndexOrThrow(Node.LAST_UPDATE);
+			} catch (IllegalArgumentException e) {
+				Log.w("colsMap", e.getMessage());
+			}
 
 			try {
 				mColumnLocationLat = cursor.getColumnIndexOrThrow(LocationData.LAT);
@@ -249,7 +258,7 @@ public class NodeAdapter extends CursorAdapter {
 	public Node getCachedNode(long buddyId, Cursor c) {
 		Node item = mNodeCache.get(buddyId);
 		if (item == null && c != null && isCursorValid(c)) {
-			item = new Node(mContext, c, mColumnsMap);
+			item = new Node(mContext, c, mLocation, mColumnsMap);
 			mNodeCache.put(buddyId, item);
 		}
 		return item;

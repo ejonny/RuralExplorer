@@ -205,7 +205,10 @@ public class NodeInfoFragment extends Fragment implements LoaderManager.LoaderCa
 		
 		public void swapData(LinkedList<Node> data) {
 			mData = data;
-			notifyDataSetChanged();
+			
+			if (mData != null) {
+				notifyDataSetChanged();
+			}
 		}
 	}
 

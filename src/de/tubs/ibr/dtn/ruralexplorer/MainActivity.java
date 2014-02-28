@@ -531,7 +531,7 @@ public class MainActivity extends FragmentActivity implements
 	}
 	
 	private void updateMarkers(Cursor c) {
-		NodeAdapter.ColumnsMap cm = new NodeAdapter.ColumnsMap();
+		NodeAdapter.ColumnsMap cm = new NodeAdapter.ColumnsMap(c);
 		
 		// clear all nodes in the node-set
 		mNodeSet.clear();
@@ -539,8 +539,10 @@ public class MainActivity extends FragmentActivity implements
 		// set to filter out inactive markers
 		HashSet<Marker> inactiveMarkers = new HashSet<Marker>(mMarkerSet.values());
 		
+		Location myLoc = mDataService.getLocation();
+		
 		while (c.moveToNext()) {
-			Node n = new Node(this, c, cm);
+			Node n = new Node(this, c, myLoc, cm);
 			
 			// add node to node set
 			mNodeSet.add(n);

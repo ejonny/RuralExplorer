@@ -164,7 +164,7 @@ public class DataService extends Service {
 			}
 			else {
 				// get node from database
-				Node n = mDatabase.getNode(source);
+				Node n = mDatabase.getNode(source, getLocation());
 				
 				if (n == null) {
 					n = new Node(type, source);
@@ -341,7 +341,11 @@ public class DataService extends Service {
 	
 	public Location getLocation() {
 		if (mLocationClient == null) return null;
-		return mLocationClient.getLastLocation();
+		if (mLocationClient.isConnected()) {
+			return mLocationClient.getLastLocation();
+		} else {
+			return null;
+		}
 	}
 
 	@Override

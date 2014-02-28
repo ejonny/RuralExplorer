@@ -5,13 +5,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.location.Location;
 import android.provider.BaseColumns;
 import android.util.Log;
+
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
 import de.tubs.ibr.dtn.api.SingletonEndpoint;
 import de.tubs.ibr.dtn.ruralexplorer.R;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
@@ -58,7 +62,7 @@ public class Node implements Serializable, Comparable<Node> {
 	}
 	
 	@SuppressLint("SimpleDateFormat")
-	public Node(Context context, Cursor cursor, NodeAdapter.ColumnsMap cmap)
+	public Node(Context context, Cursor cursor, Location l, NodeAdapter.ColumnsMap cmap)
 	{
 		final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -74,12 +78,17 @@ public class Node implements Serializable, Comparable<Node> {
 				mLastUpdate = formatter.parse(cursor.getString(cmap.mColumnLastUpdate));
 			}
 		} catch (ParseException e) {
-			Log.e(TAG, "failed to convert date");
+			Log.e(TAG, "failed to convert date: " + cursor.getString(cmap.mColumnLastUpdate));
 		}
 		
 		this.mLocation = new LocationData(context, cursor, cmap);
 		this.mSensor = new SensorData(context, cursor, cmap);
 		this.mAcceleration = new AccelerationData(context, cursor, cmap);
+		
+		// calculate distance
+		if ((l != null) && (mLocation != null)) {
+			setDistance( mLocation.distanceTo(l) );
+		}
 	}
 
 	public Long getId() {

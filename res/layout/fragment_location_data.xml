@@ -27,9 +27,10 @@
         android:textSize="@dimen/data_title_size"
         android:textColor="@android:color/secondary_text_light"
         android:text="@string/label_distance"
-        android:layout_below="@id/label_location"
+        android:layout_below="@id/text_location"
         android:layout_width="match_parent"
-    	android:layout_height="wrap_content" />
+    	android:layout_height="wrap_content"
+    	android:paddingTop="@dimen/data_item_padding" />
     
     <TextView
         android:id="@+id/text_distance"

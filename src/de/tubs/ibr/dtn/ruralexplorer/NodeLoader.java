@@ -16,7 +16,6 @@ import android.support.v4.content.AsyncTaskLoader;
 import de.tubs.ibr.dtn.ruralexplorer.backend.DataService;
 import de.tubs.ibr.dtn.ruralexplorer.backend.Database;
 import de.tubs.ibr.dtn.ruralexplorer.backend.NodeAdapter;
-import de.tubs.ibr.dtn.ruralexplorer.data.LocationData;
 import de.tubs.ibr.dtn.ruralexplorer.data.Node;
 
 public class NodeLoader extends AsyncTaskLoader<LinkedList<Node>> {
@@ -25,8 +24,6 @@ public class NodeLoader extends AsyncTaskLoader<LinkedList<Node>> {
 	private LinkedList<Node> mData = null;
 	private Boolean mObserving = false;
 	
-	private Location mLocation = null;
-
 	public NodeLoader(Context context, DataService service) {
 		super(context);
 		mService = service;
@@ -44,15 +41,12 @@ public class NodeLoader extends AsyncTaskLoader<LinkedList<Node>> {
 		// create a field map
 		NodeAdapter.ColumnsMap map = new NodeAdapter.ColumnsMap(c);
 		
+		// own location
+		Location myLocation = mService.getLocation();
+		
 		while (c.moveToNext()) {
 			// create a new node object
-			Node n = new Node(getContext(), c, map);
-			
-			// calculate distance
-			LocationData ld = n.getLocation();
-			if ((mLocation != null) && (ld != null)) {
-				n.setDistance( ld.distanceTo(mLocation) );
-			}
+			Node n = new Node(getContext(), c, myLocation, map);
 			
 			// add to list
 			nodes.push(n);
@@ -133,13 +127,10 @@ public class NodeLoader extends AsyncTaskLoader<LinkedList<Node>> {
 
 		// Begin monitoring the underlying data source.
 		IntentFilter filter = new IntentFilter(Database.DATA_UPDATED);
-		filter.addAction(DataService.EXTRA_LOCATION);
+		filter.addAction(DataService.LOCATION_UPDATED);
 		getContext().registerReceiver(mDataUpdateListener, filter);
 
 		mObserving = true;
-		
-		// query current location from data service
-		mLocation = mService.getLocation();
 
 		if (takeContentChanged() || mData == null) {
 			// When the observer detects a change, it should call
@@ -171,8 +162,7 @@ public class NodeLoader extends AsyncTaskLoader<LinkedList<Node>> {
 				onContentChanged();
 			}
 			else if (DataService.LOCATION_UPDATED.equals(intent.getAction())) {
-				mLocation = intent.getParcelableExtra(DataService.EXTRA_LOCATION);
-				if (mLocation != null) onContentChanged();
+				onContentChanged();
 			}
 		}
 	};

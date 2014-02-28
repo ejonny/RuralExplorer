@@ -22,7 +22,9 @@
 	    android:layout_alignParentTop="true"
 	    android:paddingTop="@dimen/marker_padding"
 	    android:paddingLeft="@dimen/marker_padding"
-	    android:textStyle="bold" />
+	    android:textStyle="bold"
+	    android:ellipsize="end"
+        android:singleLine="true" />
 	
 	<TextView
 	    android:layout_width="wrap_content"
@@ -32,7 +34,10 @@
 	    android:textColor="@android:color/secondary_text_light"
 	    android:layout_toRightOf="@id/marker_icon"
 	    android:layout_below="@id/marker_title"
-	    android:paddingLeft="@dimen/marker_padding" />
+	    android:paddingLeft="@dimen/marker_padding"
+	    android:layout_toLeftOf="@+id/marker_distance"
+	    android:ellipsize="end"
+        android:singleLine="true" />
 	
 	<TextView
 	    android:layout_width="wrap_content"
@@ -42,6 +47,7 @@
 	    android:textColor="@android:color/holo_blue_light"
 	    android:layout_alignParentRight="true"
 	    android:layout_alignParentBottom="true"
+	    android:paddingLeft="@dimen/marker_padding"
 	    android:paddingRight="@dimen/marker_padding"
 	    android:paddingBottom="@dimen/marker_padding" />
 
