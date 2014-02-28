@@ -1,5 +1,7 @@
 package de.tubs.ibr.dtn.ruralexplorer;
 
+import java.util.Calendar;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ public class NodeItemFragment extends Fragment {
 	private TextView mInfoTitle = null;
 	private TextView mInfoDescription = null;
 	private TextView mInfoDistance = null;
+	private TextView mInfoDistanceLabel = null;
 	private ImageView mInfoIcon = null;
 	
 	public static NodeItemFragment newInstance(Node n) {
@@ -37,6 +40,7 @@ public class NodeItemFragment extends Fragment {
 		mInfoDescription = (TextView)v.findViewById(R.id.marker_description);
 		mInfoIcon = (ImageView)v.findViewById(R.id.marker_icon);
 		mInfoDistance = (TextView)v.findViewById(R.id.marker_distance);
+		mInfoDistanceLabel = (TextView)v.findViewById(R.id.marker_distance_title);
 		
 		v.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -74,10 +78,15 @@ public class NodeItemFragment extends Fragment {
 		
 		mInfoDescription.setText(n.getEndpoint().toString());
 		
-		if (mNode.hasDistance()) {
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.HOUR, -1);
+		
+		if (mNode.hasDistance() && mNode.getLastUpdate().after(c.getTime())) {
 			mInfoDistance.setText(LocationData.formatDistance(getString(R.string.data_unit_distance), n.getDistance()));
 			mInfoDistance.setVisibility(View.VISIBLE);
+			mInfoDistanceLabel.setVisibility(View.VISIBLE);
 		} else {
+			mInfoDistanceLabel.setVisibility(View.INVISIBLE);
 			mInfoDistance.setVisibility(View.INVISIBLE);
 		}
 	}
