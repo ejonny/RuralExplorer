@@ -30,7 +30,7 @@ public class GeoTagLoader extends AsyncTaskLoader<Cursor> {
 
 		// load all markers
 		return db.query(Database.TABLE_NAME_GEOTAG, GeoTagAdapter.PROJECTION,
-				null, null, null, null, GeoTag.ENDPOINT);
+				GeoTag.RECV_TIME + " >= datetime('now', 'localtime', '-6 hours')", null, null, null, GeoTag.ENDPOINT);
 	}
 
 	@Override
