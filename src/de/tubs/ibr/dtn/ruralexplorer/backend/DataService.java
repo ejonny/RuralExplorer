@@ -255,7 +255,7 @@ public class DataService extends Service {
 		{
 			if (mLocationClient != null)
 			{
-				Location l = mLocationClient.getLastLocation();
+				Location l = getLocation();
 				
 				if (l != null)
 				{
@@ -285,7 +285,7 @@ public class DataService extends Service {
 		public void onConnected(Bundle arg0) {
 			Log.d(TAG, "Location services connected");
 			
-			Location l = mLocationClient.getLastLocation();
+			Location l = getLocation();
 			if (l != null) {
 				// send location update intent
 				Intent locationIntent = new Intent(LOCATION_UPDATED);
