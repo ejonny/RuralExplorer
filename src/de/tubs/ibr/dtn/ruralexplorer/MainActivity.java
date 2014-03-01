@@ -338,9 +338,23 @@ public class MainActivity extends FragmentActivity implements
 				
 			case R.id.action_rescue:
 			{
-				Intent i = new Intent(this, DataService.class);
-				i.setAction(DataService.ACTION_CALL_RESCUE);
-				startService(i);
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(R.string.dialog_rescue_text);
+				builder.setTitle(R.string.dialog_rescue_title);
+				builder.setPositiveButton(R.string.dialog_rescue_yes, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent i = new Intent(MainActivity.this, DataService.class);
+						i.setAction(DataService.ACTION_CALL_RESCUE);
+						startService(i);
+					}
+					
+				});
+				
+				builder.setNegativeButton(R.string.dialog_rescue_no, null);
+				
+				builder.create().show();
 				return true;
 			}
 				
