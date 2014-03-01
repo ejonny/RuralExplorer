@@ -44,4 +44,9 @@
     
     <string name="toast_no_location">No location available</string>
     <string name="toast_rescue_request_sent">Rescue request sent</string>
+    
+    <string name="dialog_ask_exit_title">Beaconing</string>
+    <string name="dialog_ask_exit">Shall this device stay visible to other users?</string>
+    <string name="dialog_ask_exit_yes">Yes.</string>
+    <string name="dialog_ask_exit_no">No, stop beaconing.</string>
 </resources>

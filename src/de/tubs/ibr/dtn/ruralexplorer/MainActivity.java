@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -151,7 +153,33 @@ public class MainActivity extends FragmentActivity implements
 			setRescue(null, null);
 		}
 		else {
-			super.onBackPressed();
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.dialog_ask_exit);
+			builder.setTitle(R.string.dialog_ask_exit_title);
+			builder.setPositiveButton(R.string.dialog_ask_exit_yes, new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					finish();
+				}
+				
+			});
+			
+			builder.setNegativeButton(R.string.dialog_ask_exit_no, new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// start up location broadcasting
+					Intent i  = new Intent(MainActivity.this, DataService.class);
+					i.setAction(DataService.ACTION_BACKGROUND_OFF);
+					startService(i);
+					
+					finish();
+				}
+				
+			});
+			
+			builder.create().show();
 		}
 	}
 	
@@ -289,11 +317,6 @@ public class MainActivity extends FragmentActivity implements
 
 	@Override
 	protected void onStop() {
-		// start up location broadcasting
-		Intent i  = new Intent(this, DataService.class);
-		i.setAction(DataService.ACTION_BACKGROUND_OFF);
-		startService(i);
-		
 		super.onStop();
 	}
 
