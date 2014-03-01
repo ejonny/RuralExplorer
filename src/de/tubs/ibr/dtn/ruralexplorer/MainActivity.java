@@ -331,8 +331,13 @@ public class MainActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_show_marker:
-				if (!mNodeSet.isEmpty()) {
-					mMarkerFragment.bind(mNodeSet.iterator().next());
+				if ((mSelectionMarker == null) || !mSelectionMarker.isVisible()) {
+					if (!mNodeSet.isEmpty()) {
+						mMarkerFragment.bind(mNodeSet.iterator().next());
+					}
+				} else {
+					// move to the marker
+					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mSelectionMarker.getPosition(), 20.0f));
 				}
 				return true;
 				
