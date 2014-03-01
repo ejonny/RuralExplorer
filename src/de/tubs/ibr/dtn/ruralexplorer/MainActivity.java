@@ -387,7 +387,7 @@ public class MainActivity extends FragmentActivity implements
 		LatLng position = new LatLng(data.getLatitude(), data.getLongitude());
 		
 		if (!mLocationInitialized) {
-			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 20.0f));
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 16.0f));
 		} else {
 			mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
 		}
@@ -397,7 +397,7 @@ public class MainActivity extends FragmentActivity implements
 		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 		
 		if (!mLocationInitialized) {
-			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 20.0f));
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 16.0f));
 		} else {
 			mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
 		}
