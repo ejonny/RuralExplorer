@@ -151,6 +151,7 @@ public class NodeInfoFragment extends Fragment implements LoaderManager.LoaderCa
 			try {
 				// set pager to position
 				mViewPager.setCurrentItem(mMarkerPagerAdapter.getPosition(n), true);
+				mListener.onMarkerNodeSelected(n);
 			} catch (NodeNotFoundException e) {
 				// node not found
 			}
