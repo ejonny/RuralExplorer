@@ -160,6 +160,12 @@ public class MainActivity extends FragmentActivity implements
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					// start up location broadcasting
+					Intent i  = new Intent(MainActivity.this, DataService.class);
+					i.setAction(DataService.ACTION_TRACKING_ON);
+					i.putExtra(DataService.EXTRA_BACKGROUND, true);
+					startService(i);
+					
 					finish();
 				}
 				
@@ -169,9 +175,9 @@ public class MainActivity extends FragmentActivity implements
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					// start up location broadcasting
+					// stop location service
 					Intent i  = new Intent(MainActivity.this, DataService.class);
-					i.setAction(DataService.ACTION_BACKGROUND_OFF);
+					i.setAction(DataService.ACTION_TRACKING_OFF);
 					startService(i);
 					
 					finish();
@@ -311,7 +317,7 @@ public class MainActivity extends FragmentActivity implements
 		
 		// start up location broadcasting
 		Intent i  = new Intent(this, DataService.class);
-		i.setAction(DataService.ACTION_BACKGROUND_ON);
+		i.setAction(DataService.ACTION_TRACKING_ON);
 		startService(i);
 	}
 

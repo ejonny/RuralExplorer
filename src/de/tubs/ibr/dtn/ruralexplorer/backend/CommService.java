@@ -60,6 +60,7 @@ public class CommService extends IntentService {
 	
 	// beacon parameters
 	public static final String EXTRA_BEACON_EMERGENCY = "de.tubs.ibr.dtn.ruralexplorer.BEACON_EMERGENCY";
+	public static final String EXTRA_BEACON_LIFETIME = "de.tubs.ibr.dtn.ruralexplorer.BEACON_LIFETIME";
 	
 	// The communication with the DTN service is done using the DTNClient
 	private DTNClient mClient = null;
@@ -114,15 +115,13 @@ public class CommService extends IntentService {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			b.setName(prefs.getString("pref_nickname", getString(R.string.pref_default_nickname)));
 			
-			int lifetime = 180;
+			// set beacon lifetime
+			int lifetime = intent.getIntExtra(EXTRA_BEACON_LIFETIME, 180);
 
 			if (intent.getBooleanExtra(EXTRA_BEACON_EMERGENCY, false))
 			{
 				// set rescue location
 				b.setRescueLocation((Location)intent.getParcelableExtra(DataService.EXTRA_LOCATION));
-				
-				// set lifetime to one hour
-				lifetime = 3600;
 			}
 			else
 			{

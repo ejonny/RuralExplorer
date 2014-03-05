@@ -48,8 +48,8 @@ public class DataService extends Service {
 	private static final int FOREGROUND_ID = 1;
 	private static final int RESCUE_NOTIFICATION = 2;
 	
-	public static final String ACTION_BACKGROUND_ON = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND_ON";
-	public static final String ACTION_BACKGROUND_OFF = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND_OFF";
+	public static final String ACTION_TRACKING_ON = "de.tubs.ibr.dtn.ruralexplorer.TRACKING_ON";
+	public static final String ACTION_TRACKING_OFF = "de.tubs.ibr.dtn.ruralexplorer.TRACKING_OFF";
 	
 	// indicates updated location to other components
 	public static final String LOCATION_UPDATED = "de.tubs.ibr.dtn.ruralexplorer.DATA_UPDATED";
@@ -60,6 +60,7 @@ public class DataService extends Service {
 	// additional parameters
 	public static final String EXTRA_LOCATION = "de.tubs.ibr.dtn.ruralexplorer.DATA_LOCATION";
 	public static final String EXTRA_GEOTAG = "de.tubs.ibr.dtn.ruralexplorer.EXTRA_GEOTAG";
+	public static final String EXTRA_BACKGROUND = "de.tubs.ibr.dtn.ruralexplorer.BACKGROUND";
 	
 	private LocationRequest mLocationRequest = null;
 	
@@ -73,6 +74,8 @@ public class DataService extends Service {
 	NotificationCompat.Builder mNotificationBuilder = null;
 	
 	private LocationClient mLocationClient = null;
+	
+	private Boolean mBackground = false;
 
 	// This is the object that receives interactions from clients. See
 	// RemoteService for a more complete example.
@@ -201,7 +204,7 @@ public class DataService extends Service {
 				mDatabase.update(n);
 			}
 		}
-		else if (ACTION_BACKGROUND_ON.equals(action))
+		else if (ACTION_TRACKING_ON.equals(action))
 		{
 			if (!mPersistent)
 			{
@@ -211,40 +214,68 @@ public class DataService extends Service {
 				mNotificationBuilder.setContentTitle(getResources().getString(R.string.background_service_title));
 				mNotificationBuilder.setContentText(getResources().getString(R.string.background_service_position_na));
 				mNotificationBuilder.setSmallIcon(R.drawable.ic_stat_rural);
-		        mNotificationBuilder.setOngoing(true);
-		        mNotificationBuilder.setOnlyAlertOnce(true);
-		        mNotificationBuilder.setWhen(0);
+				mNotificationBuilder.setOngoing(true);
+				mNotificationBuilder.setOnlyAlertOnce(true);
+				mNotificationBuilder.setWhen(0);
 
-		        Intent notifyIntent = new Intent(this, MainActivity.class);
-		        notifyIntent.setAction("android.intent.action.MAIN");
-		        notifyIntent.addCategory("android.intent.category.LAUNCHER");
+				Intent notifyIntent = new Intent(this, MainActivity.class);
+				notifyIntent.setAction("android.intent.action.MAIN");
+				notifyIntent.addCategory("android.intent.category.LAUNCHER");
 
-		        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
-		        mNotificationBuilder.setContentIntent(contentIntent);
-		        
+				PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
+				mNotificationBuilder.setContentIntent(contentIntent);
+
 				startForeground(FOREGROUND_ID, mNotificationBuilder.build());
 			}
 			
-			if (mLocationClient == null)
-			{
+			// decide if running in background or not
+			mBackground = intent.getBooleanExtra(EXTRA_BACKGROUND, false);
+
+			// create new location request if necessary
+			if (mLocationRequest == null) {
 				// create location request
 				mLocationRequest = LocationRequest.create();
+			}
+
+			// set different location request attributes
+			// for background or foreground processing
+			if (mBackground) {
+				Log.d(TAG, "set low-power location updates");
+				mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+				mLocationRequest.setInterval(300000);
+				mLocationRequest.setFastestInterval(30000);
+			} else {
+				Log.d(TAG, "set balanced location updates");
 				mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-				mLocationRequest.setInterval(60000);
+				mLocationRequest.setInterval(20000);
 				mLocationRequest.setFastestInterval(10000);
-				
+			}
+			
+			if (mLocationClient == null) {
 				// create a new location client
 				mLocationClient = new LocationClient(this, mConnectionCallbacks, mConnectionFailedListener);
 				
 				// connect to location services
 				mLocationClient.connect();
+			} else if (mLocationClient.isConnected()) {
+				// remove old location update request
+				mLocationClient.removeLocationUpdates(locationListener);
+				
+				// request location updates
+				mLocationClient.requestLocationUpdates(mLocationRequest, locationListener);
 			}
 		}
-		else if (ACTION_BACKGROUND_OFF.equals(action))
+		else if (ACTION_TRACKING_OFF.equals(action))
 		{
 			if (mLocationClient != null) {
+				// remove old location update request
+				mLocationClient.removeLocationUpdates(locationListener);
+				
 				// disconnect from location services
 				mLocationClient.disconnect();
+				
+				// invalidate location request
+				mLocationRequest = null;
 			}
 			
 			mNotificationBuilder = null;
@@ -263,6 +294,7 @@ public class DataService extends Service {
 					Intent i = new Intent(DataService.this, CommService.class);
 					i.setAction(CommService.GENERATE_BEACON);
 					i.putExtra(CommService.EXTRA_BEACON_EMERGENCY, true);
+					i.putExtra(CommService.EXTRA_BEACON_LIFETIME, 3600);
 					i.putExtra(EXTRA_LOCATION, l);
 					startService(i);
 					
@@ -320,6 +352,7 @@ public class DataService extends Service {
 			// generate beacon
 			Intent intent = new Intent(DataService.this, CommService.class);
 			intent.setAction(CommService.GENERATE_BEACON);
+			intent.putExtra(CommService.EXTRA_BEACON_LIFETIME, mBackground ? 600 : 180);
 			intent.putExtra(EXTRA_LOCATION, location);
 			startService(intent);
 			
@@ -395,7 +428,7 @@ public class DataService extends Service {
 		if (intent == null || intent.getAction() == null) {
 			Log.d(TAG, "intent == null or intent.getAction() == null -> default to ACTION_STARTUP");
 
-			intent = new Intent(ACTION_BACKGROUND_ON);
+			intent = new Intent(ACTION_TRACKING_ON);
 		}
 
 		String action = intent.getAction();
