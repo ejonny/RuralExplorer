@@ -38,7 +38,7 @@ public class CommService extends IntentService {
 	
 	// group endpoint for beacons
 	public static final GroupEndpoint RURAL_GROUP_DTN_EID = new GroupEndpoint("dtn://broadcast.dtn/rural-explorer");
-	public static final GroupEndpoint RURAL_GROUP_IPN_EID = new GroupEndpoint("ipn:666.2990520854");
+	public static final GroupEndpoint RURAL_GROUP_IPN_EID = new GroupEndpoint("ipn:666.2528788274");
 	
 	// mark a specific bundle as delivered: contains EXTRA_BUNDLEID
 	public static final String MARK_DELIVERED_INTENT = "de.tubs.ibr.dtn.ruralexplorer.MARK_DELIVERED";
